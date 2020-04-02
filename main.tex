@@ -1,0 +1,976 @@
+\documentclass{kththesis}
+
+\usepackage{csquotes} % Recommended by biblatex
+\usepackage[style=numeric,sorting=none,backend=biber]{biblatex}
+\addbibresource{references.bib} % The file containing our references, in BibTeX format
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{subcaption}
+
+\title{A reinforcement learning approach to the problem of golf using an agent limited by human data}
+\author{Fredrik Omstedt}
+\email{omstedt@kth.se}
+\supervisor{Arvind Kumar}
+\examiner{Erik Fransén}
+\programme{Master in Computer Science}
+\school{School of Electrical Engineering and Computer Science}
+\date{\today}
+
+% Uncomment the next line to include cover generated at https://intra.kth.se/kth-cover?l=en
+%\kthcover{kth-cover.pdf}
+
+\begin{document}
+
+% Frontmatter includes the titlepage, abstracts and table-of-contents
+\frontmatter
+
+\titlepage
+
+\begin{abstract}
+English abstract goes here.
+\end{abstract}
+
+\begin{otherlanguage}{swedish}
+\begin{abstract}
+Svensk sammanfattning finnes här.
+\end{abstract}
+\end{otherlanguage}
+
+\tableofcontents
+
+% Mainmatter is where the actual contents of the thesis goes
+\mainmatter
+
+%HOW TO CITE:
+%\parencite{ref} = [1]
+%\textcite{ref2} = Einstein [2]
+
+\chapter{Introduction}
+\label{chapter:introduction}
+
+\section{Research Question}
+
+
+\chapter{Background}
+\label{chapter:background}
+In this chapter, the background information necessary for the understanding of this thesis is described. Moreover, work related to this paper is presented.
+
+\section{Golf}
+\label{sec:golf}
+Golf is a sport in which players use clubs from a predetermined position to hit balls into holes on a course using as few strokes as possible. The golf course is, unlike in many other sports, not a standardized playing area. Instead, one goal of the game is to be able to adapt to the various surroundings on a course. More specifically, a golf course usually consists of nine or 18 holes, each of different nature. Every hole on the course has a fixed distance, determined by the starting position, commonly known as the tee box, and the actual hole, always located on the putting green. Both the tee box and and the green consists of short cut grass areas, with the green usually being especially well maintained.
+
+Aside from the existence of one or several tee boxes and a green, the holes on a course can look very different from one another. However, they all contain a subset of the same types of terrain:
+\begin{itemize}
+    \item The fairway - a short cut grass area positioned in the intended playing area of the hole. 
+    \item The rough - a long cut grass area positioned around the fairway.
+    \item Bunkers - sand traps positioned at various locations around the hole. These usually have a edges making them hard to escape.
+    \item Water hazards - areas of water from which it often is impossible to hit shots.
+    \item Native areas - areas of vegetation such as woods or swamps. These usually enclose the hole.
+    \item Pathways - man made paths used for walking or driving golf carts on.
+    \item Out of bounds - areas outside the course. It is not allowed to play from these areas.
+\end{itemize}
+An example of a golf hole can be found in \autoref{fig:golfhole}.\footnote{\url{https://www.reigatehillgolfclub.co.uk/assets/img/holes/hole1/hole1.jpg} (Accessed 2020-01-28)}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.4\textwidth]{golfhole.jpg}
+    \caption{An example of a golf hole as seen from above. The tee boxes are marked with white, yellow and red. The hole contains a fairway, rough, native areas, water hazards, pathways, bunkers surrounding the green, as well as an out of bounds area (marked with OoB).}
+    \label{fig:golfhole}
+\end{figure}
+
+The difficulty of each hole is determined using an index named par. The par of a hole tells a golfer how many shots generally are expected to be hit by a professional golfer before they reach the hole. This value is usually directly correlated to the distance of the hole. In most cases, the pars of the holes on a course range from three to five, but other values exist as well. The par also determines the maximum number of shots allowed to be hit on a hole, with this number being the par of the hole plus five. This limit is not mandatory, and most professional competitions require the ball to be holed no matter the number of shots hit.
+
+A round of golf is played by completing a number of holes, usually nine or 18, in a given order. This order is usually determined by the layout of the golf course. Each hole starts by the golfer hitting a shot from the tee box. The golfer then goes to the place where the ball stopped and continues hitting towards the hole. This is repeated until the ball is resting in the hole.
+
+Golfers utilize different clubs to hit their shots. Each club looks different from the others, such as in the length of the shaft, the loft of the club face, or the shape of the club head. These clubs can broadly be divided into four categories; woods, irons, wedges and the putter. Woods have large club heads and long shafts, making them able to generate a high speed. This causes the shots hit with woods to travel longer than other clubs. Woods generally have a smaller degree of loft. Irons have flat club heads and are mainly used for medium length shots. Wedges also have flat club heads but with a greater amount of loft, at least 40 degrees. They are most often used for short shots outside of the green. The putter varies in club head shape, but generally has no or a small degree of loft. It is used for rolling shots, mainly on the putting green. To separate different clubs within the different groups, numbers are used. These numbers are dependent on the loft of the club, with a lower number indicating a lower loft. For instance, a 4 Iron has a lower loft than a 7 Iron.
+
+A golfer is allowed to have 14 clubs with them during a round of golf. Generally, a mix of all types of clubs is required to perform as wide of an array of shots as possible. In most cases, a golfer can, with some accuracy, map a full swing of a club to a certain distance, and therefore utilizes this knowledge in order to play the game. For shorter shots, however, more feel is usually required than for full swing shots.
+
+In most cases, the ball is played as it lies. That is, wherever the ball stopped, the player has to continue hitting from. In some cases, however, this may not be possible. For instance, a wayward shot might be positioned in an out of bounds area or at the bottom of a lake. In such cases, the player may elect (or is forced) to drop the same or in some cases a new ball from a different position than the ball's current position, and play from there instead. In most cases, this results in the player incurring a penalty of a set amount of strokes. The new position to drop the ball on is determined based on the reason for dropping the ball. 
+
+In order for golfers of different skill levels to play against each other, a system known as the handicap system has been developed. This system gives each player a handicap, an index that describes how good a golfer is. This index can be used to determine how well a golfer is expected to play at a given course. Each course is given a slope rating, and this rating together with a handicap can determine the expected number of shots to be hit by a golfer in a round. As such, golfers of different skill levels can compete against one another by comparing their deviation from their expected number of shots, rather than comparing their number of shots directly.
+
+Due to the nature of the game, golf is easily adaptable to a digital setting. It contains well defined rules, is played on specified areas (the golf holes) and allows for a specific set of actions (hitting shots with golf clubs). These components can be described digitally, allowing golf to be played in a virtual environment. As such, this allows for artificial agents to be trained for playing golf, since they can access the game digitally. The agents have, regardless of using deterministic rules or learning methods, access to the data related to the game golf, which results in the possibilities of helping golfers improve using artificial intelligence.
+
+\section{Artificial Neural Networks}
+\label{sec:neuralnetworks}
+In the past few decades, the amount of data available has increased a lot. Much of this data contains features that can be modelled. For instance, a dataset containing images could be modelled to determine whether an image contains an elephant or not. However, the functions needed to correctly model the features are usually non-trivial to discover manually.
+
+One solution to the above mentioned problem is to approximate the functions needed for the model using artificial neural networks (ANNs). An artificial neural network, often called simply a neural network, is a universal function approximator that given an input calculates an output that approximates the value given by the actual function modelling the data \parencite{rojas2013neural}. 
+
+More specifically, the ANN consists of so called neurons. Neurons receive input which is combined with their internal state to produce an output. These internal states utilize so called weights and biases to linearly modify the input, as seen in \autoref{eq:weightsandbiases} where $o_n$, $i_n$, $w_n$ and $b_n$ are the output, input, weight and bias of the neuron, respectively. The neural network combines the neurons by using outputs from one so called layer of neurons as inputs to another layer. This is done until a final set of neurons outputs the approximated function value. As such, the ANN can be seen as a directed, weighted graph, consisting of layers of neurons. \parencite{lecun2015deep} 
+
+\begin{equation}
+\label{eq:weightsandbiases}
+o_n = w_n \cdot i_n + b_n 
+\end{equation}
+
+In order for the network to correctly approximate a function, the weights must map inputs correctly to outputs. This is hard to manually input into a network, and must instead be learned by it. This is done by training the ANN on datasets labelled with the correct result, for instance a dataset containing images mapped to a boolean value indicating whether an elephant is present or not. The network takes the data as input and approximates the output. This output is compared with the correct label, using something known as a loss function (described in \autoref{sec:loss}), to measure the error between the values. This error is then used to modify the weights and biases such that the error is reduced in the next iteration. \parencite{lecun2015deep} 
+
+Specifically, the weights and biases are modified by computing a gradient for both the weights and biases, that for each weight or bias indicates how much the error would increase or decrease if the weight or bias changed a tiny amount. The weights and biases are then modified in the opposite direction of the gradient, i.e. by taking the negative of the gradient. This is done since the gradient always points in the direction of the steepest ascent in the error space. However, the value is usually limited by a learning rate parameter $\eta$ to make the learning smoother. \parencite{lecun2015deep}
+
+For computational efficiency, the weight and bias modification is usually done by taking a few examples, a batch, and running them through the network to compute the outputs and the errors, and then computing the average gradient for the batch. The gradient is then used to adjust all weights and biases. The process, called stochastic gradient descent, is then repeated with a new batch until the errors converge. \parencite{bottou2010large}
+
+\subsection{Loss functions}
+\label{sec:loss}
+Loss functions are used to evaluate how well an algorithm models data. These functions map the deviation of the prediction and the actual value to a real number, known as the error. Larger deviations cause a larger error.
+
+There are several different loss functions, used for different purposes. The choice of loss function depend on several factors, such as what type of algorithm is used and the dataset used for comparison. One example of a loss function is the mean square error (MSE) loss function defined in \autoref{eq:mse}, where $y_i$ is the true value of sample $i$ and $x_i$ is the predicted value. \parencite{CommonLo62:online}
+
+\begin{equation}
+\label{eq:mse}
+MSE = \frac{\sum_{i=1}^n (y_i - x_i)^2}{n}
+\end{equation}
+
+\subsection{Deep neural networks}
+In order to achieve the general function approximation, a deep network architecture consisting of several neuron layers is required. Shallow networks act similar to linear function approximators and cannot learn the high level features present in inputs such as images. Aside from large amounts of layers in their architectures, the deep networks also utilize non-linear activation functions when computing the output from a layer. One of the more common activation functions is the rectified linear unit (ReLU), defined in \autoref{eq:relu}.
+\begin{equation}
+\label{eq:relu}
+f(x) = max(x, 0)
+\end{equation}
+For a visual representation of a deep neural network, see \autoref{fig:dnn}\footnote{\url{https://miro.medium.com/max/2636/1*3fA77_mLNiJTSgZFhYnU0Q.png} (Accessed 2020-02-07)}.
+
+\begin{figure}
+\centering
+\includegraphics[width=0.75\textwidth]{dnn.png}
+\caption{A representation of a deep neural network. The input layer takes the data and feeds it forward in the network to get an output from the output layer. Each dot represents a neuron, and each arrow represents the neurons' output computations, including the weight and bias modification as described in \autoref{eq:weightsandbiases} and the activation function.}
+\label{fig:dnn}
+\end{figure}
+
+To propagate the error modifications through the multiple layers and their non-linear functions, a procedure known as the backpropagation algorithm is used. This procedure utilizes the fact that the gradients for each layer can be seen as applications of the chain rule for derivatives. Specifically, the gradient for a layer in regards to the input of the layer is directly correlated to the gradient for the subsequent layer in regards to the input of that layer. As such, the algorithm can work backwards, first computing the gradient of the output layer and then utilizing that to compute the previous layer's gradient. This makes the algorithm computationally efficient and usable even for large network architectures. \parencite{Goodfellow-et-al-2016} 
+
+Due to the size of deep neural network architectures, training a deep network can be computationally heavy and take up a lot of time. However, the advances in graphical processing units (GPUs) in the last decade have made it possible to greatly speed up the computations required for the learning process, causing convergence to be achieved much faster. \parencite{lecun2015deep}
+
+\subsection{Convolutional neural networks}
+One of the drawbacks of a deep neural network as described above, often called a multilayer perceptron (MLP), is that it cannot efficiently handle data input with spatial information, such as two dimensional images. Pixels near each other are important since they contribute to defining features in the image, but an image must be flattened to be input into an MLP. Thus, information that is relevant for features may disappear. 
+
+Convolutional neural networks (CNNs) are a type of neural network that can handle spatial information. A CNN features two different types of layers: convolutional layers and pooling layers. The convolutional layers contain units organized in what is called feature maps, where each unit is connected to patches of units in one of the previous layer's feature maps through weight and bias groups called filters. A layer can and often does contain several feature maps, and these use different filters. This architecture causes the local correlation between data points to be kept when going through the layers. The name convolution comes from the name of the mathematical operation performed by the filters. \parencite{lecun2015deep}
+
+The pooling layers are used to pool similar features into one new feature. This can be done in several ways, with one common unit operation being to take the maximum of a patch of units as output. Close by pooling units use patches separate from each other such that the feature maps shrink when going through a pooling layer. \parencite{lecun2015deep}
+
+A convolutional network architecture typically uses these two types of layers together with non-linear activation functions early in the network architecture, and utilize an MLP network architecture later to extract the approximation of the function value. \parencite{lecun2015deep}
+
+\subsection{Batch normalization}
+Batch normalization is a process in which the inputs for each layer of a network are normalized before being used by the layer. This is added as a part of the network architecture, and adds a normalization for each training batch.
+
+The reason for normalizing the inputs is that the distributions of each layer's inputs changes during training since the weights and biases of other layers change. This requires a lower learning rate, which in turn causes learning to be slower. Batch normalization allows for greater learning rates and also makes the network more stable in regards to the initial weight and bias initializations. \parencite{ioffe2015batch}
+
+\subsection{Usage of neural networks}
+On their own, neural networks work well for what is known as supervised learning, in which the correct answer is already known beforehand. For instance, when training a network to identify elephants in images, the images trained on are already labelled with whether they contain elephants or not. There are however many problems with no obvious answers. As an example, it is not inherently clear how to optimally play a hole of golf. There are several different actions to choose from, and several steps to take. As such, labelling a golf hole with the suggested actions is a difficult task. Therefore, neural networks on their own cannot successfully be used for problems such as golf. Other methods must be used instead.
+
+\section{Reinforcement Learning}
+\label{sec:reinforcementlearning}
+Humans learn through interacting with their environment. For instance, a child does not have a teacher teaching it how to move its joints to walk, but rather observes its environment (such as adults moving around it) and tries actions to propel itself forward. It learns how its actions affect its environment and how much they contribute to the success of the process. Eventually, the child learns to walk successfully. 
+
+Reinforcement learning is a learning process imitating the above mentioned way humans learn. More specifically, it deals with the problem of mapping actions to observations such that a reward value is maximized. In the case of the child learning to walk, this directly corresponds to the child mapping joint movements to its position and pose in a room such that it stays upright while moving forwards as well as possible. In reinforcement learning, the learner does not know which actions to take, but must instead figure out which actions result in the highest reward simply by trying them. In some cases, the reward may not appear immediately, but follow from subsequent actions taken. Reinforcement learning therefore also takes into account the concept of delayed rewards. \parencite{sutton1998introduction}
+
+A reinforcement learning system contains several components that make it possible to learn how to achieve a goal: the \textit{environment}, the \textit{state}, the \textit{actions}, the \textit{reward}, the \textit{policy}, the \textit{agent} and the \textit{action-value function}.
+
+The \textit{environment} describes the world encapsulated by the problem the reinforcement learning system tries to solve. It contains information about how close to the goal the system is, as well as which actions are possible to take. For instance, an environment could be a maze containing a robot, with the goal being the robot exiting the maze.
+
+The \textit{state} is a snapshot of the environment. It details information about a specific part of the environment. For instance, a state of an environment could be the current position of a robot in a maze.
+
+The \textit{actions} determines the possible things to do in an environment. The actions modify the current state of the environment into a new one. For instance, the actions of an environment could be the movement of a robot in a maze. 
+
+The actions are contained in the action space. The dimensionality of the action space determines the number of actions to be taken. The actions can be either discrete, continuous, or both. A discrete action consists of choosing between one of several options, such as moving a robot either up, right, down or left in a maze. A continuous action consists of choosing real values, such as how many meters to move a robot in a given direction in a maze.
+
+An action space is named depending on its actions. Discrete action spaces contain only discrete actions, continuous action spaces contain only continuous actions, and hybrid action spaces contain both types of actions. As will be shown in the following subsections of \autoref{sec:reinforcementlearning}, some algorithms work better for different types of action spaces.
+
+The \textit{reward} indicates how good a certain state in the environment is. The higher the reward is, the better the state is to be in. In some cases, it makes more sense to use a \textit{punishment}, where a high number showcases a bad state. For instance, a punishment could be the distance between a robot in a maze and the maze's exit. 
+
+The \textit{agent} is the learner in the reinforcement learning system. It receives states and reward as input, and outputs the actions to take.
+
+The \textit{policy} is a description of how the agent takes actions given certain states and rewards. The policy is at the center of the reinforcement learning system, since the system tries to learn how to best take actions in an environment. \parencite{sutton1998introduction}
+
+Rewards only indicate the immediate result of an action. The \textit{action-value function} is therefore used to specify long term rewards. The value of a state can be seen as the reward over time, starting from that state. This action-value function is defined as the Q-function, described in \autoref{eq:qfunction}, where $\pi$ is the policy used, $s$ the current state, $a$ the action chosen, $R_t$ the current reward and $R_{t+1}$ etc. the future rewards from the subsequent states. $\gamma$ is a discount factor used to determine the importance of future rewards compared to immediate ones. The optimal value is then determined by the optimal action-value function, defined in \autoref{eq:qoptimal}. By choosing the highest valued action for each state, the optimal policy is easily found. \parencite{van2016deep}
+
+\begin{equation}
+\label{eq:qfunction}
+Q_\pi(s, a) = \mathbb{E}[R_t + \gamma R_{t+1} + \gamma^2R_{t+2} + ... | S_t = s, A_t = a, \pi]
+\end{equation}
+
+\begin{equation}
+\label{eq:qoptimal}
+Q_*(s, a) = max_\pi Q_\pi(s, a)
+\end{equation}
+
+Just like there is an action-value function, there is also a state-value function, defined in \autoref{eq:statevalue}. In this equation, $a\sim\pi(s)$ represents the action $a$ as chosen by the policy $\pi$ in state $s$.
+\begin{equation}
+\label{eq:statevalue}
+V_\pi(s) = \mathbb{E}_{a\sim\pi(s)}[Q_\pi(s,a)]
+\end{equation}
+Whereas the action-value function indicates how good an action is in a state, the state-value function indicates how well a state is in general. \parencite{wang2015dueling}
+
+A relevant function to the above defined functions is the advantage function, defined in \autoref{eq:advantage}. This equation subtracts the state-value from the action-value to showcase the relative performance of an action in a state. \parencite{wang2015dueling}
+
+\begin{equation}
+\label{eq:advantage}
+A_\pi(s,a) = Q_\pi(s,a) - V_\pi(s)
+\end{equation}
+
+For an illustration of how the above mentioned components interact with each other, see \autoref{fig:reinforcementlearning}\footnote{\url{https://www.kdnuggets.com/images/reinforcement-learning-fig1-700.jpg} (Accessed 2020-02-07)}.
+
+\begin{figure}
+\centering
+\includegraphics[width=0.75\textwidth]{reinforcement-learning.jpg}
+\caption{A representation of how reinforcement learning works. The environment sends a state and reward to the agent, which utilizes this information together with its policy to choose an action input to the environment, resulting in a new state and a corresponding reward.}
+\label{fig:reinforcementlearning}
+\end{figure}
+
+\subsection{Exploration versus Exploitation}
+\label{subsec:explorevsexploit}
+One dilemma in the reinforcement learning field is the exploration and exploitation trade-off. This trade-off relates to how an agent maximizes the reward. By performing actions and observing the states, the agent learns which actions yield a high reward. To maximize the reward, the agent has to take these valuable actions it has previously tried. However, it cannot discover these useful actions without trying actions it has never taken before. The agent must exploit what it already knows to get rewarded, but at the same time explore new actions to increase its knowledge.
+
+These approaches cannot be taken simultaneously. Due to this, and due to the fact that actions usually must be taken several times to give reliable estimates in the value function, it is hard to determine the trade-off between exploration and exploitation.
+
+For discrete action spaces, one possible solution is the use of the $\epsilon$-greedy policy. With a probability $\epsilon$ a random action is uniformly sampled from the action space, and with a probability $1 - \epsilon$, the best action is chosen. The value for $\epsilon$ usually starts at $1$ to favour exploration at the start of the learning process. It then decreases over time and settles at a low value in order to still allow for some exploration once the agent has learned about the available actions and how they affect the environment. \parencite{sutton1998introduction}
+
+For continuous action spaces the $\epsilon$-greedy policy is infeasible due to the infinite number of choices available in choosing real numbers. Instead, a useful way of introducing exploration is to add random noise to the numbers chosen. This causes the agent to end up in new states, allowing it to learn more about the environment and the actions. The scale of the noise can be reduced during training once the agent starts learning. \parencite{lillicrap2015continuous}
+
+\subsection{Q-learning}
+\label{subsec:qlearning}
+Q-learning, described in \textcite{watkins1992q}, is a reinforcement learning algorithm. The algorithm works by approximating the optimal action-value function, defined in \autoref{eq:qoptimal}, using a table for storing the so called Q-values of the function. These values are iteratively updated using dynamic programming according to \autoref{eq:qupdate}, where $\alpha$ is a learning rate used to smoothen the learning. 
+\begin{equation}
+\label{eq:qupdate}
+Q(s_t, a_t) \leftarrow Q(s_t, a_t) + \alpha \cdot (R_t + \gamma \cdot max_a Q(s_{t+1}, a) - Q(s_t, a_t))
+\end{equation}
+As can be seen in the equation, the updated Q-value for a state and action depends on the best possible Q-value in the next state, which is an approximation of all future rewards. Given enough iterations and a good exploration policy, the Q-values converge towards their correct values \parencite{watkins1992q}.
+
+\subsection{Deep Q-learning}
+\label{subsec:deepqlearning}
+One problem with the Q-learning algorithm is that a table for storing Q-values is infeasible for environments with a large state space. One example of such an environment is when an agent receives colored images as input, i.e. it observes a rendered representation of a problem. An image usually consists of tens of thousands of pixels. Environments utilizing images can have many different image states, making it impossible to store all this information in a table.
+
+As was mentioned in \autoref{sec:neuralnetworks}, ANNs can be used to approximate models with high dimensional inputs such as images. As such, they seem like a good candidate to replace tables for mapping states to actions. However, reinforcement learning algorithms have been known to diverge when used with non-linear classifiers \parencite{tsitsiklis1997analysis}. This is due to subsequent states being related to each other, major policy changes caused by small updates of the Q function, as well as the correlations between action values and their so called target values $Y$, defined in \autoref{eq:qtarget}.
+
+\begin{equation}
+\label{eq:qtarget}
+Y_t = R_t + \gamma \cdot max_a Q(s_{t+1}, a)
+\end{equation}
+
+The deep Q-network algorithm (DQN) presented in \textcite{mnih2015human} utilizes a deep neural network to approximate the action-value function. It solves the problems mentioned above by introducing two features to the network: the use of something known as experience replay, and by iteratively updating the Q-values with target values only updated periodically. 
+
+Experience replay, described in \textcite{lin1992self}, is a process in which the agent stores experiences, defined as $e_t = (s_t, a_t, R_t, s_{t+1})$, every iteration in a buffer. This buffer stores the $m$ most recent experiences, where $m$ is a fixed size defined during training of the algorithm. During the learning process the buffer is uniformly sampled for a batch of experiences which is then used to apply Q-learning updates to the network. This removes the correlations between subsequent states when learning, and smoothes major policy changes \parencite{mnih2015human}.
+
+If the network were to be used by both the Q-value prediction and the target value prediction, the network would be aiming for a moving target. Updating one value also updates the other, making it harder to reach and often leading to divergence. Because of this reason, the target values are calculated using another network which is only updated with the network parameters of the Q-value network periodically. By keeping the target values fixed, the network can more easily converge. \parencite{mnih2015human}
+
+In \textcite{mnih2015human}, a version of the MSE loss is used when applying the Q-learning updates. This loss is defined as in \autoref{eq:qloss}, where $\theta_t$ represents the network parameters at iteration $t$, $\theta_t^-$ the network parameters used for the target values at iteration $t$, and $n$ is the size of the batch from the experience replay buffer.
+
+\begin{equation}
+\label{eq:qloss}
+L_t = \frac{\sum_{i=1}^n (R_i + \gamma \cdot max_a Q(s_{i+1}, a;\theta_t^-) - Q(s_i, a_i;\theta_t))^2}{n}
+\end{equation}
+
+\subsubsection{Double Deep Q-learning}
+One problem with the Q-learning and DQN algorithms is that they tend to overestimate the action values. The $max$ operator in \autoref{eq:qupdate} and \autoref{eq:qloss} uses the same values both for choosing and evaluating actions, which is known to cause this overestimation \parencite{van2016deep}. To clarify this, \autoref{eq:qtarget} can be expanded to showcase how the selection and evaluation is performed. This is shown in \autoref{eq:qtargetuntangled}, where $\theta_t$ represents the weights at iteration $t$.
+
+\begin{equation}
+\label{eq:qtargetuntangled}
+Y_t = R_t + \gamma \cdot Q(s_{t+1}, argmax_aQ(s_{t+1}, a;\theta_t);\theta_t)
+\end{equation}
+
+Overestimation of action values is not necessarily a bad thing. If all action values are overestimated uniformly then no changes would occur, since the relative differences between values would be the same. However, even in environments well adapted for the DQN algorithm, overestimation that affects the performance does happen \parencite{van2016deep}.
+
+Double Q-learning, described in \textcite{hasselt2010double}, aims to solve the problem of overestimation by decoupling the selection and evaluation. In Double Q-learning, two action-value functions are approximated by randomly updating one of the functions with an experience. This results in two sets of weights $\theta$ and $\theta'$. One of these sets is then used for estimating the policy, and the other to estimate its value. \autoref{eq:doubleqtarget} describes how this new target value is calculated.
+\begin{equation}
+\label{eq:doubleqtarget}
+Y_t^{DoubleQ} = R_t + \gamma \cdot Q(s_{t+1}, argmax_aQ(s_{t+1}, a;\theta_t);\theta_t')
+\end{equation}
+As can be seen in the equation, the $argmax$ operator still selects an action using the online weights $\theta_t$, meaning that the estimation of the current policy is done with current values, just like in Q-learning and DQN. However, $\theta_t'$ is used to evaluate the value, reducing the overestimation of action values. By switching the use of $\theta$ and $\theta'$, both sets of weights can be updated symmetrically. \parencite{van2016deep}
+
+In \textcite{van2016deep}, Double Q-learning is applied to the DQN algorithm, resulting in the Double DQN (DDQN) algorithm. This algorithm works similarly to the DQN algorithm, but utilizes the target network for evaluating the action values. This is not a fully decoupled solution, but is a minimal possible change of the DQN algorithm to utilize Double Q-learning. This results in the target values being calculated as in \autoref{eq:ddqntarget}. The target network, as well as all other components in the algorithm, are updated just as in the DQN algorithm.
+
+\begin{equation}
+\label{eq:ddqntarget}
+Y_t^{DDQN} = R_t + \gamma \cdot Q(s_{t+1}, argmax_aQ(s_{t+1}, a;\theta_t);\theta_t^-)
+\end{equation}
+
+\subsubsection{Dueling Deep Q-learning}
+In \textcite{wang2015dueling}, a new variant of a deep Q-learning algorithm called the Dueling DQN algorithm is presented. This algorithm utilizes the DDQN algorithm with a new network architecture specifically designed for reinforcement learning problems. 
+
+The network architecture of the Dueling DQN algorithm consists of a general feature learning module which is then split into two streams; one for generating the state-value (as defined in \autoref{eq:statevalue}) and one for generating the advantages of all actions (as defined in \autoref{eq:advantage}). These streams are then combined to generate an estimate of the Q function, used by the DDQN algorithm. See \autoref{fig:duelingdqn} for a comparison between the normal DQN architecture and the dueling variant.
+
+\begin{figure}
+\centering
+\includegraphics[width=0.75\textwidth]{duddqn.png}
+\caption{A comparison of the network architecture described in \textcite{mnih2015human} (top) and the dueling architecture of \textcite{wang2015dueling} (bottom). The dueling architecture utilizes two streams, one for calculating the state-value and one for calculating the advantages for all actions, which are then combined into Q-value estimates. \parencite{wang2015dueling}}
+\label{fig:duelingdqn}
+\end{figure}
+
+The key insight with this above mentioned architecture is that in some states, there is no need to estimate the action values for all actions. For instance, in a car racing simulation, the steering actions are generally irrelevant when the car is travelling down a straight road. By separating the estimates into two streams, this allows for the algorithm to more quickly learn the correct actions for each state. \parencite{wang2015dueling}
+
+As can be seen from the definitions of the action-value, state-value and advantage functions, $Q_\pi(s, a) = V_\pi(s) + A_\pi(s, a)$. It might therefore seem intuitive to define the stream combining network module as in \autoref{eq:wrongduelingcombine}, given the scalar network output $V(s;\theta,\beta)$ and vector network output $A(s, a;\theta, \alpha)$ (where $\beta$ and $\alpha$ are the network parameters for the two streams respectively). However, these outputs are only estimates of the true functions, and as such may not yield a good learning performance. Moreover, it is impossible to recover $V$ or $A$ uniquely from $Q$, which affects performance even more. \parencite{wang2015dueling}
+
+\begin{equation}
+\label{eq:wrongduelingcombine}
+Q(s,a;\theta,\alpha,\beta) = V(s;\theta,\beta) + A(s, a;\theta, \alpha)
+\end{equation}
+
+In \textcite{wang2015dueling}, the stream combining network module is defined as in \autoref{eq:duelingcombine}, where $n$ is the size of the advantage vector. This stabilizes the learning process, since the advantages only need to change as fast as the average. 
+
+\begin{equation}
+\label{eq:duelingcombine}
+Q(s,a;\theta,\alpha,\beta) = V(s;\theta,\beta) + (A(s, a;\theta, \alpha) - \frac{1}{n}\sum_{a'}A(s, a';\theta, \alpha))
+\end{equation}
+
+\subsection{Deep Deterministic Policy Gradient}
+From \autoref{subsec:qlearning} and \autoref{subsec:deepqlearning}, it can be derived that the Q-learning algorithm and its variants work well in discrete action spaces. However, the algorithms do not work in continuous action spaces. Both the $max$ and $argmax$ operators choose between a fixed set of choices, which is impossible to apply with real numbers. One possible solution to this is to discretize the continuous action space, but this causes the Q-learning algorithms to perform poorly \parencite{lillicrap2015continuous}. As such, some other algorithm is required for continuous action spaces.
+
+In \textcite{lillicrap2015continuous}, the Deep Deterministic Policy Gradient (DDPG) algorithm is presented. This algorithm combines the continuous reinforcement learning algorithm Deterministic Policy Gradient (DPG) with the advances of utilizing deep neural networks from \textcite{mnih2015human}.
+
+The DPG algorithm uses what is known as an actor-critic approach. This is similar to the approach used by the DDQN algorithm, in that one parametrized function selects actions and that another function evaluates, or criticizes, the policy. Whereas the Q-learning algorithm uses the $max$ operator to specify a greedy policy, the action function (known as $\mu(s;\theta^\mu)$, where $\theta^\mu$ are the parameters) maps states to actions in a deterministic fashion to specify the current policy, using its parameters. 
+
+The critic function, known as $Q(s, a; \theta^Q)$, is updated as in \autoref{eq:qupdate}, but with the $max$ operator replaced with $\mu$. The actor function, however, uses the gradient of the policy's performance, known as the policy gradient $J$, to update itself. This gradient is defined in \autoref{eq:policygradient}. This is essentially an application of the chain rule with respect to the actor parameters, and is used with gradient descent to update the actor function. \parencite{lillicrap2015continuous}
+
+\begin{equation}
+\label{eq:policygradient}
+\begin{split}
+\nabla_{\theta^\mu}J \approx \mathbb{E}[\nabla_{\theta^\mu}Q(s_t, \mu(s_t;\theta^\mu); \theta^Q)] = \\ \mathbb{E}[\nabla_{\mu(s_t)}Q(s_t, \mu(s_t); \theta^Q)\nabla_{\theta^\mu}\mu(s_t; \theta^\mu)]
+\end{split}
+\end{equation}
+
+In \textcite{lillicrap2015continuous}, the DPG algorithm is modified into the DDPG algorithm by adding an experience replay from which the networks are trained on, and by creating copies of the actor and critic networks for calculating the target values. However, rather than directly copying the networks in a periodic fashion, the networks are smoothly updated using a constant $\tau$ such that $\theta^- \leftarrow \tau\theta + (1-\tau)\theta^-$, where $\tau < 1$ and $\theta^-$ represents the respective target network. Furthermore, the networks use batch normalization to make learning more efficient. 
+
+As was mentioned in \autoref{subsec:explorevsexploit}, continuous action space algorithms can explore by adding noise to the actions. This is done in the DDPG algorithm. Specifically, the actor function adds some random noise to its output. \parencite{lillicrap2015continuous}
+
+\subsection{Parametrized Deep Q-learning}
+When it comes to hybrid action spaces, neither the Q-learning algorithms nor the DDPG algorithm are intuitive choices. In order to utilize Q-learning the continuous subset of the action space must be discretized, and using DDPG requires the discrete subset to be relaxed into a continuous one. Both of these approaches causes the action space to become more complex, resulting in a harder problem to solve using reinforcement learning \parencite{xiong2018parametrized}. In \textcite{xiong2018parametrized}, the Parametrized DQN (P-DQN) algorithm is presented as a way to handle hybrid action space problems without having to modify the action space itself.
+
+The P-DQN algorithm combines both the DQN algorithm and the DDPG algorithm in order to learn how to utilize the discrete and continuous actions. An actor function is defined which maps the state and each discrete action to their corresponding parameters. This function can then be used as input, together with the discrete action chosen by a greedy policy and the state, into the action value function. 
+
+The action value function can be defined as $Q(s, a) = Q(s, k, x_k)$, where $k$ is the discrete action and $x_k$ is the associated continuous parameter. This changes \autoref{eq:qupdate} into \autoref{eq:pqupdate}. 
+\begin{equation}
+\label{eq:pqupdate}
+\begin{split}
+Q(s_t, k_t, x_{k_t}) \leftarrow Q(s_t, k_t, x_{k_t}) + \\ \alpha \cdot (R_t + \gamma \cdot max_k max_{x_k} Q(s_{t+1}, k, x_k) - Q(s_t, k_t, x_{k_t}))
+\end{split}
+\end{equation}
+As can be derived from the equation, first $x_k^* = max_{x_k}Q(s_{t+1}, k, x_k)$ is solved for each discrete action $k$. Then, the largest $Q(s_{t+1}, k, x_k^*)$ is chosen. As has already been mentioned, it is not possible to perform the $max$ operator on a continuous value. However, it is easy to see that the equation can be evaluated efficiently if $x_k^*$ is given. This value can easily be approximated using a deterministic policy network as in DDPG. The P-DQN algorithm therefore works by using this network to calculate the parameters for all discrete actions $k$, and then use DQN with these values given to find the optimal $k$ to choose from. \parencite{xiong2018parametrized}
+
+In \textcite{xiong2018parametrized}, the DQN network is actually a Dueling DQN network, and is updated as in \textcite{mnih2015human} using MSE loss. The deterministic policy network parameters are updated using the loss described in \autoref{eq:pdqnddpgloss}, where $\omega_t$ represents the Dueling DQN network parameters. Furthermore, the different network parameters use different learning rates, with the learning rate for the Dueling DQN networks being asymptotically negligible compared to those of the deterministic policy networks. 
+
+\begin{equation}
+\label{eq:pdqnddpgloss}
+L_t(\theta) = -\sum_kQ(s_t, k, x_k(s_t;\theta);\omega_t)
+\end{equation}
+
+\subsubsection{Multi Pass Parametrized Deep Q-learning}
+In \textcite{xiong2018parametrized}, all action parameters $\boldsymbol{x}$ are input into the Q-network for each discrete action $k$. As such, all discrete actions share the continuous action parameters. In \textcite{bester2019mpdqn}, it is described that this negatively affects the performance of the algorithm due to the updates of the Q-values and action parameters being affected by all parameters. 
+
+By inputting $\boldsymbol{x}$ into the Q-network, the action parameter loss changes. This is due to the Q-value producing gradients for each action parameter. If each Q-value was a function of only a single action parameter, then the gradients for all other parameters would be $0$, but this is not the case for the P-DQN algorithm in \textcite{xiong2018parametrized}. Since Q-values are only updated when their actions are sampled, this causes a problem. The Q-value contains no information on how the other action parameters should be updated, but they are still updated due to the gradients not being $0$. 
+
+Inputting $\boldsymbol{x}$ causes more problems by affecting the discrete action policy. More specifically, updating the continuous action parameter policy of any action disturbs the Q-values for all actions, not just the one associated with the continuous parameter. This can result in sub-optimal greedy choices, which slows down learning. \parencite{bester2019mpdqn}
+
+A solution to the problems mentioned above is to split the Q-network into several networks, one for each discrete action. However, this increases the complexity of the algorithm drastically. In \textcite{bester2019mpdqn}, an alternative approach is presented, where the action parameters are separated and input into different forward passes into the same network. This causes no structural changes to the network architecture, but still removes the above mentioned problems from the algorithm. This is done by inputting the one-hot vector for the $k$:th action parameter during the $k$:th forward pass, i.e. by inputting $\boldsymbol{x}\boldsymbol{e}_k$. This causes all gradients of the other action parameters to be $0$, and makes the Q-values for the $k$:th action only depend on $x_k$. This modified algorithm is referred to as the Multi Pass Q-network (MP-DQN) algorithm. \parencite{bester2019mpdqn}
+
+Performing forward passes for each discrete action is also costly, but this can be improved by utilizing the properties of batches. By doing so, all action parameters can be input at the same time without affecting each other in a single parallel forward pass. This generates a matrix of Q-values, in which the diagonal contains the valid Q-values, i.e. where the correct action parameter is used with the correct discrete action. This allows the overhead of the MP-DQN algorithm to scale linearly. \parencite{bester2019mpdqn}
+
+\section{Related work}
+In this section, articles related to this thesis are presented. Their content and how it relates to this work is described.
+
+Most of the papers referenced in \autoref{sec:reinforcementlearning} are all related to this thesis in that they utilize reinforcement learning algorithms on various problems where the performance can be compared to that of humans. \textcite{mnih2015human}, \textcite{van2016deep} and \textcite{wang2015dueling} tested their algorithms in the Atari Game environment on several different games, using pixel data as input. The DQN algorithm performed well, setting the state of the art results for Q-learning algorithms and exceeding human level of play in a majority of the games tested. These results were further improved upon in most of the games tested, first by the DDQN algorithm and then even more by the Dueling DQN algorithm. 
+
+Just like how the discrete algorithms set the state of the art in the discrete action space, the DDPG algorithm performed well in the continuous action space. The algorithm was tested in continuous control environments, such as instances where a robot arm must move an object from one position to another. The results of the algorithm were comparable to or better than that of a planning algorithm, even in cases where the planning algorithm used low-level features while the DDPG algorithm utilized pixel data. \parencite{lillicrap2015continuous}
+
+For hybrid action spaces, the P-DQN algorithm in \textcite{xiong2018parametrized} set the state of the art performance. The algorithm was tested in game environments requiring both continuous and discrete actions, such as the soccer game Half Field Offense (HFO). The performance and speed was further improved by the MP-DQN algorithm in \textcite{bester2019mpdqn}.
+
+In \textcite{vinyals2019grandmaster}, an agent was trained for the immensely complex game StarCraft II. Each game consists of several thousand time steps and in each step, more than $10^{26}$ actions can be chosen. The agent is similar to the one in this paper in that it utilizes human data. However, the agent in \textcite{vinyals2019grandmaster} does it differently in that it uses supervised imitation learning to imitate actions performed by humans. It then uses an actor-critic reinforcement learning method to directly learn a policy that maximizes its win rate. The algorithm performs very well, achieving better results than 99.8\% of StarCraft II players. This is the first algorithm to achieve such a high score.
+
+In \textcite{delalleau2019discrete}, a reinforcement learning algorithm capable of being used in discrete, continuous and hybrid action spaces is presented. This algorithm is based on an actor critic method called Soft Actor Critic (SAC), but modified to work in all types of action spaces. It is therefore named Hybrid SAC. It is compared to the MP-DQN algorithm in the same environments MP-DQN was originally trained on. The results showcased that the Hybrid SAC algorithm performed comparable to, but not better than, the MP-DQN algorithm. The only exception is when the MP-DQN algorithm is simplified for HFO to make the comparison more similar, in which the Hybrid SAC performs better. It was also tested in a Ubisoft game environment in driving a car at high speeds.
+
+The work in \textcite{delalleau2019discrete} showcases a different approach to hybrid action spaces. It is different from the MP-DQN algorithm in that it also can handle discrete and continuous action spaces. This is not necessary in this thesis, which is why the MP-DQN algorithm is preferred.
+
+In \textcite{fu2019deep}, deep multi-agent reinforcement learning is evaluated for hybrid action spaces. Two new algorithms are introduced, the Deep Multi-Agent Parametrized Q-Network (Deep MAPQN) algorithm and the Deep Multi-Agent Hierarchical Hybrid Q-Network (Deep MAHHQN) algorithm. Both of these are based on the P-DQN algorithm. The Deep MAPQN algorithm utilizes P-DQN for several agents, but combines the Q-value outputs into a so called mixing network, to get a total action value for all agents' actions. This is then used to learn how agents can cooperate with each other. This is a quite computationally complex algorithm due to it always having to compute continuous parameters for all discrete actions. The Deep MAHHQN algorithm was therefore implemented to solve this. It uses two networks, one high-level for discrete actions and one low-level for the continuous parameters, that are trained separately. 
+
+Both algorithms in \textcite{fu2019deep} were compared to a group of separate P-DQN agents in several environments, one of them being a multi-agent HFO. In all environments, they performed better than the P-DQN agents. 
+
+The work in \textcite{fu2019deep} relates to this thesis in that it utilizes parametrized reinforcement learning. It is however applied to a vastly different setting, a multi-agent one. This is completely opposite to golf, in which there is no other entity than the agent itself.
+
+\textcite{ArccosGo0:online} is a product that tracks golfers' shots on a golf course using sensors fitted to the golfers' clubs, as well as GPS locations. This data is then used to give recommendations on how to play holes, i.e. which clubs to use. This is similar to one use case of the agent from this paper, in that the reinforcement learning agent could be used to showcase how the golfer from which the data was gathered could improve. However, it is unclear whether \textcite{ArccosGo0:online} uses reinforcement learning or any similar method. Furthermore, their data is based solely on club choice and the starting and ending position of the shot. In this paper, entire shots are used to teach the agent, including statistics such as the height and curve of the shot.
+
+\textcite{HelloBir63:online} is a product similar to \textcite{ArccosGo0:online} in that it gives personal recommendations on how to play golf holes. However, \textcite{HelloBir63:online} does not utilize sensors on the golf clubs, and instead uses only GPS data to track golf shots. It is unclear what type of method this product uses for learning.
+
+In \textcite{ko2012simulation}, a model for simulating golf is developed and analyzed to see how different skills, such as long shots, approach shots and putting, in golf affect the final score of a golf round. The golf course model included realistic hole settings, and the golfer shot patterns were modeled using $t$ distributions and normal distributions. The simulations showcased that a 20 yard increase in distance improved the score of high-handicap golfers by almost three strokes, and professional golfers with less than a stroke. They also showcased that the long game accounted for two thirds of the difference in scores between high- and low-handicap golfers.
+
+The work in \textcite{ko2012simulation} is similar to the work in this thesis in that it uses simulation models for simulating golf. However, it differs in that it uses distributions to simulate golf shots, rather than golf shots directly as in this paper. Furthermore, \textcite{ko2012simulation} uses deterministic rules for hitting shots, rather than teaching an agent how to do it. The results show potential use cases for the agent in this paper, i.e. by seeing how differences in a golfer's data affects the agent in its playing.
+
+\chapter{Methods}
+\label{chapter:methods}
+In this chapter, the methodology of the thesis is detailed. The tools and algorithms used are presented, and the experiments performed are described. 
+
+\section{Golf simulation application}
+In order to train a reinforcement learning agent to play golf, an application simulating a golf environment was needed. This application needed to be able to correctly input golf shots into the environment, handle the physics interactions with objects, make sure the rules of golf were followed, and output observations of the environment to the agent. Furthermore, it was required that the application could run fast enough for training of the agent to be efficient.
+
+The golf simulation application used in this thesis was an application adapted from an application used to play virtual golf games. This virtual golf application fulfilled all requirements mentioned above except for being fast enough for efficient agent training, and being able to output observations for the agent to utilize. This was because the application was used for human consumption, and therefore included a graphical interface. Moreover, the simulation was intentionally slowed down to allow for users to be able to see their shots and results. 
+
+To remedy the speed problems, the virtual golf application was stripped of all graphical components. Furthermore, all logic related to the user interface was also removed. All rules unrelated to the way the agent plays golf, such as rules for playing against other people, were also taken out. Finally, the application speed limitations were removed completely, allowing the application to simulate golf shots and physics as quickly as possible.
+
+Shots close to the green are more complex than longer shots, due to factors such as the height, spin and speed of the shot playing a much bigger role. It was determined that the number of shot types needed in this area could affect the performance of the agent negatively, due to the increased action space complexity. Furthermore, the data required for these types of shots could not easily be gathered. As such, the application was modified to finish a hole as soon as the agent was closer than 30 meters to the hole.
+
+The application was also modified such that it outputted an observation of the environment at the start of each hole and after each golf shot. This observation included the current score of the agent on the hole, whether the hole was completed or not, metadata about the hole (such as the par of the hole), as well as a two-dimensional map showing the current state of the agent on the hole.
+
+The score of the agent was defined as a penalty dependent on the number of shots hit, and the distance remaining to the hole after the hole was finished. More specifically, the score was determined as in \autoref{eq:agentscore}, where $s_n$ is the number of shots hit on the hole, $s_{max}$ is the maximum number of shots for the hole, and $d$ is the distance remaining. As can be seen in the equation, the agent is penalized in intermediary states. Furthermore, the score for final states is normalized depending on the par of the hole. As such, the score of a hole is always between 0 and 1, regardless of the hole's par. Finally, it can be seen that the distance remaining can at most weigh as much as one shot in the final score. As such, the number of shots hit is the more important factor when determining how well the agent performed. 
+
+\begin{equation}
+\label{eq:agentscore}
+score = 
+\begin{cases}
+1,& \text{if the hole is not finished or if } s_n = s_{max}\\
+\frac{30s_n + d}{30s_{max}},& \text{if } s_n < s_{max}
+\end{cases}
+\end{equation}
+
+The two-dimensional map was defined such that it contains information on the areas surrounding the current position of the golf ball, with a size of 100x300. The golf ball's position is always at (50,50), and each other cell contains information about the area in a square meter relative to the ball. The golf simulation application always lines up the shot towards a target line, which is either a point in the middle of the fairway or the hole location. This target line is mapped to the north direction in the two-dimensional map. As such, the observation details the area 50 meters left and right of the ball, as well as 50 meters behind it and 250 meters in front of it. These numbers were chosen such that the shots gathered would fit in the map, i.e. the agent would have knowledge of where the shots could end up. 
+
+The different types of areas on a hole were mapped to an integer, and these integers were then stored in the map. To see the actual area to integer mappings, see \autoref{app:tab:areamapping} in the appendix. For a visualization of an example of a map, see \autoref{fig:observation}.
+
+\begin{figure}
+    \centering
+    \includegraphics[height=0.5\textheight]{golf_observation_visualization.png}
+    \caption{An example visualization of a map from an environment observation. The white dot indicates the ball position, always positioned at (50,50). Specifically, this map showcases the fifth hole at Pebble Beach.}
+    \label{fig:observation}
+\end{figure}
+
+The reason for not having a larger map was to reduce the time needed for agent calculations, as well as to reduce the risk of learning about holes rather than general positions. This latter reason is also why the ball is always located at the same position in the map.
+
+\section{Shot data gathering}
+\label{sec:datagathering}
+The agent learned to play golf limited by the shot data of a golfer. As such, data was needed for the agent to learn with. This data had to describe the shots well enough such that the agent could use them to approximate the way the golfer plays, and learn from that.
+
+For this thesis, the data included shot data mapped to different clubs. For each club used by the golfer, data from a set of full swing shots hit with that club was gathered. Furthermore, data for a set of shorter distances was gathered as well. These distances were between 30 meters (the lower distance limit of the simulation environment) and the length of the shortest club hit by the golfer, and were added for the agent to be able to learn to play within that distance range as well. More specifically, shots were categorized into the following groups: Driver, 3 Wood, 4 Iron, 5 Iron, 6 Iron, 7 Iron, 8 Iron, 9 Iron, Pitching Wedge, Gap Wedge, Sand Wedge, Lob Wedge, 35 meters, 45 meters, 55 meters and 65 meters. From here on out, these clubs and distances will be abbreviated as in \autoref{tab:clubabbreviations}, and be collectively referred to as clubs.
+
+\begin{table}
+    \centering
+    \begin{tabular}{|c| c|}
+        \hline
+        \textbf{Club} & \textbf{Abbreviation} \\ \hline
+        Driver & DR \\ \hline
+        3 Wood & 3W \\ \hline 
+        4 Iron & 4I \\ \hline 
+        5 Iron & 5I \\ \hline 
+        6 Iron & 6I \\ \hline 
+        7 Iron & 7I \\ \hline 
+        8 Iron & 8I \\ \hline 
+        9 Iron & 9I \\ \hline 
+        Pitching Wedge & PW \\ \hline 
+        Gap Wedge & GW \\ \hline 
+        Sand Wedge & SW \\ \hline 
+        Lob Wedge & LW \\ \hline 
+        35 Meters & 35 \\ \hline 
+        45 Meters & 45 \\ \hline 
+        55 Meters & 55 \\ \hline 
+        65 Meters & 65 \\ \hline 
+    \end{tabular}
+    \caption{A table indicating the abbreviations utilized for the various clubs and distances that were used during the shot data gathering.}
+    \label{tab:clubabbreviations}
+\end{table}
+
+It was possible to gather data through the use of a camera based ball tracking system, which could pinpoint golf shot positions in three dimensions over time while they were being hit. This data generated by the system was stored, along with values regarding the ball flight, such as the total distance, the launch angle, and speed of the ball. 
+
+The shot data used was gathered from a single golfer. This was done because the agent's purpose was to learn how to play golf like a golfer, and having more than one golfer's data does not correctly represent this behaviour. Moreover, when the data was gathered, the golfer was told to aim every shot in the same direction. This was because the agent was supposed to learn how to introduce directional changes itself. By having all shots aimed in the same direction, the misses of the golfer could correctly be gathered. As such, the agent had to take those misses into consideration when learning to play golf.
+
+The data was gathered using a modified version of an application used for visualizing golfers' shots. This application allowed players to choose which club they were hitting and see various statistics regarding the shots from that club. The application was modified such that instead of simply visualizing the data, it permanently stored it to file so that it could be used later. Furthermore, the application was changed such that it randomly selected a club to be hit by the golfer, compared to the golfer choosing themselves. This was done to eliminate bias in choosing clubs. For instance, using the same club two times in a row will most likely cause the second shot to become better because of the golfer feeling the imperfections from the first shot and adapting their swing.
+
+Shot data was gathered during five different occasions to reduce the bias from the daily form of the golfer. For each club, 8 shots were gathered per occasion, giving a total of 40 shots per club or distance. This number was seen as enough to approximate each type of shot well enough, while still being within the time frame available for this thesis. 
+
+In order to evaluate the agent's performance, data was also needed of the golfer playing golf. As such, data from different rounds of golf played by the golfer was recorded. Specifically, the same variables required to calculate the scores of the agents were saved, i.e. the number of shots hit and the distance remaining when closer than 30 meters to the hole. This data was gathered using the unmodified virtual golf application and was gathered during the same occasions as the rest of the data. This was done to reduce the risk of the golfer's performance having changed over time. 
+
+Round data was gathered from the first 9 holes of two different golf courses. Data for five rounds of golf were stored for the first course, Pebble Beach, and four rounds for the second course, Ullna GC. The reason for this difference was due to a lack of time during one of the data gathering occasions.
+
+\section{Reinforcement learning agents}
+To answer the question posed in \autoref{chapter:introduction}, reinforcement learning agents capable of observing the golf environment and selecting actions for hitting golf shots were required. Two types of deep reinforcement learning agents were implemented and evaluated for this purpose: a Dueling DDQN agent and a modified version of the MP-DQN agent.
+
+The Dueling DDQN agent utilized, as described in \autoref{chapter:background}, a dueling network layer in conjunction with a Double Deep Q network to determine club choices given observations. Since this algorithm only deals with discrete action spaces, the Dueling DDQN agent could not handle choosing a direction to hit in, but focused only on the club choices. This might sound suboptimal for the problem, but the agent was implemented to discover how important of a factor the direction was, both in terms of an agent's performance in playing golf and in terms of how well an agent learns depending on the problem's complexity. 
+
+The Dueling DDQN agent utilized the same network structure as in \textcite{wang2015dueling}. That is, it contained the same number of neurons, and utilized the same activation and learning functions. Moreover, it also used the $\epsilon$-greedy policy for exploration.
+
+The MP-DQN agent differs from the one presented in \textcite{bester2019mpdqn}. In the original version, the dueling network layer was omitted in order to make comparisons between algorithms fair. Since the layer was present in the P-DQN algorithm in \textcite{xiong2018parametrized}, it was also present in the agent used in this thesis. 
+
+The original MP-DQN agent was evaluated on problems in which the state space contained no spatial information. As such, no convolutional layers were needed. The observations in this thesis did include this kind of information and therefore the MP-DQN agent in this paper was modified to include convolutional layers. The policy networks were structured as in the DDPG algorithm in \textcite{lillicrap2015continuous}. For the Q networks, almost the same structure of convolutional layers as in the Dueling DDQN algorithm was used. Since the Q networks also used the action parameters as input, and since these parameters contained no spatial information, the parameters were not added as input to the convolutional layers. Instead, they were combined with the extracted features from the convolutional layers and input into the remaining network structure.
+
+The agents learned by playing holes of golf, where one hole was defined as an episode. First, the agents received an initial observation from the environment, showcasing the starting position on the hole. Then, the agents chose the corresponding actions according to the $\epsilon$-greedy policy, which were converted into a shot that was input to the simulation environment. The environment then returned the next observation, which as mentioned contained the new position on the hole, whether the hole was finished, as well as the penalty the agent received. This procedure was repeated until the hole was finished. The information from the episode was then stored and a new episode was started. This information included which hole was played, what par the hole had, the number of shots hit, the distance remaining to the hole after the hole was finished, the penalty received, the club or distance choices, and the directional choices.
+
+For the Dueling DDQN agent, the corresponding actions to an observation included choosing which club to hit. From this choice, one of the golfer's gathered shots with that club was uniformly sampled. This shot was then hit in the direction of the target line in the simulation environment.
+
+For the MP-DQN agent, the same club choice as with the Dueling DDQN agent was performed. However, the agent also selected a directional deviation from the target line, between -20 and 20 degrees. Before the sampled shot was input into the simulation environment, it was rotated to be hit in the chosen direction. The deviation limits were added to minimize the complexity of the state space, while still allowing deviations that were reasonable in terms of how a golfer would play a hole.
+
+For both agents, the club choice was actually variable; all actions were not available in all states. Specifically, the DR could not be used on any other shot except the first one on each hole. This was because the DR is a club which in most cases is only used when the ball is elevated from the ground using what is known as a tee, and the tee can only be used on the first shot of a hole. For all shots gathered with the DR a tee was used, making shots hit with the club illegal if they were not the first on a hole.
+
+To handle the above mentioned problem, the agent was punished more if it chose the DR when a shot had already been hit on a hole. Specifically, the agent got a punishment of $1.1$ and returned to the same state it currently was in. 
+
+\subsection{Training}
+\label{sec:rltraining}
+The agents were trained on three different course configurations. The first configuration contained only the first nine holes of the course Pebble Beach, the second only the first nine holes of the course Ullna GC, and the final configuration contained all holes from the courses Pebble Beach, Spanish Bay and Spyglass Hill. The reason behind these three configurations was to determine how much the agents learned to play courses rather than play golf in general. As was mentioned in \autoref{sec:datagathering}, data was gathered from the first nine holes of Pebble Beach and the first nine holes of Ullna GC. These courses were the focal points of the first two configurations respectively, but Ullna GC was excluded from the final configuration. As such, the first two configurations could be used to see how well the agents could learn to play courses, by evaluating the trained models on the same course they were trained on. The final configuration could be evaluated on Ullna GC to see how the agents could learn golf in general. These scores could then be compared to the scores from the configuration only training on Ullna GC, to see how the scores differ.
+
+Both agents were trained on all configurations. During training, holes from the configurations were played at random. Due to the nature of the golf simulation application, only one course could be loaded at a time. As such, the configuration containing multiple courses played the courses in batches of 250 holes. That is, one course was chosen and played for 250 holes, then a new course was chosen and played for 250 holes, and so on. 250 was chosen as the batch size because of the time required to restart the application with a new course.
+
+When training, the best weights were saved. These were determined by keeping the penalties of the last 100 par 3 holes, the last 100 par 4 holes as well as the last 100 par 5 holes, and taking the average of these penalties. The weights that caused the lowest average penalty were stored as the best.
+
+Although the simulation application was sped up, the time required for training the agents was quite long. Due to the time limitations on this project, no extensive hyperparameter tests could be conducted. Instead, the parameters used in the original Dueling DDQN and DDPG algorithms were used as a baseline, and a few combinations of parameters were tested using the parameters in \textcite{bester2019mpdqn} as guidelines. Specifically, the learning rates of the networks, the rate at which $\epsilon$ decreased and the number of episodes were tuned. For the policy networks in the MP-DQN agent, $10^{-4}$, $10^{-5}$ and $10^{-6}$ were tested. For the Q networks, $10^{-3}$, $10^{-4}$ and $10^{-5}$ were tested. The number of episodes varied between $10000$ and $200000$. For the rate at which $\epsilon$ decreased, $10^{-4}$, $10^{-5}$ and $2 \cdot 10^{-6}$ was tested. The values used in the final tests can be found in \autoref{tab:hyperparameters}. As can be seen in the table, some other values differed from the literature on which the agents were based. These values were changed due to the reduced time available for training compared to the original algorithms' training times.
+
+\begin{table}
+    \centering
+    \begin{tabular}{|c|c|}
+        \hline
+        \textbf{Hyperparameter} & \textbf{Value} \\ \hline
+        Episodes & $50000$ \\ \hline
+        Q Network learning rate & $10^{-4}$ \\ \hline
+        Policy Network learning rate & $10^{-5}$ \\ \hline
+        $\tau$ & $10^{-3}$ \\ \hline
+        $\epsilon_{min}$ & $0.02$ \\ \hline
+        $\epsilon_{dec}$ & $10^{-5}$ \\ \hline
+        Batch size & $32$ \\ \hline
+        Experience Replay size & $10000$ \\ \hline
+        Q Target network replacement iterations & $1000$ \\ \hline
+        $\gamma$ & $0.99$ \\ \hline
+    \end{tabular}
+    \caption{A table showing the hyperparameters used for the final tests of the agents.}
+    \label{tab:hyperparameters}
+\end{table}
+
+The agents were both trained and evaluated on a computer using 16GB of RAM as well as an NVIDIA GeForce GTX 970 graphics card. The GPU was utilized both for the training of the networks and the golf simulation application. The experience replay was always stored in memory during training.
+
+\subsection{Evaluation}
+The trained agents were evaluated on two course configurations, one containing the first nine holes of Pebble Beach and one containing the first nine holes of Ullna GC. As was mentioned in the previous subsection, these configurations made it possible to test both how well the agents could learn to play a specific course, and how well they could learn to play golf in general.
+
+All training configurations were evaluated on Ullna GC. The reason for having the configuration only trained on Pebble Beach evaluated at Ullna GC as well was to determine how much training on multiple courses, compared to just one, affects the performance of the agents when evaluated on an unseen course. Likewise, only the Pebble Beach configuration and the multiple course configuration were evaluated on Pebble Beach. This was done to see how training on multiple courses affects the results on a course that has been seen. Finally, these evaluations also made it possible to see how well the agents could learn to play only one course, both for Pebble Beach and Ullna GC.
+
+The training configurations were evaluated by playing 5000 random holes on the courses they were evaluated on. The results from these holes were stored and analyzed on the number of shots hit, the distance remaining to the pin, the club selections and the directional deviations chosen.
+
+During the evaluation, no noise was added to the policy network output, and no exploration was done by any agent in order to see what the agents had learned. Because of this, the agents could end up in an endless loop of trying to choose the DR club when in a state that did not allow it. Therefore, the DR club choice was redirected to the closest legal club choice, the 3W, when chosen in an illegal state during evaluation.
+
+To determine how well the agents played compared to the golfer from which the data was gathered from, 250 samples of each hole from Pebble Beach and Ullna GC were retrieved from the results of the 5000 holes played, and the scores were compared to the samples gathered from the golfer. Both the scores on a hole by hole basis and the total scores were compared and analyzed. Statistical significance tests were performed to determine if the agents played better than, worse than, or on the same level as the golfer.
+
+\chapter{Results}
+In this chapter, the results from the experiments mentioned in \autoref{chapter:methods} are presented. The numbers are explained, and graphs and tables are used to visualize the outcomes of the tests.
+
+\section{Shot Data}
+This section details the results from the data gathering process of the thesis. The shot data retrieved from the golfer used by the agent is presented, as well as the results from the golfer playing courses.
+
+\subsection{Agent shot data}
+As was described in \autoref{sec:datagathering}, 40 shots were gathered for each club. \autoref{fig:all_shots} showcases the landing positions for all shots, colour coded depending on the club used or distance hit. Figures for the shots grouped by the club or distance hit can be found in \autoref{app:shot_data}. In the figures, the axes' numbers are in meters. As can be seen, the x-axis goes from right to left. This is because of the coordinate system used in the applications used for gathering the data. It is shown in the figures that the shots covered essentially all distances between the shortest shot and the longest. Furthermore, the shots were generally straight, with the shorter clubs or distances being less spread out than the longer ones.
+
+\begin{figure}
+    \centering
+    \includegraphics[height=0.5\textheight]{Shots/all_shots.png}
+    \caption{The landing positions of all shots gathered from the golfer. Each color is mapped to a club or distance hit.}
+    \label{fig:all_shots}
+\end{figure}
+
+In \autoref{tab:shot_data_distance}, the average, minimum and maximum carry distances for each club are presented, where carry distance is defined as the distance between the starting point and the landing point of a shot. In \autoref{tab:shot_data_angle}, the average, minimum and maximum offline angles for each club are presented. That is, the angles between the target line and the landing position of the shots are shown. For both tables, the values have been rounded to two decimals.
+
+\begin{table}
+\centering
+\begin{tabular}{|c|c|c|c|} \hline
+\multicolumn{4}{|c|}{\textbf{Carry distances}} \\ \hline
+\textbf{Club} & \textbf{Average} & \textbf{Minimum} & \textbf{Maximum} \\ \hline
+DR & 206.15 & 177.31 & 234.36 \\ \hline
+3W & 188.64 & 105.61 & 215.31 \\ \hline
+4I & 162.61 & 72.60 & 192.49 \\ \hline
+5I & 156.53 & 99.01 & 188.65 \\ \hline
+6I & 150.87 & 43.83 & 176.08 \\ \hline
+7I & 142.69 & 79.52 & 166.86 \\ \hline
+8I & 136.48 & 50.65 & 157.27 \\ \hline
+9I & 126.74 & 39.48 & 145.16 \\ \hline
+PW & 116.69 & 61.04 & 131.51 \\ \hline
+GW & 96.96 & 74.12 & 112.53 \\ \hline
+SW & 84.42 & 42.52 & 114.52 \\ \hline
+LW & 72.22 & 16.55 & 103.69 \\ \hline
+65 & 59.01 & 13.78 & 80.70 \\ \hline
+55 & 52.02 & 33.99 & 69.20 \\ \hline
+45 & 42.13 & 28.63 & 69.39 \\ \hline
+35 & 30.13 & 14.82 & 44.60 \\ \hline
+\end{tabular}
+\caption{The average, minimum and maximum carry distances for each club and distance hit by the golfer. All numbers are rounded to two decimals.}
+\label{tab:shot_data_distance}
+\end{table}
+
+\begin{table}
+\centering
+\begin{tabular}{|c|c|c|c|} \hline
+\multicolumn{4}{|c|}{\textbf{Offline angles}} \\ \hline
+\textbf{Club} & \textbf{Average} & \textbf{Minimum} & \textbf{Maximum} \\ \hline
+DR & -2.87 & -14.73 & 8.67 \\ \hline
+3W & -1.06 & -19.61 & 17.56 \\ \hline
+4I & -2.66 & -16.40 & 15.69 \\ \hline
+5I & -2.10 & -15.55 & 8.26 \\ \hline
+6I & -0.72 & -13.09 & 10.83 \\ \hline
+7I & -0.20 & -30.37 & 16.00 \\ \hline
+8I & 1.20 & -26.08 & 13.14 \\ \hline
+9I & 0.52 & -9.84 & 10.96 \\ \hline
+PW & 1.38 & -27.74 & 12.42 \\ \hline
+GW & 0.88 & -41.98 & 11.27 \\ \hline
+SW & 0.49 & -28.59 & 10.19 \\ \hline
+LW & 1.84 & -9.86 & 10.12 \\ \hline
+65 & 2.91 & -1.40 & 11.10 \\ \hline
+55 & 2.44 & -4.83 & 13.09 \\ \hline
+45 & 2.37 & -4.32 & 7.27 \\ \hline
+35 & 1.83 & -3.41 & 7.31 \\ \hline
+\end{tabular}
+\caption{The average, minimum and maximum offline angles for each club and distance hit by the golfer, i.e. the angles between the landing position of the shot and the target line. All numbers are rounded to two decimals.}
+\label{tab:shot_data_angle}
+\end{table}
+
+The values in \autoref{tab:shot_data_angle} further indicate that most shots were generally hit straight, since the average offline angles were lower than 3 in any direction. However, the minimum and maximum values indicate that some clubs had a big spread, for instance the 7I. This indicates that the agents can end up in states that differ much, even though the same club has been used. It is also interesting to note that the shorter clubs and distances all have a positive average offline angle, whereas the longer clubs all have a negative angle.
+
+The same analysis can be derived from the values in \autoref{tab:shot_data_distance}. The average shot distances gradually increase from the shortest to the longest club used. The minimum and maximum values showcase however that the distance can fluctuate much for a club. For instance, the shortest and longest 6I shot differed 132.25 meters in carry distance. 
+
+It is important to note that the values in the above mentioned tables do not take into account how much the balls bounced and rolled after landing. This data was excluded from the graphs and tables in this section due to it being dependent on the terrain where the shot lands.
+
+\subsection{Golfer course data}
+The golfer played five rounds on Pebble Beach's first nine holes, and four rounds on Ullna GC's first nine holes. In \autoref{tab:L2_pebble_average_results} and \autoref{tab:L2_ullna_average_results} the average scores, shots hit and distances remaining for each hole are presented for the courses, respectively. For more detailed information regarding each round, see \autoref{app:shot_data}.
+
+\begin{table}
+    \centering
+    \begin{tabular}{|c|c|c|c|c|} \hline
+    \multicolumn{5}{|c|}{\textbf{Pebble Beach Average Golfer Results}} \\ \hline
+        \textbf{Hole} & \textbf{Par} & \textbf{Score} & \textbf{Shots} & \textbf{Distance remaining}  \\ \hline
+        1 & 4 & 0.31 & 2.20 & 17.60 \\ \hline
+        2 & 5 & 0.31 & 2.80 & 8.82 \\ \hline
+        3 & 4 & 0.27 & 2.20 & 7.00 \\ \hline
+        4 & 4 & 0.32 & 2.60 & 7.30 \\ \hline
+        5 & 3 & 0.18 & 1.00 & 12.18 \\ \hline
+        6 & 5 & 0.35 & 3.00 & 15.00 \\ \hline
+        7 & 3 & 0.21 & 1.20 & 15.04 \\ \hline
+        8 & 4 & 0.32 & 2.60 & 7.76 \\ \hline
+        9 & 4 & 0.29 & 2.20 & 11.28 \\ \hline
+    \end{tabular}
+    \caption{The average scores, number of shots and distances remaining gathered from the golfer for each hole on Pebble Beach. All numbers are rounded to two decimals.}
+    \label{tab:L2_pebble_average_results}
+\end{table}
+
+\begin{table}
+    \centering
+    \begin{tabular}{|c|c|c|c|c|} \hline
+    \multicolumn{5}{|c|}{\textbf{Ullna GC Average Golfer Results}} \\ \hline
+        \textbf{Hole} & \textbf{Par} & \textbf{Score} & \textbf{Shots} & \textbf{Distance remaining}  \\ \hline
+        1 & 5 & 0.32 & 2.75 & 13.75 \\ \hline
+        2 & 4 & 0.27 & 2.00 & 12.50 \\ \hline
+        3 & 3 & 0.17 & 1.00 & 9.65 \\ \hline
+        4 & 5 & 0.40 & 3.25 & 23.25 \\ \hline
+        5 & 3 & 0.37 & 2.50 & 14.85 \\ \hline
+        6 & 4 & 0.25 & 2.00 & 6.67 \\ \hline
+        7 & 4 & 0.32 & 2.25 & 18.00 \\ \hline
+        8 & 4 & 0.28 & 2.00 & 15.75 \\ \hline
+        9 & 4 & 0.28 & 2.00 & 14.50 \\ \hline
+    \end{tabular}
+    \caption{The average scores, number of shots and distances remaining gathered from the golfer for each hole on Ullna GC. All numbers are rounded to two decimals.}
+    \label{tab:L2_ullna_average_results}
+\end{table}
+
+Due to the nature of the application used for gathering the results in the tables, distances could not be retrieved with exact precision. For shots closer to the hole than five meters, one decimal precision was possible. Otherwise, only full meters were available. 
+
+The tables showcase that the golfer found some holes more difficult than others. Generally, the number of shots needed depended on the par of the hole, with the number of shots being close to the par of the hole minus two. Some holes deviated from this, however, such as the fifth hole on Ullna GC or the eighth hole on Pebble Beach. These results stem from the hazards present on the holes.
+
+In \autoref{fig:L2_pebble_club_choice_confusion} and \autoref{fig:L2_ullna_club_choice_confusion}, the percentages of clubs chosen for the first, second and third shot on a given hole are presented for Pebble Beach and Ullna GC, respectively. These matrices indicate how often a club was chosen on a hole for a shot. 
+
+\begin{figure}
+    \centering
+    \begin{subfigure}{\textwidth}
+    \centering
+    \includegraphics[height=0.3\textheight]{L2ClubChoices/Ludvig_Pebble_Club_Choices_First_Shot.png} 
+    \end{subfigure}
+    \begin{subfigure}{\textwidth}
+    \centering
+    \includegraphics[height=0.3\textheight]{L2ClubChoices/Ludvig_Pebble_Club_Choices_Second_Shot.png} 
+    \end{subfigure}
+    \begin{subfigure}{\textwidth}
+    \centering
+    \includegraphics[height=0.3\textheight]{L2ClubChoices/Ludvig_Pebble_Club_Choices_Third_Shot.png} 
+    \end{subfigure}
+    \caption{Confusion matrices indicating the how often clubs were chosen by the golfer for the first, second and third shot on a given hole at Pebble Beach.}
+    \label{fig:L2_pebble_club_choice_confusion}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \begin{subfigure}{\textwidth}
+    \centering
+    \includegraphics[height=0.3\textheight]{L2ClubChoices/Ludvig_Ullna_Club_Choices_First_Shot.png} 
+    \end{subfigure}
+    \begin{subfigure}{\textwidth}
+    \centering
+    \includegraphics[height=0.3\textheight]{L2ClubChoices/Ludvig_Ullna_Club_Choices_Second_Shot.png} 
+    \end{subfigure}
+    \begin{subfigure}{\textwidth}
+    \centering
+    \includegraphics[height=0.3\textheight]{L2ClubChoices/Ludvig_Ullna_Club_Choices_Third_Shot.png} 
+    \end{subfigure}
+    \caption{Confusion matrices indicating how often clubs were chosen by the golfer for the first, second and third shot on a given hole at Ullna GC.}
+    \label{fig:L2_ullna_club_choice_confusion}
+\end{figure}
+
+\section{Reinforcement Learning Agents}
+%Average scores, shots and distances for each hole
+%Directional choices heatmap for each club for each agent
+%Club choices confusion matrix, one for first shot, one for second and one for third
+
+\chapter{Discussion}
+
+
+\chapter{Conclusions}
+
+
+% Print the bibliography (and make it appear in the table of contents)
+\printbibliography[heading=bibintoc]
+
+\appendix
+
+\chapter{Shot data}
+\label{app:shot_data}
+\begin{figure}
+    \centering
+    \begin{subfigure}{0.4\textwidth}
+    \centering
+    \includegraphics[height=0.4\textheight]{Shots/DR_shots.png} 
+    \caption{The landing positions of the DR shots hit by the golfer.}
+    \label{fig:DR_shots}
+    \end{subfigure}
+    \begin{subfigure}{0.4\textwidth}
+    \centering
+    \includegraphics[height=0.4\textheight]{Shots/3W_shots.png} 
+    \caption{The landing positions of the 3W shots hit by the golfer.}
+    \label{fig:3W_shots}
+    \end{subfigure}
+    \begin{subfigure}{0.4\textwidth}
+    \centering
+    \includegraphics[height=0.4\textheight]{Shots/4I_shots.png} 
+    \caption{The landing positions of the 4I shots hit by the golfer.}
+    \label{fig:4I_shots}
+    \end{subfigure}
+    \begin{subfigure}{0.4\textwidth}
+    \centering
+    \includegraphics[height=0.4\textheight]{Shots/5I_shots.png} 
+    \caption{The landing positions of the 5I shots hit by the golfer.}
+    \label{fig:5I_shots}
+    \end{subfigure}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \begin{subfigure}{0.4\textwidth}
+    \centering
+    \includegraphics[height=0.4\textheight]{Shots/6I_shots.png} 
+    \caption{The landing positions of the 6I shots hit by the golfer.}
+    \label{fig:6I_shots}
+    \end{subfigure}
+    \begin{subfigure}{0.4\textwidth}
+    \centering
+    \includegraphics[height=0.4\textheight]{Shots/7I_shots.png} 
+    \caption{The landing positions of the 7I shots hit by the golfer.}
+    \label{fig:7I_shots}
+    \end{subfigure}
+    \begin{subfigure}{0.4\textwidth}
+    \centering
+    \includegraphics[height=0.4\textheight]{Shots/8I_shots.png} 
+    \caption{The landing positions of the 8I shots hit by the golfer.}
+    \label{fig:8I_shots}
+    \end{subfigure}
+    \begin{subfigure}{0.4\textwidth}
+    \centering
+    \includegraphics[height=0.4\textheight]{Shots/9I_shots.png} 
+    \caption{The landing positions of the 9I shots hit by the golfer.}
+    \label{fig:9I_shots}
+    \end{subfigure}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \begin{subfigure}{0.4\textwidth}
+    \centering
+    \includegraphics[height=0.4\textheight]{Shots/PW_shots.png} 
+    \caption{The landing positions of the PW shots hit by the golfer.}
+    \label{fig:PW_shots}
+    \end{subfigure}
+    \begin{subfigure}{0.4\textwidth}
+    \centering
+    \includegraphics[height=0.4\textheight]{Shots/GW_shots.png} 
+    \caption{The landing positions of the GW shots hit by the golfer.}
+    \label{fig:GW_shots}
+    \end{subfigure}
+    \begin{subfigure}{0.4\textwidth}
+    \centering
+    \includegraphics[height=0.4\textheight]{Shots/SW_shots.png} 
+    \caption{The landing positions of the SW shots hit by the golfer.}
+    \label{fig:SW_shots}
+    \end{subfigure}
+    \begin{subfigure}{0.4\textwidth}
+    \centering
+    \includegraphics[height=0.4\textheight]{Shots/LW_shots.png} 
+    \caption{The landing positions of the LW shots hit by the golfer.}
+    \label{fig:LW_shots}
+    \end{subfigure}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \begin{subfigure}{0.4\textwidth}
+    \centering
+    \includegraphics[height=0.4\textheight]{Shots/65_shots.png} 
+    \caption{The landing positions of the 65 shots hit by the golfer.}
+    \label{fig:65_shots}
+    \end{subfigure}
+    \begin{subfigure}{0.4\textwidth}
+    \centering
+    \includegraphics[height=0.4\textheight]{Shots/55_shots.png} 
+    \caption{The landing positions of the 55 shots hit by the golfer.}
+    \label{fig:55_shots}
+    \end{subfigure}
+    \begin{subfigure}{0.4\textwidth}
+    \centering
+    \includegraphics[height=0.4\textheight]{Shots/45_shots.png} 
+    \caption{The landing positions of the 45 shots hit by the golfer.}
+    \label{fig:45_shots}
+    \end{subfigure}
+    \begin{subfigure}{0.4\textwidth}
+    \centering
+    \includegraphics[height=0.4\textheight]{Shots/35_shots.png} 
+    \caption{The landing positions of the 35 shots hit by the golfer.}
+    \label{fig:35_shots}
+    \end{subfigure}
+\end{figure}
+
+\begin{table}
+    \centering
+    \begin{tabular}{|c|c|c|c|c|c|c|} \hline
+    \multicolumn{7}{|c|}{\textbf{Pebble Beach Golfer Score Results}} \\ \hline  
+    \textbf{Hole} & \textbf{Par} & \textbf{Round 1} & \textbf{Round 2} & \textbf{Round 3} & \textbf{Round 4} & \textbf{Round 5} \\ \hline
+    1 & 4 & 0.27 & 0.28 & 0.29 & 0.41 & 0.31 \\ \hline
+    2 & 5 & 0.35 & 0.31 & 0.21 & 0.33 & 0.34 \\ \hline
+    3 & 4 & 0.34 & 0.24 & 0.25 & 0.26 & 0.26 \\ \hline
+    4 & 4 & 0.28 & 0.23 & 0.47 & 0.25 & 0.35 \\ \hline
+    5 & 3 & 0.20 & 0.21 & 0.17 & 0.17 & 0.13 \\ \hline
+    6 & 5 & 0.31 & 0.48 & 0.32 & 0.38 & 0.27 \\ \hline
+    7 & 3 & 0.17 & 0.14 & 0.20 & 0.17 & 0.37 \\ \hline
+    8 & 4 & 0.25 & 0.26 & 0.24 & 0.36 & 0.48 \\ \hline
+    9 & 4 & 0.39 & 0.29 & 0.23 & 0.30 & 0.22 \\ \hline
+    \end{tabular}
+    \caption{The scores of the golfer for each hole and round at Pebble Beach, calculated according to \autoref{eq:agentscore}, rounded to two decimals.}
+    \label{tab:L2_pebble_score_results}
+\end{table}
+
+\begin{table}
+    \centering
+    \begin{tabular}{|c|c|c|c|c|c|c|} \hline
+    \multicolumn{7}{|c|}{\textbf{Pebble Beach Golfer Shot Results}} \\ \hline  
+    \textbf{Hole} & \textbf{Par} & \textbf{Round 1} & \textbf{Round 2} & \textbf{Round 3} & \textbf{Round 4} & \textbf{Round 5} \\ \hline
+    1 & 4 & 2 & 2 & 2 & 3 & 2 \\ \hline
+    2 & 5 & 3 & 3 & 2 & 3 & 3 \\ \hline
+    3 & 4 & 3 & 2 & 2 & 2 & 2 \\ \hline
+    4 & 4 & 2 & 2 & 4 & 2 & 3 \\ \hline
+    5 & 3 & 1 & 1 & 1 & 1 & 1 \\ \hline
+    6 & 5 & 3 & 4 & 3 & 3 & 2 \\ \hline
+    7 & 3 & 1 & 1 & 1 & 1 & 2 \\ \hline
+    8 & 4 & 2 & 2 & 2 & 3 & 4 \\ \hline
+    9 & 4 & 3 & 2 & 2 & 2 & 2 \\ \hline
+    \end{tabular}
+    \caption{The number of shots hit by the golfer for each hole and round at Pebble Beach.}
+    \label{tab:L2_pebble_shot_results}
+\end{table}
+
+\begin{table}
+    \centering
+    \begin{tabular}{|c|c|c|c|c|c|c|} \hline
+    \multicolumn{7}{|c|}{\textbf{Pebble Beach Golfer Distance Results}} \\ \hline  
+    \textbf{Hole} & \textbf{Par} & \textbf{Round 1} & \textbf{Round 2} & \textbf{Round 3} & \textbf{Round 4} & \textbf{Round 5} \\ \hline
+    1 & 4 & 12.0 & 15.0 & 17.0 & 20.0 & 24.0 \\ \hline
+    2 & 5 & 15.0 & 4.4 & 2.7 & 9.0 & 13.0 \\ \hline
+    3 & 4 & 3.0 & 6.0 & 7.0 & 10.0 & 9.0 \\ \hline
+    4 & 4 & 16.0 & 1.5 & 6.0 & 8.0 & 5.0 \\ \hline
+    5 & 3 & 17.0 & 20.0 & 11.0 & 12.0 & 0.9 \\ \hline
+    6 & 5 & 2.0 & 23.0 & 6.0 & 23.0 & 21.0 \\ \hline
+    7 & 3 & 12.0 & 4.2 & 19.0 & 11.0 & 29.0 \\ \hline
+    8 & 4 & 8.0 & 10.0 & 4.8 & 6.0 & 10.0 \\ \hline
+    9 & 4 & 14.0 & 17.0 & 2.9 & 22.0 & 0.5 \\ \hline
+    \end{tabular}
+    \caption{The distances remaining for the golfer for each hole and round at Pebble Beach, rounded to one decimal.}
+    \label{tab:L2_pebble_distance_results}
+\end{table}
+
+\begin{table}
+    \centering
+    \begin{tabular}{|c|c|c|c|c|c|} \hline
+    \multicolumn{6}{|c|}{\textbf{Ullna GC Golfer Score Results}} \\ \hline  
+    \textbf{Hole} & \textbf{Par} & \textbf{Round 1} & \textbf{Round 2} & \textbf{Round 3} & \textbf{Round 4} \\ \hline
+    1 & 5 & 0.29 & 0.34 & 0.32 & 0.33 \\ \hline
+    2 & 4 & 0.27 & 0.27 & 0.29 & 0.24 \\ \hline
+    3 & 3 & 0.17 & 0.17 & 0.18 & 0.14 \\ \hline
+    4 & 5 & 0.29 & 0.67 & 0.26 & 0.39 \\ \hline
+    5 & 3 & 0.44 & 0.18 & 0.39 & 0.48 \\ \hline
+    6 & 4 & 0.26 & 0.23 & 0.24 & 0.26 \\ \hline
+    7 & 4 & 0.28 & 0.30 & 0.40 & 0.30 \\ \hline
+    8 & 4 & 0.26 & 0.29 & 0.30 & 0.28 \\ \hline
+    9 & 4 & 0.30 & 0.25 & 0.28 & 0.27 \\ \hline
+    \end{tabular}
+    \caption{The scores of the golfer for each hole and round at Ullna GC, calculated according to \autoref{eq:agentscore}, rounded to two decimals.}
+    \label{tab:L2_ullna_score_results}
+\end{table}
+
+\begin{table}
+    \centering
+    \begin{tabular}{|c|c|c|c|c|c|} \hline
+    \multicolumn{6}{|c|}{\textbf{Ullna GC Golfer Shot Results}} \\ \hline  
+    \textbf{Hole} & \textbf{Par} & \textbf{Round 1} & \textbf{Round 2} & \textbf{Round 3} & \textbf{Round 4} \\ \hline
+    1 & 5 & 2 & 3 & 3 & 3 \\ \hline
+    2 & 4 & 2 & 2 & 2 & 2 \\ \hline
+    3 & 3 & 1 & 1 & 1 & 1 \\ \hline
+    4 & 5 & 2 & 6 & 2 & 3 \\ \hline
+    5 & 3 & 3 & 1 & 3 & 3 \\ \hline
+    6 & 4 & 2 & 2 & 2 & 2 \\ \hline
+    7 & 4 & 2 & 2 & 3 & 2 \\ \hline
+    8 & 4 & 2 & 2 & 2 & 2 \\ \hline
+    9 & 4 & 2 & 2 & 2 & 2 \\ \hline
+    \end{tabular}
+    \caption{The number of shots hit by the golfer for each hole and round at Ullna GC.}
+    \label{tab:L2_ullna_shot_results}
+\end{table}
+
+\begin{table}
+    \centering
+    \begin{tabular}{|c|c|c|c|c|c|} \hline
+    \multicolumn{6}{|c|}{\textbf{Ullna GC Golfer Distance Results}} \\ \hline  
+    \textbf{Hole} & \textbf{Par} & \textbf{Round 1} & \textbf{Round 2} & \textbf{Round 3} & \textbf{Round 4} \\ \hline
+    1 & 5 & 27.0 & 13.0 & 7.0 & 8.0 \\ \hline
+    2 & 4 & 14.0 & 13.0 & 18.0 & 5.0 \\ \hline
+    3 & 3 & 11.0 & 10.0 & 13.0 & 4.6 \\ \hline
+    4 & 5 & 28.0 & 21.0 & 18.0 & 26.0 \\ \hline
+    5 & 3 & 16.0 & 14.0 & 4.4 & 25.0 \\ \hline
+    6 & 4 & 9.0 & 2.2 & 4.5 & 11.0 \\ \hline
+    7 & 4 & 15.0 & 20.0 & 17.0 & 20.0 \\ \hline
+    8 & 4 & 10.0 & 17.0 & 20.0 & 16.0 \\ \hline
+    9 & 4 & 22.0 & 7.0 & 16.0 & 13.0 \\ \hline
+    \end{tabular}
+    \caption{The distances remaining for the golfer for each hole and round at Ullna GC, rounded to one decimal.}
+    \label{tab:L2_ullna_distance_results}
+\end{table}
+
+\chapter{Miscellaneous}
+\begin{table}
+    \centering
+    \begin{tabular}{|c|c|}
+        \hline
+        \textbf{Area} & \textbf{Integer} \\ \hline
+        Fairway & 0 \\ \hline
+        Rough & 1 \\ \hline
+        Green & 2 \\ \hline
+        Tee box & 3 \\ \hline
+        Pathway & 4 \\ \hline
+        Tree & 5 \\ \hline
+        Out of bounds & 6 \\ \hline
+        Water & 7 \\ \hline
+        Ball & 8 \\ \hline
+        Hole & 9 \\ \hline
+        Bunker & 10 \\ \hline
+        Waste area & 11 \\ \hline
+        Native area & 12 \\ \hline
+        Penalty area & 13 \\ \hline
+    \end{tabular}
+    \caption{A table indicating the mapping between golf areas and integers. These integers were stored in the observations from the golf simulation application and used by the agent to learn how to play golf.}
+    \label{app:tab:areamapping}
+\end{table}
+
+\tailmatter
+
+\end{document}
