@@ -8,6 +8,7 @@
 \usepackage{amssymb}
 \usepackage{graphicx}
 \usepackage{hyperref}
+\usepackage{caption}
 \usepackage{subcaption}
 
 \title{A reinforcement learning approach to the problem of golf using an agent limited by human data}
@@ -502,11 +503,9 @@ To handle the above mentioned problem, the agent was punished more if it chose t
 
 \subsection{Training}
 \label{sec:rltraining}
-The agents were trained on three different course configurations. The first configuration contained only the first nine holes of the course Pebble Beach, the second only the first nine holes of the course Ullna GC, and the final configuration contained all holes from the courses Pebble Beach, Spanish Bay and Spyglass Hill. The reason behind these three configurations was to determine how much the agents learned to play courses rather than play golf in general. As was mentioned in \autoref{sec:datagathering}, data was gathered from the first nine holes of Pebble Beach and the first nine holes of Ullna GC. These courses were the focal points of the first two configurations respectively, but Ullna GC was excluded from the final configuration. As such, the first two configurations could be used to see how well the agents could learn to play courses, by evaluating the trained models on the same course they were trained on. The final configuration could be evaluated on Ullna GC to see how the agents could learn golf in general. These scores could then be compared to the scores from the configuration only training on Ullna GC, to see how the scores differ.
+The agents were trained on two different course configurations. The first configuration contained the first nine holes of the course Pebble Beach, and the second contained the first nine holes of the course Ullna GC. This was because the purpose of this thesis is to investigate how well the agents compare to the golfer, and as such the configurations only contained the holes data was gathered from. This might have affected the agents in their ability to play golf in general, a topic which is touched upon in \autoref{chapter:discussion}.
 
-Both agents were trained on all configurations. During training, holes from the configurations were played at random. Due to the nature of the golf simulation application, only one course could be loaded at a time. As such, the configuration containing multiple courses played the courses in batches of 250 holes. That is, one course was chosen and played for 250 holes, then a new course was chosen and played for 250 holes, and so on. 250 was chosen as the batch size because of the time required to restart the application with a new course.
-
-When training, the best weights were saved. These were determined by keeping the penalties of the last 100 par 3 holes, the last 100 par 4 holes as well as the last 100 par 5 holes, and taking the average of these penalties. The weights that caused the lowest average penalty were stored as the best.
+Both agents were trained on both configurations. During training, holes from the configurations were played at random, and the best weights were saved. These weights were determined by keeping the penalties of the last 100 par 3 holes, the last 100 par 4 holes as well as the last 100 par 5 holes, and taking the average of these penalties. The weights that caused the lowest average penalty were stored as the best.
 
 Although the simulation application was sped up, the time required for training the agents was quite long. Due to the time limitations on this project, no extensive hyperparameter tests could be conducted. Instead, the parameters used in the original Dueling DDQN and DDPG algorithms were used as a baseline, and a few combinations of parameters were tested using the parameters in \textcite{bester2019mpdqn} as guidelines. Specifically, the learning rates of the networks, the rate at which $\epsilon$ decreased and the number of episodes were tuned. For the policy networks in the MP-DQN agent, $10^{-4}$, $10^{-5}$ and $10^{-6}$ were tested. For the Q networks, $10^{-3}$, $10^{-4}$ and $10^{-5}$ were tested. The number of episodes varied between $10000$ and $200000$. For the rate at which $\epsilon$ decreased, $10^{-4}$, $10^{-5}$ and $2 \cdot 10^{-6}$ was tested. The values used in the final tests can be found in \autoref{tab:hyperparameters}. As can be seen in the table, some other values differed from the literature on which the agents were based. These values were changed due to the reduced time available for training compared to the original algorithms' training times.
 
@@ -533,28 +532,23 @@ Although the simulation application was sped up, the time required for training 
 The agents were both trained and evaluated on a computer using 16GB of RAM as well as an NVIDIA GeForce GTX 970 graphics card. The GPU was utilized both for the training of the networks and the golf simulation application. The experience replay was always stored in memory during training.
 
 \subsection{Evaluation}
-The trained agents were evaluated on two course configurations, one containing the first nine holes of Pebble Beach and one containing the first nine holes of Ullna GC. As was mentioned in the previous subsection, these configurations made it possible to test both how well the agents could learn to play a specific course, and how well they could learn to play golf in general.
-
-All training configurations were evaluated on Ullna GC. The reason for having the configuration only trained on Pebble Beach evaluated at Ullna GC as well was to determine how much training on multiple courses, compared to just one, affects the performance of the agents when evaluated on an unseen course. Likewise, only the Pebble Beach configuration and the multiple course configuration were evaluated on Pebble Beach. This was done to see how training on multiple courses affects the results on a course that has been seen. Finally, these evaluations also made it possible to see how well the agents could learn to play only one course, both for Pebble Beach and Ullna GC.
-
-The training configurations were evaluated by playing 5000 random holes on the courses they were evaluated on. The results from these holes were stored and analyzed on the number of shots hit, the distance remaining to the pin, the club selections and the directional deviations chosen.
+The agents were evaluated on the same configurations they were trained on, one containing the first nine holes of Pebble Beach and one containing the first nine holes of Ullna GC. They were evaluated by playing 5000 random holes on their respective course. The results from these holes were stored and analyzed on the number of shots hit, the distance remaining to the pin, the club selections and the directional deviations chosen.
 
 During the evaluation, no noise was added to the policy network output, and no exploration was done by any agent in order to see what the agents had learned. Because of this, the agents could end up in an endless loop of trying to choose the DR club when in a state that did not allow it. Therefore, the DR club choice was redirected to the closest legal club choice, the 3W, when chosen in an illegal state during evaluation.
 
-To determine how well the agents played compared to the golfer from which the data was gathered from, 250 samples of each hole from Pebble Beach and Ullna GC were retrieved from the results of the 5000 holes played, and the scores were compared to the samples gathered from the golfer. Both the scores on a hole by hole basis and the total scores were compared and analyzed. Statistical significance tests were performed to determine if the agents played better than, worse than, or on the same level as the golfer.
+To determine how well the agents played compared to the golfer from which the data was gathered from, 250 samples of each hole from Pebble Beach and Ullna GC were retrieved from the results of the 5000 holes played, and the scores were compared to the samples gathered from the golfer. Both the scores on a hole by hole basis and the total scores were compared and analyzed. Finally, statistical significance tests were performed to determine if the agents played better than, worse than, or on the same level as the golfer.
 
 \chapter{Results}
 In this chapter, the results from the experiments mentioned in \autoref{chapter:methods} are presented. The numbers are explained, and graphs and tables are used to visualize the outcomes of the tests.
 
 \section{Shot Data}
-This section details the results from the data gathering process of the thesis. The shot data retrieved from the golfer used by the agent is presented, as well as the results from the golfer playing courses.
+This section details the results from the data gathering process of the thesis. The shot data retrieved from the golfer used by the agent is presented, including numbers describing the shots.
 
-\subsection{Agent shot data}
-As was described in \autoref{sec:datagathering}, 40 shots were gathered for each club. \autoref{fig:all_shots} showcases the landing positions for all shots, colour coded depending on the club used or distance hit. Figures for the shots grouped by the club or distance hit can be found in \autoref{app:shot_data}. In the figures, the axes' numbers are in meters. As can be seen, the x-axis goes from right to left. This is because of the coordinate system used in the applications used for gathering the data. It is shown in the figures that the shots covered essentially all distances between the shortest shot and the longest. Furthermore, the shots were generally straight, with the shorter clubs or distances being less spread out than the longer ones.
+As was described in \autoref{sec:datagathering}, 40 shots were gathered for each club. \autoref{fig:all_shots} showcases the landing positions for all shots, colour coded depending on the club used. Figures for the shots grouped by club can be found in \autoref{app:shot_data}. In the figures, the axes' numbers are in meters. As can be seen, the X-axis goes from right to left. This is because of the coordinate system used in the applications used for gathering the data. It is shown in the figures that the shots covered essentially all distances between the shortest shot and the longest. Furthermore, the shots were generally straight, with the shorter clubs or distances being less spread out than the longer ones.
 
 \begin{figure}
     \centering
-    \includegraphics[height=0.5\textheight]{Shots/all_shots.png}
+    \includegraphics[height=0.4\textheight]{Shots/all_shots.png}
     \caption{The landing positions of all shots gathered from the golfer. Each color is mapped to a club or distance hit.}
     \label{fig:all_shots}
 \end{figure}
@@ -563,6 +557,7 @@ In \autoref{tab:shot_data_distance}, the average, minimum and maximum carry dist
 
 \begin{table}
 \centering
+\resizebox{0.5\textwidth}{!}{
 \begin{tabular}{|c|c|c|c|} \hline
 \multicolumn{4}{|c|}{\textbf{Carry distances}} \\ \hline
 \textbf{Club} & \textbf{Average} & \textbf{Minimum} & \textbf{Maximum} \\ \hline
@@ -583,12 +578,14 @@ LW & 72.22 & 16.55 & 103.69 \\ \hline
 45 & 42.13 & 28.63 & 69.39 \\ \hline
 35 & 30.13 & 14.82 & 44.60 \\ \hline
 \end{tabular}
+}
 \caption{The average, minimum and maximum carry distances for each club and distance hit by the golfer. All numbers are rounded to two decimals.}
 \label{tab:shot_data_distance}
 \end{table}
 
 \begin{table}
 \centering
+\resizebox{0.5\textwidth}{!}{
 \begin{tabular}{|c|c|c|c|} \hline
 \multicolumn{4}{|c|}{\textbf{Offline angles}} \\ \hline
 \textbf{Club} & \textbf{Average} & \textbf{Minimum} & \textbf{Maximum} \\ \hline
@@ -609,21 +606,47 @@ LW & 1.84 & -9.86 & 10.12 \\ \hline
 45 & 2.37 & -4.32 & 7.27 \\ \hline
 35 & 1.83 & -3.41 & 7.31 \\ \hline
 \end{tabular}
+}
 \caption{The average, minimum and maximum offline angles for each club and distance hit by the golfer, i.e. the angles between the landing position of the shot and the target line. All numbers are rounded to two decimals.}
 \label{tab:shot_data_angle}
 \end{table}
 
-The values in \autoref{tab:shot_data_angle} further indicate that most shots were generally hit straight, since the average offline angles were lower than 3 in any direction. However, the minimum and maximum values indicate that some clubs had a big spread, for instance the 7I. This indicates that the agents can end up in states that differ much, even though the same club has been used. It is also interesting to note that the shorter clubs and distances all have a positive average offline angle, whereas the longer clubs all have a negative angle.
+The values in \autoref{tab:shot_data_angle} further indicate that most shots were generally hit straight, since the average offline angles were lower than 3 in any direction. However, the minimum and maximum values show that some clubs had a big spread, for instance the 7I. This shows that the agents can end up in states that differ much, even though the same club has been used. It is also interesting to note that the shorter clubs and distances all have a positive average offline angle, whereas the longer clubs all have a negative angle.
 
 The same analysis can be derived from the values in \autoref{tab:shot_data_distance}. The average shot distances gradually increase from the shortest to the longest club used. The minimum and maximum values showcase however that the distance can fluctuate much for a club. For instance, the shortest and longest 6I shot differed 132.25 meters in carry distance. 
 
 It is important to note that the values in the above mentioned tables do not take into account how much the balls bounced and rolled after landing. This data was excluded from the graphs and tables in this section due to it being dependent on the terrain where the shot lands.
 
-\subsection{Golfer course data}
-The golfer played five rounds on Pebble Beach's first nine holes, and four rounds on Ullna GC's first nine holes. In \autoref{tab:L2_pebble_average_results} and \autoref{tab:L2_ullna_average_results} the average scores, shots hit and distances remaining for each hole are presented for the courses, respectively. For more detailed information regarding each round, see \autoref{app:shot_data}.
+\section{Golfer and Agent Comparison}
+In this section, the results from training and evaluating the reinforcement learning agents are presented. Furthermore, the golfer's results on the courses played are showcased and compared to the agents' results. The agents' training progress is showcased, and the results on the holes evaluated are detailed. The choices made by the agents and the golfer are also described.
+
+\subsection{Training}
+In \autoref{fig:training_plots}, the learning progress of each agent on each training configuration is presented, using rolling averages of $500$ episodes. That is, the average score of the $500$ previous episodes is used for each data point in the plots. In the figure, it is shown that all agents were capable of learning to play golf during training. Specifically, all agents lowered their average score to between $0.3$ and $0.4$ during the training process. However, due to the training process always including some exploration, this is not indicative of how well the agents played.
+
+\begin{figure}
+    \centering
+    \begin{subfigure}{0.45\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{TrainingPlots/Pebble9_training.png}
+    \end{subfigure}
+    \begin{subfigure}{0.45\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{TrainingPlots/Ullna9_training.png}
+    \end{subfigure}
+    \caption{The rolling averages over 500 episodes of scores for the two training configurations. Each subfigure contain plots for both the Dueling DDQN agent and MP-DQN agent.}
+    \label{fig:training_plots}
+\end{figure}
+
+\subsection{Evaluation}
+The results in this subsection are divided into two groups; Pebble Beach results and Ullna GC results. For each group, the agents' performances as well as their club choices and directional deviations are presented.
+
+\subsubsection{Pebble Beach}
+In \autoref{tab:pebble_average_results}, the average scores, number of shots and distances remaining for each hole on Pebble Beach are presented for the golfer, the Dueling DDQN agent and MP-DQN agent. As was mentioned in \autoref{chapter:methods}, the golfer was evaluated over five rounds, whereas the agents were evaluated over 250 rounds. The tables showcase that both the golfer and the agents found some holes more difficult than others. This is also true when comparing the Dueling DDQN and MP-DQN agents. For instance, the Dueling DDQN agent performed better than the MP-DQN agent on hole 2, but the opposite was true for hole 6.
 
 \begin{table}
+    \begin{subtable}{0.3\textwidth}
     \centering
+    \resizebox{\textwidth}{!}{
     \begin{tabular}{|c|c|c|c|c|} \hline
     \multicolumn{5}{|c|}{\textbf{Pebble Beach Average Golfer Results}} \\ \hline
         \textbf{Hole} & \textbf{Par} & \textbf{Score} & \textbf{Shots} & \textbf{Distance remaining}  \\ \hline
@@ -637,12 +660,99 @@ The golfer played five rounds on Pebble Beach's first nine holes, and four round
         8 & 4 & 0.32 & 2.60 & 7.76 \\ \hline
         9 & 4 & 0.29 & 2.20 & 11.28 \\ \hline
     \end{tabular}
-    \caption{The average scores, number of shots and distances remaining gathered from the golfer for each hole on Pebble Beach. All numbers are rounded to two decimals.}
-    \label{tab:L2_pebble_average_results}
+    }
+    \end{subtable}
+    \hfill
+    \begin{subtable}{0.3\textwidth}
+    \centering
+    \resizebox{\textwidth}{!}{
+    \begin{tabular}{|c|c|c|c|c|} \hline
+    \multicolumn{5}{|c|}{\textbf{Pebble Beach Average Dueling DDQN Results}} \\ \hline
+        \textbf{Hole} & \textbf{Par} & \textbf{Score} & \textbf{Shots} & \textbf{Distance remaining}  \\ \hline
+        1 & 4 & 0.30 & 2.26 & 12.76 \\ \hline
+        2 & 5 & 0.30 & 2.48 & 14.16 \\ \hline
+        3 & 4 & 0.29 & 2.14 & 12.76 \\ \hline
+        4 & 4 & 0.34 & 2.62 & 12.75 \\ \hline
+        5 & 3 & 0.19 & 1.12 & 11.70 \\ \hline
+        6 & 5 & 0.51 & 4.64 & 17.26 \\ \hline
+        7 & 3 & 0.20 & 1.30 & 9.91 \\ \hline
+        8 & 4 & 0.34 & 2.56 & 15.36 \\ \hline
+        9 & 4 & 0.35 & 2.62 & 16.37 \\ \hline
+    \end{tabular}
+    }
+    \end{subtable}
+    \hfill
+    \begin{subtable}{0.3\textwidth}
+    \centering
+    \resizebox{\textwidth}{!}{
+    \begin{tabular}{|c|c|c|c|c|} \hline
+    \multicolumn{5}{|c|}{\textbf{Pebble Beach Average MP-DQN Results}} \\ \hline
+        \textbf{Hole} & \textbf{Par} & \textbf{Score} & \textbf{Shots} & \textbf{Distance remaining}  \\ \hline
+        1 & 4 & 0.30 & 2.22 & 15.19 \\ \hline
+        2 & 5 & 0.31 & 2.62 & 15.09 \\ \hline
+        3 & 4 & 0.30 & 2.17 & 14.70 \\ \hline
+        4 & 4 & 0.30 & 2.24 & 13.43 \\ \hline
+        5 & 3 & 0.21 & 1.12 & 17.54 \\ \hline
+        6 & 5 & 0.39 & 3.40 & 15.75 \\ \hline
+        7 & 3 & 0.19 & 1.11 & 13.04 \\ \hline
+        8 & 4 & 0.35 & 2.61 & 16.53 \\ \hline
+        9 & 4 & 0.35 & 2.60 & 16.97 \\ \hline
+    \end{tabular}
+    }
+    \end{subtable}
+    \caption{The average scores, number of shots and distances remaining gathered from the golfer, Dueling DDQN agent and MP-DQN agent for each hole on Pebble Beach, respsectively. All numbers are rounded to two decimals.}
+    \label{tab:pebble_average_results}
 \end{table}
+
+When looking at the average results over all holes, both the Dueling DDQN agent and the MP-DQN agent performed worse than the golfer. However, to determine the significance of the results in comparison to the golfer's results, paired t-tests, with the holes as the dependent variable, were performed on the scores, number of shots and distances remaining. Furthermore, the effect size was calculated using Cohen's d using the agents' results as the first mean. For the Dueling DDQN agent all attributes were non-significant, with $(P = 0.152 > 0.05, d = 0.392)$, $(P = 0.287 > 0.05, d = 0.266)$ and $(P = 0.178 > 0.05, d=0.772)$ for the scores, number of shots and distances remaining, respectively. For the MP-DQN agent, the scores and number of shots were non-significant and the distances remaining were significant, with $(P = 0.116 > 0.05, d = 0.308)$, $(P = 0.706 > 0.05, d = 0.049)$ and $(P = 0.020 \leq 0.05, d = 1.446)$, respectively.
+
+It should be noted that due to the nature of the application used for gathering the golfer's results, distances could not be retrieved with exact precision. For shots closer to the hole than five meters, one decimal precision was possible. Otherwise, only full meters were available.
+
+For more specific results regarding the scores of the golfer and the agents on Pebble Beach, see \autoref{fig:pebble_histograms} in \autoref{app:pebble_histograms}. This figure showcases histograms that describes how often a score was achieved, a certain number of shots were hit, and a specific distance was remaining for the agents and the golfer.
+
+In \autoref{app:pebble_club_choices}, the percentages of clubs chosen for the first, second and third shot on a given hole are presented for the golfer and the Dueling DDQN and MP-DQN agents, respectively. As can be seen in the figures, the golfer was fairly consistent with the choice of clubs for the first shots on the holes. Furthermore, it can be seen that the club choices go from left to right along the X-axis in the figures, indicating that the golfer started with the longer clubs and finished with shorter clubs.
+
+Just like with the golfer's choices, both agents trend rightwards in club selection from their first shots to their third shots. The agents differ from the golfer in that they always choose the same club for the first shot on each hole. This is due to no exploration being done. The state is the same for all first shots, so the action will always be the same as well.
+
+The figures also show that the Dueling DDQN and MP-DQN agents differ. For instance, the MP-DQN agent is more prone to choosing the DR for its first shot. It is also less likely to choose longer clubs for its third shot. Finally, the MP-DQN agent never used the 7I, while the Dueling DDQN agent did.
+
+It should be noted that these numbers only indicate percentages and as such, some clubs may look overrepresented in the graphs. For instance, the third shot on hole 9 was always hit with the GW. During the golfer's rounds however, only one third shot was needed on this hole. The club was therefore always chosen because there was only one time it could be chosen.
+
+In \autoref{tab:MPDQN_pebble_direction_choices}, the average directional choices made by the MP-DQN agent for each club are shown. Furthermore, graphs showcasing all directional deviations made for each club can be found in \autoref{app:mpdqn_pebble_direction_choices}. As is shown in the table, most clubs were on average hit well within the limits on the directional deviations, with the only exception being the 35. Moreover, it can be seen that the MP-DQN agent used higher directional deviations than the average offline angles from \autoref{tab:shot_data_angle}. However, the agent does in general choose average directional deviations that counter the average offline angles from the golfer's data. That is, the sign of the angle is flipped for most clubs.
 
 \begin{table}
     \centering
+    \resizebox{0.25\textwidth}{!}{
+    \begin{tabular}{|c|c|} \hline
+        \textbf{Club} & \textbf{Average direction} \\ \hline
+        DR & 4.30 \\ \hline
+        3W & 1.00 \\ \hline
+        4I & 12.97 \\ \hline
+        5I & 5.52 \\ \hline
+        6I & 1.20 \\ \hline
+        8I & -2.80 \\ \hline
+        9I & -1.53 \\ \hline
+        PW & -5.21 \\ \hline
+        GW & -7.88 \\ \hline
+        SW & 1.77 \\ \hline
+        LW & 1.19 \\ \hline
+        65 & -7.07 \\ \hline
+        55 & -6.03 \\ \hline
+        45 & -11.09 \\ \hline
+        35 & -19.79 \\ \hline
+    \end{tabular}
+    }
+    \caption{The average directional deviations for each club used by the MP-DQN agent on Pebble Beach.}
+    \label{tab:MPDQN_pebble_direction_choices}
+\end{table}
+
+\subsubsection{Ullna GC}
+In \autoref{tab:ullna_average_results}, the average scores, number of shots and distances remaining for each hole on Ullna GC are presented for the golfer, the Dueling DDQN agent and the MP-DQN agent, respectively. Similarly to previously mentioned results, some holes were harder or easier than others for both the agents and the golfer. 
+
+\begin{table}
+    \begin{subtable}{0.3\textwidth}
+    \centering
+    \resizebox{\textwidth}{!}{
     \begin{tabular}{|c|c|c|c|c|} \hline
     \multicolumn{5}{|c|}{\textbf{Ullna GC Average Golfer Results}} \\ \hline
         \textbf{Hole} & \textbf{Par} & \textbf{Score} & \textbf{Shots} & \textbf{Distance remaining}  \\ \hline
@@ -656,59 +766,87 @@ The golfer played five rounds on Pebble Beach's first nine holes, and four round
         8 & 4 & 0.28 & 2.00 & 15.75 \\ \hline
         9 & 4 & 0.28 & 2.00 & 14.50 \\ \hline
     \end{tabular}
-    \caption{The average scores, number of shots and distances remaining gathered from the golfer for each hole on Ullna GC. All numbers are rounded to two decimals.}
-    \label{tab:L2_ullna_average_results}
+    }
+    \end{subtable}
+    \hfill
+    \begin{subtable}{0.3\textwidth}
+    \centering
+    \resizebox{\textwidth}{!}{
+    \begin{tabular}{|c|c|c|c|c|} \hline
+    \multicolumn{5}{|c|}{\textbf{Ullna GC Average Dueling DDQN Results}} \\ \hline
+        \textbf{Hole} & \textbf{Par} & \textbf{Score} & \textbf{Shots} & \textbf{Distance remaining}  \\ \hline
+        1 & 5 & 0.33 & 2.85 & 14.36 \\ \hline
+        2 & 4 & 0.28 & 2.08 & 12.85 \\ \hline
+        3 & 3 & 0.21 & 1.16 & 15.73 \\ \hline
+        4 & 5 & 0.41 & 3.68 & 20.89 \\ \hline
+        5 & 3 & 0.23 & 1.35 & 15.10 \\ \hline
+        6 & 4 & 0.30 & 2.24 & 13.41 \\ \hline
+        7 & 4 & 0.28 & 2.05 & 13.16 \\ \hline
+        8 & 4 & 0.29 & 2.12 & 13.51 \\ \hline
+        9 & 4 & 0.29 & 2.19 & 13.95 \\ \hline
+    \end{tabular}
+    }
+    \end{subtable}
+    \hfill
+    \begin{subtable}{0.3\textwidth}
+    \centering
+    \resizebox{\textwidth}{!}{
+    \begin{tabular}{|c|c|c|c|c|} \hline
+    \multicolumn{5}{|c|}{\textbf{Ullna GC Average MP-DQN Results}} \\ \hline
+        \textbf{Hole} & \textbf{Par} & \textbf{Score} & \textbf{Shots} & \textbf{Distance remaining}  \\ \hline
+        1 & 5 & 0.34 & 2.96 & 14.14 \\ \hline
+        2 & 4 & 0.30 & 2.26 & 12.11 \\ \hline
+        3 & 3 & 0.19 & 1.08 & 14.32 \\ \hline
+        4 & 5 & 0.35 & 3.02 & 16.23 \\ \hline
+        5 & 3 & 0.25 & 1.55 & 13.67 \\ \hline
+        6 & 4 & 0.33 & 2.42 & 15.46 \\ \hline
+        7 & 4 & 0.29 & 2.18 & 13.85 \\ \hline
+        8 & 4 & 0.30 & 2.21 & 15.79 \\ \hline
+        9 & 4 & 0.29 & 2.18 & 13.80 \\ \hline
+    \end{tabular}
+    }
+    \end{subtable}
+    \caption{The average scores, number of shots and distances remaining gathered from the golfer, Dueling DDQN agent and MP-DQN agent for each hole on Ullna GC, respectively. All numbers are rounded to two decimals.}
+    \label{tab:ullna_average_results}
 \end{table}
 
-Due to the nature of the application used for gathering the results in the tables, distances could not be retrieved with exact precision. For shots closer to the hole than five meters, one decimal precision was possible. Otherwise, only full meters were available. 
+When looking at the average scores over all holes, both the Dueling DDQN agent and the MP-DQN agent performed better than the golfer. Just like with the Pebble Beach data, paired t-tests were conducted to determine the significance of the results, and Cohen's d was used to determine the effect size. For the Dueling DDQN agent, all attributes were non-significant with $(P = 0.865 > 0.05, d = -0.057)$, $(P = 0.983 > 0.05, d = -0.005)$ and $(P = 0.733 > 0.05, d = 0.126)$ for the scores, number of shots and distances remaining, respectively. The same was true for the MP-DQN agent, with $(P = 0.991 > 0.05, d = -0.004)$, $(P = 0.933 > 0.05, d = 0.020)$ and $(P = 0.975 > 0.05, d = 0.015)$ for the scores, number of shots and distances remaining, respectively.
 
-The tables showcase that the golfer found some holes more difficult than others. Generally, the number of shots needed depended on the par of the hole, with the number of shots being close to the par of the hole minus two. Some holes deviated from this, however, such as the fifth hole on Ullna GC or the eighth hole on Pebble Beach. These results stem from the hazards present on the holes.
+For more specific results regarding the scores of the golfer and the agents on Ullna GC, see \autoref{fig:ullna_histograms} in \autoref{app:ullna_histograms}. This figure showcases histograms that describes how often a score was achieved, a certain number of shots were hit, and a specific distance was remaining for the agents and the golfer.
 
-In \autoref{fig:L2_pebble_club_choice_confusion} and \autoref{fig:L2_ullna_club_choice_confusion}, the percentages of clubs chosen for the first, second and third shot on a given hole are presented for Pebble Beach and Ullna GC, respectively. These matrices indicate how often a club was chosen on a hole for a shot. 
+In \autoref{app:ullna_club_choices}, the percentages of clubs chosen for the first, second and third shot on a given hole at Ullna GC are presented for the golfer and the Dueling DDQN and MP-DQN agents, respectively. Just like with the choices on Pebble Beach, both agents, as well as the golfer, trend rightwards in club selection from their first shots to their third shots. The only exception is the matrix for the third shot by the golfer, which contains only a few entries. This is because on Ullna GC, most holes the golfer played did not require a third shot before completion. Just like with the Pebble Beach matrices, there is a difference between the Dueling DDQN agent and MP-DQN agent, with the MP-DQN agent being more prone to hitting the DR.
 
-\begin{figure}
-    \centering
-    \begin{subfigure}{\textwidth}
-    \centering
-    \includegraphics[height=0.3\textheight]{L2ClubChoices/Ludvig_Pebble_Club_Choices_First_Shot.png} 
-    \end{subfigure}
-    \begin{subfigure}{\textwidth}
-    \centering
-    \includegraphics[height=0.3\textheight]{L2ClubChoices/Ludvig_Pebble_Club_Choices_Second_Shot.png} 
-    \end{subfigure}
-    \begin{subfigure}{\textwidth}
-    \centering
-    \includegraphics[height=0.3\textheight]{L2ClubChoices/Ludvig_Pebble_Club_Choices_Third_Shot.png} 
-    \end{subfigure}
-    \caption{Confusion matrices indicating the how often clubs were chosen by the golfer for the first, second and third shot on a given hole at Pebble Beach.}
-    \label{fig:L2_pebble_club_choice_confusion}
-\end{figure}
+In \autoref{tab:MPDQN_ullna_direction_choices}, the average directional choices made by the MP-DQN agent for each club are shown. Furthermore, graphs showcasing all directional deviations made for each club can be found in \autoref{app:mpdqn_ullna_direction_choices}. As is shown in the table, the agent deviated on average well within the limits for all clubs, unlike the agent trained on Pebble Beach. However, the signs of the directional deviations are flipped less often than the Pebble Beach agent's deviations, compared to the golfer's data in \autoref{tab:shot_data_angle}. That is, the deviations do not counter the average miss of the golfer's data as often.
 
-\begin{figure}
+\begin{table}
     \centering
-    \begin{subfigure}{\textwidth}
-    \centering
-    \includegraphics[height=0.3\textheight]{L2ClubChoices/Ludvig_Ullna_Club_Choices_First_Shot.png} 
-    \end{subfigure}
-    \begin{subfigure}{\textwidth}
-    \centering
-    \includegraphics[height=0.3\textheight]{L2ClubChoices/Ludvig_Ullna_Club_Choices_Second_Shot.png} 
-    \end{subfigure}
-    \begin{subfigure}{\textwidth}
-    \centering
-    \includegraphics[height=0.3\textheight]{L2ClubChoices/Ludvig_Ullna_Club_Choices_Third_Shot.png} 
-    \end{subfigure}
-    \caption{Confusion matrices indicating how often clubs were chosen by the golfer for the first, second and third shot on a given hole at Ullna GC.}
-    \label{fig:L2_ullna_club_choice_confusion}
-\end{figure}
-
-\section{Reinforcement Learning Agents}
-%Average scores, shots and distances for each hole
-%Directional choices heatmap for each club for each agent
-%Club choices confusion matrix, one for first shot, one for second and one for third
+    \resizebox{0.25\textwidth}{!}{
+    \begin{tabular}{|c|c|} \hline
+        \textbf{Club} & \textbf{Average direction} \\ \hline
+        DR & 1.42 \\ \hline
+        3W & -0.81 \\ \hline
+        4I & 10.21 \\ \hline
+        5I & -0.23 \\ \hline
+        6I & 1.09 \\ \hline
+        7I & -2.15 \\ \hline
+        8I & -1.66 \\ \hline
+        9I & 3.19 \\ \hline
+        PW & 1.60 \\ \hline
+        GW & -10.66 \\ \hline
+        SW & -3.47 \\ \hline
+        LW & -8.14 \\ \hline
+        65 & -2.88 \\ \hline
+        55 & -4.81 \\ \hline
+        45 & -11.68 \\ \hline
+        35 & -3.11 \\ \hline
+    \end{tabular}
+    }
+    \caption{The average directional deviations for each club used by the MP-DQN agent on Ullna GC.}
+    \label{tab:MPDQN_ullna_direction_choices}
+\end{table}
 
 \chapter{Discussion}
-
+\label{chapter:discussion}
 
 \chapter{Conclusions}
 
@@ -832,119 +970,447 @@ In \autoref{fig:L2_pebble_club_choice_confusion} and \autoref{fig:L2_ullna_club_
     \end{subfigure}
 \end{figure}
 
-\begin{table}
+\chapter{Pebble Beach Histograms}
+\label{app:pebble_histograms}
+\begin{figure}
     \centering
-    \begin{tabular}{|c|c|c|c|c|c|c|} \hline
-    \multicolumn{7}{|c|}{\textbf{Pebble Beach Golfer Score Results}} \\ \hline  
-    \textbf{Hole} & \textbf{Par} & \textbf{Round 1} & \textbf{Round 2} & \textbf{Round 3} & \textbf{Round 4} & \textbf{Round 5} \\ \hline
-    1 & 4 & 0.27 & 0.28 & 0.29 & 0.41 & 0.31 \\ \hline
-    2 & 5 & 0.35 & 0.31 & 0.21 & 0.33 & 0.34 \\ \hline
-    3 & 4 & 0.34 & 0.24 & 0.25 & 0.26 & 0.26 \\ \hline
-    4 & 4 & 0.28 & 0.23 & 0.47 & 0.25 & 0.35 \\ \hline
-    5 & 3 & 0.20 & 0.21 & 0.17 & 0.17 & 0.13 \\ \hline
-    6 & 5 & 0.31 & 0.48 & 0.32 & 0.38 & 0.27 \\ \hline
-    7 & 3 & 0.17 & 0.14 & 0.20 & 0.17 & 0.37 \\ \hline
-    8 & 4 & 0.25 & 0.26 & 0.24 & 0.36 & 0.48 \\ \hline
-    9 & 4 & 0.39 & 0.29 & 0.23 & 0.30 & 0.22 \\ \hline
-    \end{tabular}
-    \caption{The scores of the golfer for each hole and round at Pebble Beach, calculated according to \autoref{eq:agentscore}, rounded to two decimals.}
-    \label{tab:L2_pebble_score_results}
-\end{table}
+    \makebox[\linewidth][c]{
+    \begin{subfigure}{0.3\paperwidth}
+    \centering
+    \includegraphics[width=0.3\paperwidth]{L2Percentages/L2_Score_Percentages_Pebble.png} 
+    \end{subfigure}
+    \begin{subfigure}{0.3\paperwidth}
+    \centering
+    \includegraphics[width=0.3\paperwidth]{AgentPercentages/DDDQN_Score_Percentages_Pebble.png} 
+    \end{subfigure}
+    \begin{subfigure}{0.3\paperwidth}
+    \centering
+    \includegraphics[width=0.3\paperwidth]{AgentPercentages/MPDQN_Score_Percentages_Pebble.png} 
+    \end{subfigure}
+    }
+    \makebox[\linewidth][c]{
+    \begin{subfigure}{0.3\paperwidth}
+    \centering
+    \includegraphics[width=0.3\paperwidth]{L2Percentages/L2_Shot_Percentages_Pebble.png} 
+    \end{subfigure}
+    \begin{subfigure}{0.3\paperwidth}
+    \centering
+    \includegraphics[width=0.3\paperwidth]{AgentPercentages/DDDQN_Shot_Percentages_Pebble.png} 
+    \end{subfigure}
+    \begin{subfigure}{0.3\paperwidth}
+    \centering
+    \includegraphics[width=0.3\paperwidth]{AgentPercentages/MPDQN_Shot_Percentages_Pebble.png} 
+    \end{subfigure}
+    }
+    \makebox[\linewidth][c]{
+    \begin{subfigure}{0.3\paperwidth}
+    \centering
+    \includegraphics[width=0.3\paperwidth]{L2Percentages/L2_Distance_Percentages_Pebble.png} 
+    \end{subfigure}
+    \begin{subfigure}{0.3\paperwidth}
+    \centering
+    \includegraphics[width=0.3\paperwidth]{AgentPercentages/DDDQN_Distance_Percentages_Pebble.png} 
+    \end{subfigure}
+    \begin{subfigure}{0.3\paperwidth}
+    \centering
+    \includegraphics[width=0.3\paperwidth]{AgentPercentages/MPDQN_Distance_Percentages_Pebble.png} 
+    \end{subfigure}
+    }
+    \caption{Histograms showcasing how often different values were achieved by different entities on Pebble Beach's first nine holes. Each column represents an entity, with the leftmost being the golfer, the middle being the Dueling DDQN agent and the rightmost being the MP-DQN agent. Each row represents the showcased value; the score, the number of shots and the distance remaining, respectively.}
+    \label{fig:pebble_histograms}
+\end{figure}
 
-\begin{table}
+\chapter{Pebble Beach Club Choices}
+\label{app:pebble_club_choices}
+\begin{figure}
     \centering
-    \begin{tabular}{|c|c|c|c|c|c|c|} \hline
-    \multicolumn{7}{|c|}{\textbf{Pebble Beach Golfer Shot Results}} \\ \hline  
-    \textbf{Hole} & \textbf{Par} & \textbf{Round 1} & \textbf{Round 2} & \textbf{Round 3} & \textbf{Round 4} & \textbf{Round 5} \\ \hline
-    1 & 4 & 2 & 2 & 2 & 3 & 2 \\ \hline
-    2 & 5 & 3 & 3 & 2 & 3 & 3 \\ \hline
-    3 & 4 & 3 & 2 & 2 & 2 & 2 \\ \hline
-    4 & 4 & 2 & 2 & 4 & 2 & 3 \\ \hline
-    5 & 3 & 1 & 1 & 1 & 1 & 1 \\ \hline
-    6 & 5 & 3 & 4 & 3 & 3 & 2 \\ \hline
-    7 & 3 & 1 & 1 & 1 & 1 & 2 \\ \hline
-    8 & 4 & 2 & 2 & 2 & 3 & 4 \\ \hline
-    9 & 4 & 3 & 2 & 2 & 2 & 2 \\ \hline
-    \end{tabular}
-    \caption{The number of shots hit by the golfer for each hole and round at Pebble Beach.}
-    \label{tab:L2_pebble_shot_results}
-\end{table}
+    \begin{subfigure}{\textwidth}
+    \centering
+    \includegraphics[height=0.3\textheight]{L2ClubChoices/Ludvig_Pebble_Club_Choices_First_Shot.png} 
+    \end{subfigure}
+    \begin{subfigure}{\textwidth}
+    \centering
+    \includegraphics[height=0.3\textheight]{L2ClubChoices/Ludvig_Pebble_Club_Choices_Second_Shot.png} 
+    \end{subfigure}
+    \begin{subfigure}{\textwidth}
+    \centering
+    \includegraphics[height=0.3\textheight]{L2ClubChoices/Ludvig_Pebble_Club_Choices_Third_Shot.png} 
+    \end{subfigure}
+    \caption{Confusion matrices indicating how often clubs were chosen by the golfer for the first, second and third shot on a given hole at Pebble Beach. Only the first three shots are shown because most of the holes played were completed within this shot range.}
+    \label{fig:L2_pebble_club_choice_confusion}
+\end{figure}
 
-\begin{table}
+\begin{figure}
     \centering
-    \begin{tabular}{|c|c|c|c|c|c|c|} \hline
-    \multicolumn{7}{|c|}{\textbf{Pebble Beach Golfer Distance Results}} \\ \hline  
-    \textbf{Hole} & \textbf{Par} & \textbf{Round 1} & \textbf{Round 2} & \textbf{Round 3} & \textbf{Round 4} & \textbf{Round 5} \\ \hline
-    1 & 4 & 12.0 & 15.0 & 17.0 & 20.0 & 24.0 \\ \hline
-    2 & 5 & 15.0 & 4.4 & 2.7 & 9.0 & 13.0 \\ \hline
-    3 & 4 & 3.0 & 6.0 & 7.0 & 10.0 & 9.0 \\ \hline
-    4 & 4 & 16.0 & 1.5 & 6.0 & 8.0 & 5.0 \\ \hline
-    5 & 3 & 17.0 & 20.0 & 11.0 & 12.0 & 0.9 \\ \hline
-    6 & 5 & 2.0 & 23.0 & 6.0 & 23.0 & 21.0 \\ \hline
-    7 & 3 & 12.0 & 4.2 & 19.0 & 11.0 & 29.0 \\ \hline
-    8 & 4 & 8.0 & 10.0 & 4.8 & 6.0 & 10.0 \\ \hline
-    9 & 4 & 14.0 & 17.0 & 2.9 & 22.0 & 0.5 \\ \hline
-    \end{tabular}
-    \caption{The distances remaining for the golfer for each hole and round at Pebble Beach, rounded to one decimal.}
-    \label{tab:L2_pebble_distance_results}
-\end{table}
+    \begin{subfigure}{\textwidth}
+    \centering
+    \includegraphics[height=0.3\textheight]{AgentClubChoices/DDDQN_Pebble_Club_Choices_First_Shot.png} 
+    \end{subfigure}
+    \begin{subfigure}{\textwidth}
+    \centering
+    \includegraphics[height=0.3\textheight]{AgentClubChoices/DDDQN_Pebble_Club_Choices_Second_Shot.png} 
+    \end{subfigure}
+    \begin{subfigure}{\textwidth}
+    \centering
+    \includegraphics[height=0.3\textheight]{AgentClubChoices/DDDQN_Pebble_Club_Choices_Third_Shot.png} 
+    \end{subfigure}
+    \caption{Confusion matrices indicating how often clubs were chosen by the Dueling DDQN agent for the first, second and third shot on a given hole at Pebble Beach. Only the first three shots are shown because most of the holes played were completed within this shot range.}
+    \label{fig:DDDQN_pebble_club_choice_confusion}
+\end{figure}
 
-\begin{table}
+\begin{figure}
     \centering
-    \begin{tabular}{|c|c|c|c|c|c|} \hline
-    \multicolumn{6}{|c|}{\textbf{Ullna GC Golfer Score Results}} \\ \hline  
-    \textbf{Hole} & \textbf{Par} & \textbf{Round 1} & \textbf{Round 2} & \textbf{Round 3} & \textbf{Round 4} \\ \hline
-    1 & 5 & 0.29 & 0.34 & 0.32 & 0.33 \\ \hline
-    2 & 4 & 0.27 & 0.27 & 0.29 & 0.24 \\ \hline
-    3 & 3 & 0.17 & 0.17 & 0.18 & 0.14 \\ \hline
-    4 & 5 & 0.29 & 0.67 & 0.26 & 0.39 \\ \hline
-    5 & 3 & 0.44 & 0.18 & 0.39 & 0.48 \\ \hline
-    6 & 4 & 0.26 & 0.23 & 0.24 & 0.26 \\ \hline
-    7 & 4 & 0.28 & 0.30 & 0.40 & 0.30 \\ \hline
-    8 & 4 & 0.26 & 0.29 & 0.30 & 0.28 \\ \hline
-    9 & 4 & 0.30 & 0.25 & 0.28 & 0.27 \\ \hline
-    \end{tabular}
-    \caption{The scores of the golfer for each hole and round at Ullna GC, calculated according to \autoref{eq:agentscore}, rounded to two decimals.}
-    \label{tab:L2_ullna_score_results}
-\end{table}
+    \begin{subfigure}{\textwidth}
+    \centering
+    \includegraphics[height=0.3\textheight]{AgentClubChoices/MPDQN_Pebble_Club_Choices_First_Shot.png} 
+    \end{subfigure}
+    \begin{subfigure}{\textwidth}
+    \centering
+    \includegraphics[height=0.3\textheight]{AgentClubChoices/MPDQN_Pebble_Club_Choices_Second_Shot.png} 
+    \end{subfigure}
+    \begin{subfigure}{\textwidth}
+    \centering
+    \includegraphics[height=0.3\textheight]{AgentClubChoices/MPDQN_Pebble_Club_Choices_Third_Shot.png} 
+    \end{subfigure}
+    \caption{Confusion matrices indicating how often clubs were chosen by the MP-DQN agent for the first, second and third shot on a given hole at Pebble Beach. Only the first three shots are shown because most of the holes played were completed within this shot range.}
+    \label{fig:MPDQN_pebble_club_choice_confusion}
+\end{figure}
 
-\begin{table}
+\chapter{MP-DQN Pebble Beach Directions}
+\label{app:mpdqn_pebble_direction_choices}
+\begin{figure}
     \centering
-    \begin{tabular}{|c|c|c|c|c|c|} \hline
-    \multicolumn{6}{|c|}{\textbf{Ullna GC Golfer Shot Results}} \\ \hline  
-    \textbf{Hole} & \textbf{Par} & \textbf{Round 1} & \textbf{Round 2} & \textbf{Round 3} & \textbf{Round 4} \\ \hline
-    1 & 5 & 2 & 3 & 3 & 3 \\ \hline
-    2 & 4 & 2 & 2 & 2 & 2 \\ \hline
-    3 & 3 & 1 & 1 & 1 & 1 \\ \hline
-    4 & 5 & 2 & 6 & 2 & 3 \\ \hline
-    5 & 3 & 3 & 1 & 3 & 3 \\ \hline
-    6 & 4 & 2 & 2 & 2 & 2 \\ \hline
-    7 & 4 & 2 & 2 & 3 & 2 \\ \hline
-    8 & 4 & 2 & 2 & 2 & 2 \\ \hline
-    9 & 4 & 2 & 2 & 2 & 2 \\ \hline
-    \end{tabular}
-    \caption{The number of shots hit by the golfer for each hole and round at Ullna GC.}
-    \label{tab:L2_ullna_shot_results}
-\end{table}
+    \begin{subfigure}{0.4\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{AgentDirectionChoices/MPDQN_Pebble_Direction_Choices_DR.png} 
+    \caption{The DR.}
+    \label{fig:DR_pebble_deviation}
+    \end{subfigure}
+    \begin{subfigure}{0.4\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{AgentDirectionChoices/MPDQN_Pebble_Direction_Choices_3W.png} 
+    \caption{The 3W.}
+    \label{fig:3W_pebble_deviation}
+    \end{subfigure}
+    \begin{subfigure}{0.4\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{AgentDirectionChoices/MPDQN_Pebble_Direction_Choices_4I.png} 
+    \caption{The 4I.}
+    \label{fig:4I_pebble_deviation}
+    \end{subfigure}
+    \begin{subfigure}{0.4\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{AgentDirectionChoices/MPDQN_Pebble_Direction_Choices_5I.png} 
+    \caption{The 5I.}
+    \label{fig:5I_pebble_deviation}
+    \end{subfigure}
+    \caption{Directional deviations by the MP-DQN agent on Pebble Beach. The brighter colours are closer to the average deviation.}
+\end{figure}
 
-\begin{table}
+\begin{figure}
     \centering
-    \begin{tabular}{|c|c|c|c|c|c|} \hline
-    \multicolumn{6}{|c|}{\textbf{Ullna GC Golfer Distance Results}} \\ \hline  
-    \textbf{Hole} & \textbf{Par} & \textbf{Round 1} & \textbf{Round 2} & \textbf{Round 3} & \textbf{Round 4} \\ \hline
-    1 & 5 & 27.0 & 13.0 & 7.0 & 8.0 \\ \hline
-    2 & 4 & 14.0 & 13.0 & 18.0 & 5.0 \\ \hline
-    3 & 3 & 11.0 & 10.0 & 13.0 & 4.6 \\ \hline
-    4 & 5 & 28.0 & 21.0 & 18.0 & 26.0 \\ \hline
-    5 & 3 & 16.0 & 14.0 & 4.4 & 25.0 \\ \hline
-    6 & 4 & 9.0 & 2.2 & 4.5 & 11.0 \\ \hline
-    7 & 4 & 15.0 & 20.0 & 17.0 & 20.0 \\ \hline
-    8 & 4 & 10.0 & 17.0 & 20.0 & 16.0 \\ \hline
-    9 & 4 & 22.0 & 7.0 & 16.0 & 13.0 \\ \hline
-    \end{tabular}
-    \caption{The distances remaining for the golfer for each hole and round at Ullna GC, rounded to one decimal.}
-    \label{tab:L2_ullna_distance_results}
-\end{table}
+    \begin{subfigure}{0.4\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{AgentDirectionChoices/MPDQN_Pebble_Direction_Choices_6I.png} 
+    \caption{The 6I.}
+    \label{fig:6I_pebble_deviation}
+    \end{subfigure}
+    \begin{subfigure}{0.4\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{AgentDirectionChoices/MPDQN_Pebble_Direction_Choices_8I.png} 
+    \caption{The 8I.}
+    \label{fig:8I_pebble_deviation}
+    \end{subfigure}
+    \begin{subfigure}{0.4\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{AgentDirectionChoices/MPDQN_Pebble_Direction_Choices_9I.png} 
+    \caption{The 9I.}
+    \label{fig:9I_pebble_deviation}
+    \end{subfigure}
+    \begin{subfigure}{0.4\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{AgentDirectionChoices/MPDQN_Pebble_Direction_Choices_PW.png} 
+    \caption{The PW.}
+    \label{fig:PW_pebble_deviation}
+    \end{subfigure}
+    \caption{Directional deviations by the MP-DQN agent on Pebble Beach. The brighter colours are closer to the average deviation.}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \begin{subfigure}{0.4\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{AgentDirectionChoices/MPDQN_Pebble_Direction_Choices_GW.png} 
+    \caption{The GW.}
+    \label{fig:GW_pebble_deviation}
+    \end{subfigure}
+    \begin{subfigure}{0.4\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{AgentDirectionChoices/MPDQN_Pebble_Direction_Choices_SW.png} 
+    \caption{The SW.}
+    \label{fig:SW_pebble_deviation}
+    \end{subfigure}
+    \begin{subfigure}{0.4\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{AgentDirectionChoices/MPDQN_Pebble_Direction_Choices_LW.png} 
+    \caption{The LW.}
+    \label{fig:LW_pebble_deviation}
+    \end{subfigure}
+    \begin{subfigure}{0.4\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{AgentDirectionChoices/MPDQN_Pebble_Direction_Choices_65.png} 
+    \caption{The 65.}
+    \label{fig:65_pebble_deviation}
+    \end{subfigure}
+    \caption{Directional deviations by the MP-DQN agent on Pebble Beach. The brighter colours are closer to the average deviation.}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \begin{subfigure}{0.4\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{AgentDirectionChoices/MPDQN_Pebble_Direction_Choices_55.png} 
+    \caption{The 55.}
+    \label{fig:55_pebble_deviation}
+    \end{subfigure}
+    \begin{subfigure}{0.4\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{AgentDirectionChoices/MPDQN_Pebble_Direction_Choices_45.png} 
+    \caption{The 45.}
+    \label{fig:45_pebble_deviation}
+    \end{subfigure}
+    \begin{subfigure}{0.4\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{AgentDirectionChoices/MPDQN_Pebble_Direction_Choices_35.png} 
+    \caption{The 35.}
+    \label{fig:35_pebble_deviation}
+    \end{subfigure}
+    \caption{Directional deviations by the MP-DQN agent on Pebble Beach. The brighter colours are closer to the average deviation.}
+\end{figure}
+
+\chapter{Ullna GC Histograms}
+\label{app:ullna_histograms}
+\begin{figure}
+    \centering
+    \makebox[\linewidth][c]{
+    \begin{subfigure}{0.3\paperwidth}
+    \centering
+    \includegraphics[width=0.3\paperwidth]{L2Percentages/L2_Score_Percentages_Ullna.png} 
+    \end{subfigure}
+    \begin{subfigure}{0.3\paperwidth}
+    \centering
+    \includegraphics[width=0.3\paperwidth]{AgentPercentages/DDDQN_Score_Percentages_Ullna.png} 
+    \end{subfigure}
+    \begin{subfigure}{0.3\paperwidth}
+    \centering
+    \includegraphics[width=0.3\paperwidth]{AgentPercentages/MPDQN_Score_Percentages_Ullna.png} 
+    \end{subfigure}
+    }
+    \makebox[\linewidth][c]{
+    \begin{subfigure}{0.3\paperwidth}
+    \centering
+    \includegraphics[width=0.3\paperwidth]{L2Percentages/L2_Shot_Percentages_Ullna.png} 
+    \end{subfigure}
+    \begin{subfigure}{0.3\paperwidth}
+    \centering
+    \includegraphics[width=0.3\paperwidth]{AgentPercentages/DDDQN_Shot_Percentages_Ullna.png} 
+    \end{subfigure}
+    \begin{subfigure}{0.3\paperwidth}
+    \centering
+    \includegraphics[width=0.3\paperwidth]{AgentPercentages/MPDQN_Shot_Percentages_Ullna.png} 
+    \end{subfigure}
+    }
+    \makebox[\linewidth][c]{
+    \begin{subfigure}{0.3\paperwidth}
+    \centering
+    \includegraphics[width=0.3\paperwidth]{L2Percentages/L2_Distance_Percentages_Ullna.png} 
+    \end{subfigure}
+    \begin{subfigure}{0.3\paperwidth}
+    \centering
+    \includegraphics[width=0.3\paperwidth]{AgentPercentages/DDDQN_Distance_Percentages_Ullna.png} 
+    \end{subfigure}
+    \begin{subfigure}{0.3\paperwidth}
+    \centering
+    \includegraphics[width=0.3\paperwidth]{AgentPercentages/MPDQN_Distance_Percentages_Ullna.png} 
+    \end{subfigure}
+    }
+    \caption{Histograms showcasing how often different values were achieved by different entities on Ullna GC's first nine holes. Each column represents an entity, with the leftmost being the golfer, the middle being the Dueling DDQN agent and the rightmost being the MP-DQN agent. Each row represents the showcased value; the score, the number of shots and the distance remaining, respectively.}
+    \label{fig:ullna_histograms}
+\end{figure}
+
+\chapter{Ullna GC Club Choices}
+\label{app:ullna_club_choices}
+\begin{figure}
+    \centering
+    \begin{subfigure}{\textwidth}
+    \centering
+    \includegraphics[height=0.3\textheight]{L2ClubChoices/Ludvig_Ullna_Club_Choices_First_Shot.png} 
+    \end{subfigure}
+    \begin{subfigure}{\textwidth}
+    \centering
+    \includegraphics[height=0.3\textheight]{L2ClubChoices/Ludvig_Ullna_Club_Choices_Second_Shot.png} 
+    \end{subfigure}
+    \begin{subfigure}{\textwidth}
+    \centering
+    \includegraphics[height=0.3\textheight]{L2ClubChoices/Ludvig_Ullna_Club_Choices_Third_Shot.png} 
+    \end{subfigure}
+    \caption{Confusion matrices indicating how often clubs were chosen by the golfer for the first, second and third shot on a given hole at Ullna GC. Only the first three shots are shown because most of the holes played were completed within this shot range.}
+    \label{fig:L2_ullna_club_choice_confusion}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \begin{subfigure}{\textwidth}
+    \centering
+    \includegraphics[height=0.3\textheight]{AgentClubChoices/DDDQN_Ullna_Club_Choices_First_Shot.png} 
+    \end{subfigure}
+    \begin{subfigure}{\textwidth}
+    \centering
+    \includegraphics[height=0.3\textheight]{AgentClubChoices/DDDQN_Ullna_Club_Choices_Second_Shot.png} 
+    \end{subfigure}
+    \begin{subfigure}{\textwidth}
+    \centering
+    \includegraphics[height=0.3\textheight]{AgentClubChoices/DDDQN_Ullna_Club_Choices_Third_Shot.png} 
+    \end{subfigure}
+    \caption{Confusion matrices indicating how often clubs were chosen by the Dueling DDQN agent for the first, second and third shot on a given hole at Ullna GC. Only the first three shots are shown because most of the holes played were completed within this shot range.}
+    \label{fig:DDDQN_ullna_club_choice_confusion}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \begin{subfigure}{\textwidth}
+    \centering
+    \includegraphics[height=0.3\textheight]{AgentClubChoices/MPDQN_Ullna_Club_Choices_First_Shot.png} 
+    \end{subfigure}
+    \begin{subfigure}{\textwidth}
+    \centering
+    \includegraphics[height=0.3\textheight]{AgentClubChoices/MPDQN_Ullna_Club_Choices_Second_Shot.png} 
+    \end{subfigure}
+    \begin{subfigure}{\textwidth}
+    \centering
+    \includegraphics[height=0.3\textheight]{AgentClubChoices/MPDQN_Ullna_Club_Choices_Third_Shot.png} 
+    \end{subfigure}
+    \caption{Confusion matrices indicating how often clubs were chosen by the MP-DQN agent for the first, second and third shot on a given hole at Ullna GC. Only the first three shots are shown because most of the holes played were completed within this shot range.}
+    \label{fig:MPDQN_ullna_club_choice_confusion}
+\end{figure}
+
+\chapter{MP-DQN Ullna GC Directions}
+\label{app:mpdqn_ullna_direction_choices}
+\begin{figure}
+    \centering
+    \begin{subfigure}{0.4\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{AgentDirectionChoices/MPDQN_Ullna_Direction_Choices_DR.png} 
+    \caption{The DR.}
+    \label{fig:DR_ullna_deviation}
+    \end{subfigure}
+    \begin{subfigure}{0.4\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{AgentDirectionChoices/MPDQN_Ullna_Direction_Choices_3W.png} 
+    \caption{The 3W.}
+    \label{fig:3W_ullna_deviation}
+    \end{subfigure}
+    \begin{subfigure}{0.4\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{AgentDirectionChoices/MPDQN_Ullna_Direction_Choices_4I.png} 
+    \caption{The 4I.}
+    \label{fig:4I_ullna_deviation}
+    \end{subfigure}
+    \begin{subfigure}{0.4\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{AgentDirectionChoices/MPDQN_Ullna_Direction_Choices_5I.png} 
+    \caption{The 5I.}
+    \label{fig:5I_ullna_deviation}
+    \end{subfigure}
+    \caption{Directional deviations by the MP-DQN agent on Ullna GC. The brighter colours are closer to the average deviation.}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \begin{subfigure}{0.4\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{AgentDirectionChoices/MPDQN_Ullna_Direction_Choices_6I.png} 
+    \caption{The 6I.}
+    \label{fig:6I_ullna_deviation}
+    \end{subfigure}
+    \begin{subfigure}{0.4\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{AgentDirectionChoices/MPDQN_Ullna_Direction_Choices_7I.png} 
+    \caption{The 7I.}
+    \label{fig:7I_ullna_deviation}
+    \end{subfigure}
+    \begin{subfigure}{0.4\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{AgentDirectionChoices/MPDQN_Ullna_Direction_Choices_8I.png} 
+    \caption{The 8I.}
+    \label{fig:8I_ullna_deviation}
+    \end{subfigure}
+    \begin{subfigure}{0.4\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{AgentDirectionChoices/MPDQN_Ullna_Direction_Choices_9I.png} 
+    \caption{The 9I.}
+    \label{fig:9I_ullna_deviation}
+    \end{subfigure}
+    \caption{Directional deviations by the MP-DQN agent on Ullna GC. The brighter colours are closer to the average deviation.}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \begin{subfigure}{0.4\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{AgentDirectionChoices/MPDQN_Ullna_Direction_Choices_PW.png} 
+    \caption{The PW.}
+    \label{fig:PW_ullna_deviation}
+    \end{subfigure}
+    \begin{subfigure}{0.4\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{AgentDirectionChoices/MPDQN_Ullna_Direction_Choices_GW.png} 
+    \caption{The GW.}
+    \label{fig:GW_ullna_deviation}
+    \end{subfigure}
+    \begin{subfigure}{0.4\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{AgentDirectionChoices/MPDQN_Ullna_Direction_Choices_SW.png} 
+    \caption{The SW.}
+    \label{fig:SW_ullna_deviation}
+    \end{subfigure}
+    \begin{subfigure}{0.4\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{AgentDirectionChoices/MPDQN_Ullna_Direction_Choices_LW.png} 
+    \caption{The LW.}
+    \label{fig:LW_ullna_deviation}
+    \end{subfigure}
+    \caption{Directional deviations by the MP-DQN agent on Ullna GC. The brighter colours are closer to the average deviation.}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \begin{subfigure}{0.4\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{AgentDirectionChoices/MPDQN_Ullna_Direction_Choices_65.png} 
+    \caption{The 65.}
+    \label{fig:65_ullna_deviation}
+    \end{subfigure}
+    \begin{subfigure}{0.4\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{AgentDirectionChoices/MPDQN_Ullna_Direction_Choices_55.png} 
+    \caption{The 55.}
+    \label{fig:55_ullna_deviation}
+    \end{subfigure}
+    \begin{subfigure}{0.4\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{AgentDirectionChoices/MPDQN_Ullna_Direction_Choices_45.png} 
+    \caption{The 45.}
+    \label{fig:45_ullna_deviation}
+    \end{subfigure}
+    \begin{subfigure}{0.4\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{AgentDirectionChoices/MPDQN_Ullna_Direction_Choices_35.png} 
+    \caption{The 35.}
+    \label{fig:35_ullna_deviation}
+    \end{subfigure}
+    \caption{Directional deviations by the MP-DQN agent on Ullna GC. The brighter colours are closer to the average deviation.}
+\end{figure}
 
 \chapter{Miscellaneous}
 \begin{table}
