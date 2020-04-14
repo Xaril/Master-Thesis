@@ -21,7 +21,7 @@
 \date{\today}
 
 % Uncomment the next line to include cover generated at https://intra.kth.se/kth-cover?l=en
-%\kthcover{kth-cover.pdf}
+\kthcover{kth-cover.pdf}
 
 \begin{document}
 
@@ -40,6 +40,12 @@ Svensk sammanfattning finnes här.
 \end{abstract}
 \end{otherlanguage}
 
+\newenvironment{acknowledgements} {\renewcommand\abstractname{Acknowledgements}\begin{abstract}} {\end{abstract}}
+
+\begin{acknowledgements}
+Thanks mom!
+\end{acknowledgements}
+
 \tableofcontents
 
 % Mainmatter is where the actual contents of the thesis goes
@@ -51,9 +57,24 @@ Svensk sammanfattning finnes här.
 
 \chapter{Introduction}
 \label{chapter:introduction}
+Golf is a sport in which a player attempts to hit a ball into a hole using clubs, from a given starting position, with as few strokes as possible. It is a widely popular sport, with golf courses and active players all around the world. Due to the technical skills required to perform a good golf swing, many teachers, professionals as well as amateur golfers have started using statistics to try and understand and improve their golf swings. This need of data has caused a surge in technical tools such as launch monitors that analyze the golf swing as a player hits a ball, and tracking software that looks at the golf shots while in the air. 
+
+Even though swing and shot data is more easily accessible than before it is not always inherently clear how to use this data. Professional golfers as well as teachers usually know enough about golf swings to understand how their shot and swing data affects their results, and how to improve their game using it, but amateurs seldom have the time nor knowledge required to efficiently do so. This can be remedied by lessons from teachers, but lessons can become expensive since consistent updates are usually required for noticeable improvements. 
+
+In the past decade, there has been plenty of research done in the field of artificial intelligence for games. Specifically, the work done by Google DeepMind in \textcite{mnih2015human} showcased methods capable of exceeding human levels of play in several Atari games. This research caused much more work to be done in the field, and now there are artificial agents capable of beating 99.8\% of players in the immensely complex game StarCraft II \parencite{vinyals2019grandmaster}. 
+
+The methods used in the above mentioned examples are all based on reinforcement learning. At its core, reinforcement learning is a method in which an agent learns how to perform a task in a given environment by observing the environment, performing actions, and analyzing the effects of those actions on the environment. By being punished or rewarded, the agent can learn which actions to take given a specific environment. Traditionally, these types of algorithms have worked for relatively simple environments, but the Dueling Q Network algorithm in \textcite{mnih2015human} showed that this is also possible in complex environments through the use of deep neural networks. This deep reinforcement learning has now been applied to several different types of problems, such as the Deep Deterministic Policy Gradient algorithm presented in \textcite{lillicrap2015continuous} for continuous action spaces, and is a baseline for the state of the art in this field.
+
+As can be seen from above, reinforcement learning is capable of creating well performing agents for various games. It is therefore interesting to investigate if this approach could be utilized to create an agent for the game of golf, since golf is easily adaptable to a reinforcement learning problem in that the agent will hit golf shots (the actions) on a golf course (the environment) such that it minimizes the number of strokes performed (the penalty). Furthermore, it is interesting to see if an artificial agent could learn how to utilize data from golf shots when playing. If that is the case, then real golfers' data could be used with the agent, resulting in the agent being able to show the golfers how their data can improve their game. If successful, this could then be generalized to other areas of a similar kind, such as basketball players trying to throw balls into hoops, or robots trying to learn tasks utilizing human data.
 
 \section{Research Question}
 
+
+\section{Purpose}
+
+\section{Scope}
+
+\section{Disposition}
 
 \chapter{Background}
 \label{chapter:background}
@@ -539,6 +560,7 @@ During the evaluation, no noise was added to the policy network output, and no e
 To determine how well the agents played compared to the golfer from which the data was gathered from, 250 samples of each hole from Pebble Beach and Ullna GC were retrieved from the results of the 5000 holes played, and the scores were compared to the samples gathered from the golfer. Both the scores on a hole by hole basis and the total scores were compared and analyzed. Finally, statistical significance tests were performed to determine if the agents played better than, worse than, or on the same level as the golfer.
 
 \chapter{Results}
+\label{chapter:results}
 In this chapter, the results from the experiments mentioned in \autoref{chapter:methods} are presented. The numbers are explained, and graphs and tables are used to visualize the outcomes of the tests.
 
 \section{Shot Data}
@@ -553,67 +575,25 @@ As was described in \autoref{sec:datagathering}, 40 shots were gathered for each
     \label{fig:all_shots}
 \end{figure}
 
-In \autoref{tab:shot_data_distance}, the average, minimum and maximum carry distances for each club are presented, where carry distance is defined as the distance between the starting point and the landing point of a shot. In \autoref{tab:shot_data_angle}, the average, minimum and maximum offline angles for each club are presented. That is, the angles between the target line and the landing position of the shots are shown. For both tables, the values have been rounded to two decimals.
+In \autoref{fig:shot_data_distance}, boxplots showcasing the carry distances for each club are presented, where carry distance is defined as the distance between the starting point and the landing point of a shot. In \autoref{fig:shot_data_angle}, boxplots for the offline angles for each club are presented. That is, the angles between the target line and the landing position of the shots are shown. For both tables, the values have been rounded to two decimals.
 
-\begin{table}
-\centering
-\resizebox{0.5\textwidth}{!}{
-\begin{tabular}{|c|c|c|c|} \hline
-\multicolumn{4}{|c|}{\textbf{Carry distances}} \\ \hline
-\textbf{Club} & \textbf{Average} & \textbf{Minimum} & \textbf{Maximum} \\ \hline
-DR & 206.15 & 177.31 & 234.36 \\ \hline
-3W & 188.64 & 105.61 & 215.31 \\ \hline
-4I & 162.61 & 72.60 & 192.49 \\ \hline
-5I & 156.53 & 99.01 & 188.65 \\ \hline
-6I & 150.87 & 43.83 & 176.08 \\ \hline
-7I & 142.69 & 79.52 & 166.86 \\ \hline
-8I & 136.48 & 50.65 & 157.27 \\ \hline
-9I & 126.74 & 39.48 & 145.16 \\ \hline
-PW & 116.69 & 61.04 & 131.51 \\ \hline
-GW & 96.96 & 74.12 & 112.53 \\ \hline
-SW & 84.42 & 42.52 & 114.52 \\ \hline
-LW & 72.22 & 16.55 & 103.69 \\ \hline
-65 & 59.01 & 13.78 & 80.70 \\ \hline
-55 & 52.02 & 33.99 & 69.20 \\ \hline
-45 & 42.13 & 28.63 & 69.39 \\ \hline
-35 & 30.13 & 14.82 & 44.60 \\ \hline
-\end{tabular}
-}
-\caption{The average, minimum and maximum carry distances for each club and distance hit by the golfer. All numbers are rounded to two decimals.}
-\label{tab:shot_data_distance}
-\end{table}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.5\textwidth]{Boxplots/distances.png}
+    \caption{Boxplots showcasing the carry distances for each club hit by the golfer.}
+    \label{fig:shot_data_distance}
+\end{figure}
 
-\begin{table}
-\centering
-\resizebox{0.5\textwidth}{!}{
-\begin{tabular}{|c|c|c|c|} \hline
-\multicolumn{4}{|c|}{\textbf{Offline angles}} \\ \hline
-\textbf{Club} & \textbf{Average} & \textbf{Minimum} & \textbf{Maximum} \\ \hline
-DR & -2.87 & -14.73 & 8.67 \\ \hline
-3W & -1.06 & -19.61 & 17.56 \\ \hline
-4I & -2.66 & -16.40 & 15.69 \\ \hline
-5I & -2.10 & -15.55 & 8.26 \\ \hline
-6I & -0.72 & -13.09 & 10.83 \\ \hline
-7I & -0.20 & -30.37 & 16.00 \\ \hline
-8I & 1.20 & -26.08 & 13.14 \\ \hline
-9I & 0.52 & -9.84 & 10.96 \\ \hline
-PW & 1.38 & -27.74 & 12.42 \\ \hline
-GW & 0.88 & -41.98 & 11.27 \\ \hline
-SW & 0.49 & -28.59 & 10.19 \\ \hline
-LW & 1.84 & -9.86 & 10.12 \\ \hline
-65 & 2.91 & -1.40 & 11.10 \\ \hline
-55 & 2.44 & -4.83 & 13.09 \\ \hline
-45 & 2.37 & -4.32 & 7.27 \\ \hline
-35 & 1.83 & -3.41 & 7.31 \\ \hline
-\end{tabular}
-}
-\caption{The average, minimum and maximum offline angles for each club and distance hit by the golfer, i.e. the angles between the landing position of the shot and the target line. All numbers are rounded to two decimals.}
-\label{tab:shot_data_angle}
-\end{table}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.5\textwidth]{Boxplots/directions.png}
+    \caption{Boxplots showcasing the offline angles for each club hit by the golfer. That is, the angles between the landing position of the shot and the target line are presented.}
+    \label{fig:shot_data_angle}
+\end{figure}
 
-The values in \autoref{tab:shot_data_angle} further indicate that most shots were generally hit straight, since the average offline angles were lower than 3 in any direction. However, the minimum and maximum values show that some clubs had a big spread, for instance the 7I. This shows that the agents can end up in states that differ much, even though the same club has been used. It is also interesting to note that the shorter clubs and distances all have a positive average offline angle, whereas the longer clubs all have a negative angle.
+The values in \autoref{fig:shot_data_angle} also indicate that most shots were generally hit straight, since the average offline angles were lower than 3 in any direction. However, the minimum and maximum values show that some clubs had a big spread, for instance the 7I. This shows that the agents can end up in states that differ much, even though the same club has been used. It is also interesting to note that the shorter clubs and distances all have a positive average offline angle, whereas the longer clubs all have a negative angle.
 
-The same analysis can be derived from the values in \autoref{tab:shot_data_distance}. The average shot distances gradually increase from the shortest to the longest club used. The minimum and maximum values showcase however that the distance can fluctuate much for a club. For instance, the shortest and longest 6I shot differed 132.25 meters in carry distance. 
+The same analysis can be derived from the values in \autoref{fig:shot_data_distance}. The average shot distances gradually increase from the shortest to the longest club used. The minimum and maximum values showcase however that the distance can fluctuate much for a club. For instance, the shortest and longest 6I shot differed 132.25 meters in carry distance. 
 
 It is important to note that the values in the above mentioned tables do not take into account how much the balls bounced and rolled after landing. This data was excluded from the graphs and tables in this section due to it being dependent on the terrain where the shot lands.
 
@@ -638,7 +618,7 @@ In \autoref{fig:training_plots}, the learning progress of each agent on each tra
 \end{figure}
 
 \subsection{Evaluation}
-The results in this subsection are divided into two groups; Pebble Beach results and Ullna GC results. For each group, the agents' performances as well as their club choices and directional deviations are presented.
+The results in this subsection are divided into two groups; Pebble Beach results and Ullna GC results. For each group, the golfer's results, as well as the agents' performances and their club choices and directional deviations are presented.
 
 \subsubsection{Pebble Beach}
 In \autoref{tab:pebble_average_results}, the average scores, number of shots and distances remaining for each hole on Pebble Beach are presented for the golfer, the Dueling DDQN agent and MP-DQN agent. As was mentioned in \autoref{chapter:methods}, the golfer was evaluated over five rounds, whereas the agents were evaluated over 250 rounds. The tables showcase that both the golfer and the agents found some holes more difficult than others. This is also true when comparing the Dueling DDQN and MP-DQN agents. For instance, the Dueling DDQN agent performed better than the MP-DQN agent on hole 2, but the opposite was true for hole 6.
@@ -704,7 +684,7 @@ In \autoref{tab:pebble_average_results}, the average scores, number of shots and
     \label{tab:pebble_average_results}
 \end{table}
 
-When looking at the average results over all holes, both the Dueling DDQN agent and the MP-DQN agent performed worse than the golfer. However, to determine the significance of the results in comparison to the golfer's results, paired t-tests, with the holes as the dependent variable, were performed on the scores, number of shots and distances remaining. Furthermore, the effect size was calculated using Cohen's d using the agents' results as the first mean. For the Dueling DDQN agent all attributes were non-significant, with $(P = 0.152 > 0.05, d = 0.392)$, $(P = 0.287 > 0.05, d = 0.266)$ and $(P = 0.178 > 0.05, d=0.772)$ for the scores, number of shots and distances remaining, respectively. For the MP-DQN agent, the scores and number of shots were non-significant and the distances remaining were significant, with $(P = 0.116 > 0.05, d = 0.308)$, $(P = 0.706 > 0.05, d = 0.049)$ and $(P = 0.020 \leq 0.05, d = 1.446)$, respectively.
+When looking at the average results over all holes, both the Dueling DDQN agent and the MP-DQN agent performed worse than the golfer. However, to determine the significance of the results in comparison to the golfer's results, paired t-tests, with the holes as the dependent variable, were performed on the scores, number of shots and distances remaining. For the Dueling DDQN agent all attributes were non-significant, with $P = 0.152 > 0.05$, $P = 0.287 > 0.05$ and $P = 0.178 > 0.05$ for the scores, number of shots and distances remaining, respectively. For the MP-DQN agent, the scores and number of shots were non-significant and the distances remaining were significant, with $P = 0.116 > 0.05$, $P = 0.706 > 0.05$ and $P = 0.020 \leq 0.05$, respectively. The effect size of the significant result was calculated using Cohen's d, with a value of $d = 1.446$.
 
 It should be noted that due to the nature of the application used for gathering the golfer's results, distances could not be retrieved with exact precision. For shots closer to the hole than five meters, one decimal precision was possible. Otherwise, only full meters were available.
 
@@ -718,33 +698,14 @@ The figures also show that the Dueling DDQN and MP-DQN agents differ. For instan
 
 It should be noted that these numbers only indicate percentages and as such, some clubs may look overrepresented in the graphs. For instance, the third shot on hole 9 was always hit with the GW. During the golfer's rounds however, only one third shot was needed on this hole. The club was therefore always chosen because there was only one time it could be chosen.
 
-In \autoref{tab:MPDQN_pebble_direction_choices}, the average directional choices made by the MP-DQN agent for each club are shown. Furthermore, graphs showcasing all directional deviations made for each club can be found in \autoref{app:mpdqn_pebble_direction_choices}. As is shown in the table, most clubs were on average hit well within the limits on the directional deviations, with the only exception being the 35. Moreover, it can be seen that the MP-DQN agent used higher directional deviations than the average offline angles from \autoref{tab:shot_data_angle}. However, the agent does in general choose average directional deviations that counter the average offline angles from the golfer's data. That is, the sign of the angle is flipped for most clubs.
+In \autoref{fig:MPDQN_pebble_direction_choices}, boxplots showcasing the directional choices made by the MP-DQN agent for each club are shown. As is shown in the figure, most clubs were on average hit well within the limits of the directional deviations, with the only clear exception being the 35. Moreover, it can be seen that the MP-DQN agent used higher directional deviations than the average offline angles from \autoref{fig:shot_data_angle}. However, the agent does in general choose average directional deviations that counter the average offline angles from the golfer's data. That is, the sign of the angle is flipped for most clubs.
 
-\begin{table}
+\begin{figure}
     \centering
-    \resizebox{0.25\textwidth}{!}{
-    \begin{tabular}{|c|c|} \hline
-        \textbf{Club} & \textbf{Average direction} \\ \hline
-        DR & 4.30 \\ \hline
-        3W & 1.00 \\ \hline
-        4I & 12.97 \\ \hline
-        5I & 5.52 \\ \hline
-        6I & 1.20 \\ \hline
-        8I & -2.80 \\ \hline
-        9I & -1.53 \\ \hline
-        PW & -5.21 \\ \hline
-        GW & -7.88 \\ \hline
-        SW & 1.77 \\ \hline
-        LW & 1.19 \\ \hline
-        65 & -7.07 \\ \hline
-        55 & -6.03 \\ \hline
-        45 & -11.09 \\ \hline
-        35 & -19.79 \\ \hline
-    \end{tabular}
-    }
-    \caption{The average directional deviations for each club used by the MP-DQN agent on Pebble Beach.}
-    \label{tab:MPDQN_pebble_direction_choices}
-\end{table}
+    \includegraphics[width=0.5\textwidth]{Boxplots/MPDQN_Pebble_directions.png}
+    \caption{Boxplots showcasing the directional deviations for each club by the MP-DQN agent on Pebble Beach.}
+    \label{fig:MPDQN_pebble_direction_choices}
+\end{figure}
 
 \subsubsection{Ullna GC}
 In \autoref{tab:ullna_average_results}, the average scores, number of shots and distances remaining for each hole on Ullna GC are presented for the golfer, the Dueling DDQN agent and the MP-DQN agent, respectively. Similarly to previously mentioned results, some holes were harder or easier than others for both the agents and the golfer. 
@@ -810,48 +771,122 @@ In \autoref{tab:ullna_average_results}, the average scores, number of shots and 
     \label{tab:ullna_average_results}
 \end{table}
 
-When looking at the average scores over all holes, both the Dueling DDQN agent and the MP-DQN agent performed better than the golfer. Just like with the Pebble Beach data, paired t-tests were conducted to determine the significance of the results, and Cohen's d was used to determine the effect size. For the Dueling DDQN agent, all attributes were non-significant with $(P = 0.865 > 0.05, d = -0.057)$, $(P = 0.983 > 0.05, d = -0.005)$ and $(P = 0.733 > 0.05, d = 0.126)$ for the scores, number of shots and distances remaining, respectively. The same was true for the MP-DQN agent, with $(P = 0.991 > 0.05, d = -0.004)$, $(P = 0.933 > 0.05, d = 0.020)$ and $(P = 0.975 > 0.05, d = 0.015)$ for the scores, number of shots and distances remaining, respectively.
+When looking at the average scores over all holes, both the Dueling DDQN agent and the MP-DQN agent performed better than the golfer. Just like with the Pebble Beach data, paired t-tests were conducted to determine the significance of the results, and Cohen's d was used to determine the effect size. For the Dueling DDQN agent, all attributes were non-significant with $P = 0.865 > 0.05$, $P = 0.983 > 0.05$ and $P = 0.733 > 0.05$ for the scores, number of shots and distances remaining, respectively. The same was true for the MP-DQN agent, with $P = 0.991 > 0.05$, $P = 0.933 > 0.05$ and $P = 0.975 > 0.05$ for the scores, number of shots and distances remaining, respectively.
 
 For more specific results regarding the scores of the golfer and the agents on Ullna GC, see \autoref{fig:ullna_histograms} in \autoref{app:ullna_histograms}. This figure showcases histograms that describes how often a score was achieved, a certain number of shots were hit, and a specific distance was remaining for the agents and the golfer.
 
 In \autoref{app:ullna_club_choices}, the percentages of clubs chosen for the first, second and third shot on a given hole at Ullna GC are presented for the golfer and the Dueling DDQN and MP-DQN agents, respectively. Just like with the choices on Pebble Beach, both agents, as well as the golfer, trend rightwards in club selection from their first shots to their third shots. The only exception is the matrix for the third shot by the golfer, which contains only a few entries. This is because on Ullna GC, most holes the golfer played did not require a third shot before completion. Just like with the Pebble Beach matrices, there is a difference between the Dueling DDQN agent and MP-DQN agent, with the MP-DQN agent being more prone to hitting the DR.
 
-In \autoref{tab:MPDQN_ullna_direction_choices}, the average directional choices made by the MP-DQN agent for each club are shown. Furthermore, graphs showcasing all directional deviations made for each club can be found in \autoref{app:mpdqn_ullna_direction_choices}. As is shown in the table, the agent deviated on average well within the limits for all clubs, unlike the agent trained on Pebble Beach. However, the signs of the directional deviations are flipped less often than the Pebble Beach agent's deviations, compared to the golfer's data in \autoref{tab:shot_data_angle}. That is, the deviations do not counter the average miss of the golfer's data as often.
+In \autoref{fig:MPDQN_ullna_direction_choices}, the average directional choices made by the MP-DQN agent for each club are shown. As is shown in the table, the agent deviated on average well within the limits for all clubs, unlike the agent trained on Pebble Beach. However, the signs of the directional deviations are flipped less often than the Pebble Beach agent's deviations, compared to the golfer's data in \autoref{fig:shot_data_angle}. That is, the deviations do not counter the average miss of the golfer's data as often.
 
-\begin{table}
+\begin{figure}
     \centering
-    \resizebox{0.25\textwidth}{!}{
-    \begin{tabular}{|c|c|} \hline
-        \textbf{Club} & \textbf{Average direction} \\ \hline
-        DR & 1.42 \\ \hline
-        3W & -0.81 \\ \hline
-        4I & 10.21 \\ \hline
-        5I & -0.23 \\ \hline
-        6I & 1.09 \\ \hline
-        7I & -2.15 \\ \hline
-        8I & -1.66 \\ \hline
-        9I & 3.19 \\ \hline
-        PW & 1.60 \\ \hline
-        GW & -10.66 \\ \hline
-        SW & -3.47 \\ \hline
-        LW & -8.14 \\ \hline
-        65 & -2.88 \\ \hline
-        55 & -4.81 \\ \hline
-        45 & -11.68 \\ \hline
-        35 & -3.11 \\ \hline
-    \end{tabular}
-    }
-    \caption{The average directional deviations for each club used by the MP-DQN agent on Ullna GC.}
-    \label{tab:MPDQN_ullna_direction_choices}
-\end{table}
+    \includegraphics[width=0.5\textwidth]{Boxplots/MPDQN_Ullna_directions.png}
+    \caption{Boxplots showcasing the directional deviations for each club by the MP-DQN agent on Ullna GC.}
+    \label{fig:MPDQN_ullna_direction_choices}
+\end{figure}
 
 \chapter{Discussion}
 \label{chapter:discussion}
+In this chapter, the results presented in \autoref{chapter:results} are analyzed and discussed. The reasons behind the results are examined, and other interesting points from this thesis are brought up. Finally, the limitations on the results are presented, and potential future research is talked about.
+
+It is clear from the results and significance tests that both agents played neither better nor worse than the golfer. All tests were non-significant, aside from the MP-DQN agent trained on Pebble Beach being worse in regards to distance remaining. In regards to the research question of this thesis, how well reinforcement learning agents compare to a golfer when playing golf using the golfer's shot data, it is therefore possible to say that the agents can play at least on a similar level to the golfer.
+
+It is interesting to discuss why this is the case, i.e. the reasons behind the agents being able to play on a similar level. One possible reason is that the problem of playing golf fits well with reinforcement learning agents. Even though there are many state and action combinations, the scores propagate quickly through the agent networks due to an episode consisting of at most ten actions. For instance, a single action should be enough to determine the outcome of a par three hole, since in general only one shot is needed for those holes. This allows the agents to quickly learn what actions are good to take early on a hole, and these good actions in turn make it easier to figure out what actions are good to take later on a hole, resulting in a good score.
+
+Given these results, it is also interesting to discuss why the agents did not perform better than the golfer. Due to their trial and error learning method, they should be able to figure out problems that the golfer has with their swing and learn how to counter them. There are several possible answers to this question. One is that the golfer already played optimally. If the golfer always chooses the correct club and direction to hit in, the agents could never become better but at most play as well as the golfer. It is however hard to determine if this was the case since no analysis has been done in regards to how well the golfer played the courses. It does seem unlikely, since the agents managed to play better than the golfer on some holes, for instance the fifth hole at Ullna GC. 
+
+Another reason for the agents not outperforming the golfer could be that the data gathered from the golfer was non-representative of the golfer's actual performance. This could be either the shot data used by the agents or the course data used to compare the agents with the golfer. For instance, the golfer might have played especially well when gathering the course data, compared to when hitting shots for the agents to use. This might sound unlikely given that the data was collected at the same time and therefore should not be affected by potential surges in form, but there are two reasons why this could be the case. The first reason is the lack of data available from the golfer playing courses. Only five and four rounds were gathered from Pebble Beach and Ullna GC, respectively. This might have been too few rounds to accurately determine the performance of the golfer, and could have skewed the results in favor of the golfer.
+
+The second reason for non-representative data could be that the way the data was gathered caused a performance difference between the course data and the shot data used by the agent. When gathering the shot data, the golfer only had a target direction to hit in, but no distance or specific target to aim for. Furthermore, aside from the distance clubs between 35 and 65 meters, all shot were full swings. These restrictions were not present when gathering the course data. The golfer was allowed to hit all kinds of shots when playing the holes. Moreover, the golfer also had specific targets to aim for, both in regards to distance and direction. Having specific targets may have made it easier to visualize and execute shots that were better suited given the current state of the golfer, and not always requiring full swings could have caused the golfer to adjust to distances where no club fit perfectly. As such, the course data might actually showcase a better performing golfer than the shot data used by the agents.
+
+What these potential data deviations mean in terms of the results is most likely that the agents were compared with data that was not directly comparable, yet still performed similar to it. In that case, the agents might have been able to outperform the golfer with no way of showing that they did. It is however hard to determine if this is the case. Given that more experienced golfers most likely have more control over their swing and more knowledge in visualizing and executing shots depending on targets, it is likely that the potential difference between course data and shot data is smaller for a more inexperienced golfer. By gathering data from an inexperienced golfer, it would be possible to examine this further.
+
+One other possible reason for the agents not playing better than the golfer is that the problem might be too complex. This may sound counterintuitive to the above statements of the problem fitting well with reinforcement learning, but it might be the case that the number of state and action combinations actually affect the results. The agents may know very well what to do in states that occur often, but have a worse knowledge of what to do when in states they rarely enter. Every shot counts a lot when playing golf, so one wrong action could significantly affect the results.  For instance, \autoref{fig:GW_shots} in \autoref{app:shot_data} showcases the shots hit with the GW, with one clear outlier compared to the rest of the shots. It is unlikely that the outlier is the sampled shot when choosing the GW club, but once it is sampled, the agent may end up in a state it can't infer much from, causing the score of the hole to worsen a lot compared to if any other GW shot had been hit.
+
+The above mentioned potential problem is worsened when more shots are hit on a hole and where hazards are present, since the number of potential states grows exponentially for each club choice and when having to take into consideration where balls may be dropped. We can see that this is the case on one of the harder holes played, hole six on Pebble Beach. This is a long par five with several elevation changes and with the Pacific Ocean acting as a water hazard on the entirety of the right side of the hole. As can be seen in \autoref{tab:pebble_average_results} and the second column in \autoref{fig:pebble_histograms} in \autoref{app:pebble_histograms}, the Dueling DDQN agent is significantly affected by this. Furthermore, in \autoref{fig:DDDQN_pebble_club_choice_confusion} in \autoref{app:pebble_club_choices}, it is shown that this hole has one of the larger spreads in club selection over the first to third shot. This showcases the potential number of states the agent can end up in. The MP-DQN agent manages to handle this problem because it can aim left, making it possible to avoid the water hazard which in turn makes it possible to reduce the number of shots needed, but it is still affected and performs worse than the golfer. 
+
+It is important to note that even though the agents did not perform better than the golfer when looking at the average results of the holes, they did in some cases actually play better. For instance, as is shown in \autoref{app:pebble_histograms}, more than 40\% of the time the agents only hit two shots on the par five second hole on Pebble Beach, whereas the golfer only did it 20\% of the time. The same is true for the par four seventh hole on Ullna GC, as shown in \autoref{app:ullna_histograms}, where the Dueling DDQN agent never performed worse than the golfer, but hit two shots over 90\% of the time compared to the golfer's 75\%. Similarly, the MP-DQN agent also hits two shots more often than the golfer, while being worse less than 5\% of the time. 
+
+In general, the histograms showcase that the golfer is more consistent than the agents. That is, the golfer produces results that are more similar to each other, whereas the agents in a few cases produce results worse than the usual results. This is clear from the second rows in the histogram figures, where the agents for most holes have poor results in around 5\% to 10\% of the cases. It is possible that these results affect the performance of the agents enough for them to not perform better than the golfer. As was mentioned above, the complexity of the problem could have affected the agents' knowledge in states occurring later on the hole due to a lack of exploring in those states. As such, the agents could be causing these poor results because of this complexity. It could therefore be the case that allowing the agents to explore more would result in fewer outliers.
+
+It should also be noted that the histograms for the golfer, as mentioned, might not accurately tell the performance of the golfer, due to the lack of data available. It could be the case that with more rounds gathered, less consistent results would be present for the golfer as well. 
+
+The above mentioned example with the sixth hole at Pebble Beach clearly indicates why the Dueling DDQN agent might not have been able to outperform the golfer; the lack of directional input causes it to become incapable of avoiding hazards or obstacles. The target line is biased towards being in a good position, so if that is not the case, it might be impossible for the Dueling DDQN agent to escape the current bad state. It is therefore interesting that both the Dueling DDQN agent and the MP-DQN agent played similarly to the golfer. The MP-DQN agent should be able to perform better, like it does on Pebble Beach's sixth hole, but in general it does not. 
+
+One possible reason for why the MP-DQN agent does not perform better than the Dueling DDQN agent is yet again the complexity of the problem. The selection of a directional deviation not only makes the action space more complex, but also the state space. With the Dueling DDQN agent, there are a finite number of states that the agent could end up in, dependent on the sampled shots and club choices. This number is huge when looking at the number of holes, number of shots possible on the holes and the number of shots available. However, when adding the directional deviation, a continuous interval, into the mix, the possible states that the agent can end up in becomes a continuous space instead. This might affect how well the agent is capable of learning, especially given the same time frame of 50000 episodes as the Dueling DDQN agent.
+
+The learning graphs in \autoref{fig:training_plots} further showcase the added complexity when introducing direction. For the Dueling DDQN agent, the plots trend downwards from the start. The MP-DQN agent plots not only start at a higher score, but also trend upwards before the agents start learning information. This showcases that the MP-DQN agents need to explore more before actually learning something about the problem. It is therefore possible that a suboptimal solution is found due to the lack of extra training compared to the Dueling DDQN agent.
+
+A clear example of where this added complexity could have affected the agent is through the MP-DQN agent's usage of the 35 on Pebble Beach. When looking in \autoref{fig:MPDQN_pebble_club_choice_confusion}, it is shown that the agent uses the 35 for many of its third shots. This most likely stems from good initial club choices, but sampling problems that caused it to end up just outside the finishing range of 30m. However, when looking at the directional deviations with the 35 on Pebble Beach in \autoref{fig:MPDQN_pebble_direction_choices}, it is shown that the agent aims almost as far right as it can for all shots. When looking at the shot data in \autoref{fig:35_shots} and \autoref{fig:shot_data_angle}, it is shown that the shots are not even close to needing that much of a directional deviation to end up close to the hole. Unless there are obstacles in the way, this is clearly a suboptimal choice, but the areas around the green are usually cleared from obstacles. This result could therefore stem from the lack of exploration performed by the agent in these types of states, due to them rarely occurring, with even more complexity of having to learn the direction as well. 
+
+One example where the MP-DQN agent should outperform the Dueling DDQN agent is par three holes. In general, only one shot is needed to reach a terminal state on a par three. As such, both agents should quickly realize which club is the optimal choice on the hole. Furthermore, the MP-DQN agent should be able to determine the directional deviation required to get the ball close to the hole. However, when looking at the results in \autoref{tab:pebble_average_results} and \autoref{tab:ullna_average_results}, this is not clearly the case. Only on the third hole at Ullna GC does the MP-DQN agent improve in all regards compared to the Dueling DDQN agent. Moreover, when looking at the histograms in \autoref{fig:pebble_histograms} it is shown that the MP-DQN agent has the worst distance distribution of all holes on the par three fifth hole on Pebble Beach. This is further added upon with the fact that the only significantly worse result was the distance remaining for the MP-DQN agent on Pebble Beach, and this was with a large effect size. 
+
+One possible explanation to the above results is the definition of the scoring function. The distance remaining is never more important than the number of shots, and the MP-DQN agent could have learned to utilize its directional choices in terms of that. For instance, a water hazard on a hole can affect the number of shots due to penalty strokes incurred when hitting into it. The MP-DQN agent might therefore have come to the conclusion that it is smarter to deviate enough such that the hazards are not in play than deviate enough so that the distance remaining is minimized. This might in turn have come at the cost that the distance remaining is increased in order to make sure the number of shots is as low as possible. 
+
+The above explanation is backed up by the results from the seventh hole on Pebble Beach. As is seen in \autoref{fig:pebble_histograms}, the distance remaining is increased for the MP-DQN agent compared to the Dueling DDQN agent, but the number of shots needed is decreased. However, the opposite is true for the fifth hole on Ullna GC, as is shown in \autoref{fig:ullna_histograms}. It could therefore be the case that these results also stem from the added complexity of the problem.
+
+Finally, one possible reason for why the MP-DQN agent did not outperform the Dueling DDQN agent could be the fact that the shot data generally was straight. Most average offline angles were not large, as shown in \autoref{fig:shot_data_angle}. Since the Dueling DDQN always aims straight towards the target line, and the data generally was pretty straight, there might not have been much room for improvement for the MP-DQN agent. The difference could have been much larger with data with greater systematic misses in some direction.
+
+Given the results when considering agents only trained and evaluated on one course, it is interesting to discuss how well the agents generalize to other courses. For instance, how well does an agent trained on one or more courses play on an unseen course, or how well does an agent trained on several courses play on a course it has been trained on? A few tests were actually performed to look into these questions, but were excluded from the thesis to keep it clean in regards to the research question. Instead, the findings are briefly discussed here.
+
+The tests looked into how well an agent trained on three courses played on the unseen course Ullna GC as well as the seen course Pebble Beach. They also looked into how well the agent trained on Pebble Beach played on Ullna GC. On all courses evaluated, the agents played significantly worse than the golfer. This indicates that the agents used in this paper overfit to the courses trained on. However, it should be noted that the agents tested on novel courses were trained for 50000 episodes as well. This could have affected the results. For instance, the agent trained on multiple courses may not have had the time to learn features from all courses. It might therefore have been possible for the agent to improve its performance on Pebble Beach with more training. Thus, more research would be required to determine how well a reinforcement learning agent can learn how to play golf in general.
+
+As a final discussion point, it is interesting to talk about the complexity of the variable hybrid action space. As has already been mentioned, most reinforcement learning papers have dealt with either discrete or continuous problems, and in most cases these have been static. That is, the available actions do not change depending on the state. It is therefore not inherently clear how to best approach more complex action spaces. This was the case when implementing the agents in this thesis. As mentioned in \autoref{chapter:methods}, the agents were punished when choosing the DR in an illegal state and sent back to that state again. Before this method was tested, a filtering technique and mapping technique were tested. The former simply made sure the advantage value of the DR was the lowest of all club choices when choosing an action, rendering it impossible to pick that club, and when exploring, the DR was removed from the possible choices. The latter remapped the DR to the 3W when chosen in an illegal state, due to the similarities between the two clubs. 
+
+For both of these approaches, the agents actually performed worse than agents where the DR could be used for every shot and agents where the DR could never be used. This clearly indicated that the approaches caused the agents to learn suboptimal policies. It is hard to determine why this was the case, and no rigorous analysis was performed to figure out why. It could be that the techniques were not part of the learning process but simply acted as an extra layer of filtering. The agents could therefore not learn how the DR could be used, which caused a suboptimal choice to be made in its stead. Regardless of the reasons behind the performances of various approaches, this was an important lesson learned when working with complex action spaces.
+
+\section{Societal and Ethical Aspects}
+Whenever research is conducted, it is necessary to ask what the impact of the research will be on society. Even though there are good intentions behind the work, ideas can be twisted into something malicious instead. This section therefore deals with how this thesis' research will impact the world.
+
+As mentioned in \autoref{chapter:introduction}, the work in this thesis can be used to figure out how to use reinforcement learning to help golfers improve their game, which can make coaching more accessible to golfers. However, it may also act as a device that does too much for the golfer. For instance, if the technology presented in this paper is improved upon such that it is usable on a golf course, then a golfer could get assistance for almost every shot they hit. Is it then really the golfer that is playing? Some may consider the use of this technology as cheating, and this might in turn be detrimental to the game.
+
+The above problem might happen, but when compared to other aspects of golf most likely will not impact the state of the game much. First of all, the governing bodies of golf would most likely set rules in place for when this type of technology could be used, such as banning it from competition play. This is in line with similar technologies that can assist golfers on the course, such as slope measuring tools. Secondly, golf is a sport where competition is mainly against oneself. During non-competition rounds the only person to cheat against is oneself, so the use of the technologies presented in this thesis would not affect others, but be a choice each golfer has to make. As a final remark, professional golfers utilize caddies during competition. These do not only carry the clubs of the golfer, but also figure out distances, and help golfers in their club and shot choices. If the professionals are allowed help, then it might not be unreasonable to allow amateurs the same help as well.
+
+Another ethical aspect to this research is the problem of not exactly knowing how the agents work. This is a general problem with the use of neural networks, since the information found in the networks is not easily visualized such that humans can comprehend it. Because of this problem, it can be believed that the agents work as expected, without knowing about specific cases where the agents might act irrationally. In the case of the work presented in this thesis, the consequences might not be big; the agent will play a hole of golf suboptimally. However, if this research is expanded into other fields, the consequences may be more dire. For instance, what if robots learn how to perform surgical incisions using data from human surgeons? If there is not full knowledge about the agent, there is always a risk of it performing an incision that might cost the life of a patient. The implementations of this technology must therefore be rigorously tested before put in production.
+
+\section{Limitations}
+In this section, the limitations of this thesis are presented and discussed. The reasons behind these limitations are mentioned, and how these limitations affected the results is described.
+
+As has already been mentioned above, one possible contributor to the results is the lack of data available. This is true both in regards to the golfer the data was gathered from, but also the lack of data from other golfers. First of all, the number of rounds might have been too low to accurately portray how well the golfer played. The significance of the results could therefore be wrong, and the analysis of the results could be skewed. However, the analysis also touches upon other aspects, so it is not necessarily the case that the results are invalid.
+
+The lack of data from other golfers also affected the analysis because it made it hard to determine how skill level affects the performance of the agents. As mentioned above, the agents might play better than more inexperienced golfers. There is however no way of testing this in this thesis due to the lack of data. 
+
+Both these problems were caused due to the lack of time when gathering data. Each data gathering occasion took three hours to complete, and there was a cost to use the facility for gathering the data. It was therefore not feasible for the scope of this paper to gather more data.
+
+The lack of time was also present in other parts of the thesis. Training the agents was very time consuming, which made it hard to test different approaches. 50000 episodes of training took around 14 hours to complete and since time was limited for this project, this resulted in only some configurations being tested. For instance, training the agents for a significantly longer time than 50000 episodes was not possible. Furthermore, there was no time to perform a rigorous parameter tuning, and instead estimates utilizing the literature available was used. Finally, the option to try different scoring functions, or even different algorithms, was severely limited because of this lack of time.
+
+The effects of the lack of time could be that the agents got stuck in local optimums in terms of the scoring function. It could have been possible for the agents to perform better had they been able to train for a longer time, or train with different configurations. 
+
+A final limitation is the golfer from which the data was gathered from. Given the time and accuracy needed for the gathering process, a colleague was used. To maintain the accuracy of the data, the gathering process was slow and could therefore not be performed using an unknown test subject. There is therefore a potential bias in the data from the golfer knowing the purpose of the various data gathering components. 
+
+\section{Future Research}
+In this section, future research related to that of this paper is discussed. Research directly related to the work in this paper is touched upon, and other similar topics are explored.
+
+From the discussion about the results and limitations, it is clear that further research could be done within this specific topic if given more data to work with. More data from the same person would help clarify the agents' performance compared to the golfer's, and more data from other people would determine how well the agent's play in general compared to humans. It is also clear that the results could be investigated further by looking at the training time. Future research could try using better hardware or longer training times to see how that affects the agents' performance, and if that could reduce the risk of finding a local optimum compared to a global one.
+
+The discussions from the previous sections in this chapter also talked about how other methods could be used. It would be worthwhile to investigate how changing the weight of the distance remaining in the scoring function affects the results of the agents. Furthermore, it would be interesting to see if other factors could yield an even better result. For instance, one could investigate a scoring function that takes into account the terrain the ball ends up in when calculating the punishment, i.e. giving a worse score if the agent is in the rough compared to the fairway. 
+
+Another interesting research topic would be to compare the reinforcement learning agents not only to the golfer, but to other types of agents too. For instance, a deterministic rule based agent could be interesting to implement. This type of agent has the benefit of not needing any training time. However, it would require more implementation time in order to figure out how to handle different states. The comparison is therefore interesting, since it provides a trade-off that might be viewed differently depending on the implementer.
+
+As has been mentioned in this paper, one use case of the agents would be to act as a helper to the golfer they have used data from. However, this thesis only looked into the feasibility of using reinforcement learning to teach artificial agents to play golf, and no experiments were performed to see if the agents can help golfers improve their game. This would therefore be an interesting topic to research. However, more investigation into the feasibility of the agents, as mentioned above, is most likely needed since there was no significant performance difference found. 
+
+Instead of looking into how the agents can help golfers, it could be researched if the agents are useful as opponents to the golfer. The agents trained in this paper managed to play on a similar level to the golfer and could therefore act as opponents when playing. It would be interesting to see if golfers would find these opponents reasonable to play against.
+
+Finally, one can look at the general problem instead of the golf specific variant. In this thesis, a reinforcement learning approach was applied to a problem in which data was provided to the agents to limit and personalize them. This can be provided in many other contexts. For instance, other sports could be tested, such as baseball, bowling or cricket. This would require the agent to receive some representative data from the players and a definition of how to simulate the sport. Another example is robot workers replacing human tasks and utilizing data from humans to learn how these tasks can be executed. Similar conditions as with the sports would be needed here as well. Investigating how well reinforcement learning agents act in these types of environments would not only yield a better understanding of the problem and how it can be solved in general, but probably also give more insight about complex action and state spaces.
 
 \chapter{Conclusions}
+\label{chapter:conclusions}
+In this thesis, reinforcement learning agents limited by human data have been trained and evaluated on playing golf in order to determine how well they play compared to the golfer whose data they have been limited on. This was done because of the potential use cases of reinforcement learning agents as tutors on how to improve, for this and similar problems.
 
+Specifically, a Dueling Double Deep Q Network agent and a Multipass Deep Q Network agent were implemented for the above mentioned purpose. These agents could play holes of golf by choosing clubs to hit. The latter of the two agents could also choose the direction to hit in. These actions sampled a shot gathered from a golfer with the chosen club, that was then input into a simulated golf environment. 
 
-% Print the bibliography (and make it appear in the table of contents)
+The agents were trained on 50000 holes on two courses, Pebble Beach and Ullna GC. These courses were also used for evaluation, and the results from the agents were compared to the golfer's performance on the courses. The results showcased no statistical significance between either agent and the golfer in terms of the score on each hole.
+
+It was concluded that the results showcase that reinforcement learning agents are at least able to perform on a similar level as a golfer. However, there were no indications that they could not be able to perform better, and several reasons as to why they did not were discussed. Two main components were the lack of data available and the lack of time during the scope of the thesis. The former made it difficult to determine the confidence of the golfer's results, which could have made the comparison between the agents and the golfer inaccurate. The latter made it difficult to test several approaches, and could also have affected the agents' performance due to them reaching local optimums in terms of the scoring function instead of global optimums. Another discussed factor was the complexity of the problem, which not only included a large state space but also a complex action space. This complexity could have affected the agents when reaching states they had not explored much, causing outlier results of poor quality. It could also explain why the directional agent did not perform better than the non-directional one.
+
+The agents were able to play on a similar level as the golfer, even though they were limited on training time, even though the data available was limited and even though the problem was complex. By putting more research into this problem and investigating longer training times, better data and other scoring functions, it is possible to generalize the results of this thesis, potentially giving way to an agent capable of playing better than a golfer it has gotten data from. To conclude this thesis, it is therefore clear there is potential in using reinforcement learning to play golf with an agent limited by human data.
+
 \printbibliography[heading=bibintoc]
 
 \appendix
@@ -1076,118 +1111,6 @@ In \autoref{tab:MPDQN_ullna_direction_choices}, the average directional choices 
     \label{fig:MPDQN_pebble_club_choice_confusion}
 \end{figure}
 
-\chapter{MP-DQN Pebble Beach Directions}
-\label{app:mpdqn_pebble_direction_choices}
-\begin{figure}
-    \centering
-    \begin{subfigure}{0.4\textwidth}
-    \centering
-    \includegraphics[width=\textwidth]{AgentDirectionChoices/MPDQN_Pebble_Direction_Choices_DR.png} 
-    \caption{The DR.}
-    \label{fig:DR_pebble_deviation}
-    \end{subfigure}
-    \begin{subfigure}{0.4\textwidth}
-    \centering
-    \includegraphics[width=\textwidth]{AgentDirectionChoices/MPDQN_Pebble_Direction_Choices_3W.png} 
-    \caption{The 3W.}
-    \label{fig:3W_pebble_deviation}
-    \end{subfigure}
-    \begin{subfigure}{0.4\textwidth}
-    \centering
-    \includegraphics[width=\textwidth]{AgentDirectionChoices/MPDQN_Pebble_Direction_Choices_4I.png} 
-    \caption{The 4I.}
-    \label{fig:4I_pebble_deviation}
-    \end{subfigure}
-    \begin{subfigure}{0.4\textwidth}
-    \centering
-    \includegraphics[width=\textwidth]{AgentDirectionChoices/MPDQN_Pebble_Direction_Choices_5I.png} 
-    \caption{The 5I.}
-    \label{fig:5I_pebble_deviation}
-    \end{subfigure}
-    \caption{Directional deviations by the MP-DQN agent on Pebble Beach. The brighter colours are closer to the average deviation.}
-\end{figure}
-
-\begin{figure}
-    \centering
-    \begin{subfigure}{0.4\textwidth}
-    \centering
-    \includegraphics[width=\textwidth]{AgentDirectionChoices/MPDQN_Pebble_Direction_Choices_6I.png} 
-    \caption{The 6I.}
-    \label{fig:6I_pebble_deviation}
-    \end{subfigure}
-    \begin{subfigure}{0.4\textwidth}
-    \centering
-    \includegraphics[width=\textwidth]{AgentDirectionChoices/MPDQN_Pebble_Direction_Choices_8I.png} 
-    \caption{The 8I.}
-    \label{fig:8I_pebble_deviation}
-    \end{subfigure}
-    \begin{subfigure}{0.4\textwidth}
-    \centering
-    \includegraphics[width=\textwidth]{AgentDirectionChoices/MPDQN_Pebble_Direction_Choices_9I.png} 
-    \caption{The 9I.}
-    \label{fig:9I_pebble_deviation}
-    \end{subfigure}
-    \begin{subfigure}{0.4\textwidth}
-    \centering
-    \includegraphics[width=\textwidth]{AgentDirectionChoices/MPDQN_Pebble_Direction_Choices_PW.png} 
-    \caption{The PW.}
-    \label{fig:PW_pebble_deviation}
-    \end{subfigure}
-    \caption{Directional deviations by the MP-DQN agent on Pebble Beach. The brighter colours are closer to the average deviation.}
-\end{figure}
-
-\begin{figure}
-    \centering
-    \begin{subfigure}{0.4\textwidth}
-    \centering
-    \includegraphics[width=\textwidth]{AgentDirectionChoices/MPDQN_Pebble_Direction_Choices_GW.png} 
-    \caption{The GW.}
-    \label{fig:GW_pebble_deviation}
-    \end{subfigure}
-    \begin{subfigure}{0.4\textwidth}
-    \centering
-    \includegraphics[width=\textwidth]{AgentDirectionChoices/MPDQN_Pebble_Direction_Choices_SW.png} 
-    \caption{The SW.}
-    \label{fig:SW_pebble_deviation}
-    \end{subfigure}
-    \begin{subfigure}{0.4\textwidth}
-    \centering
-    \includegraphics[width=\textwidth]{AgentDirectionChoices/MPDQN_Pebble_Direction_Choices_LW.png} 
-    \caption{The LW.}
-    \label{fig:LW_pebble_deviation}
-    \end{subfigure}
-    \begin{subfigure}{0.4\textwidth}
-    \centering
-    \includegraphics[width=\textwidth]{AgentDirectionChoices/MPDQN_Pebble_Direction_Choices_65.png} 
-    \caption{The 65.}
-    \label{fig:65_pebble_deviation}
-    \end{subfigure}
-    \caption{Directional deviations by the MP-DQN agent on Pebble Beach. The brighter colours are closer to the average deviation.}
-\end{figure}
-
-\begin{figure}
-    \centering
-    \begin{subfigure}{0.4\textwidth}
-    \centering
-    \includegraphics[width=\textwidth]{AgentDirectionChoices/MPDQN_Pebble_Direction_Choices_55.png} 
-    \caption{The 55.}
-    \label{fig:55_pebble_deviation}
-    \end{subfigure}
-    \begin{subfigure}{0.4\textwidth}
-    \centering
-    \includegraphics[width=\textwidth]{AgentDirectionChoices/MPDQN_Pebble_Direction_Choices_45.png} 
-    \caption{The 45.}
-    \label{fig:45_pebble_deviation}
-    \end{subfigure}
-    \begin{subfigure}{0.4\textwidth}
-    \centering
-    \includegraphics[width=\textwidth]{AgentDirectionChoices/MPDQN_Pebble_Direction_Choices_35.png} 
-    \caption{The 35.}
-    \label{fig:35_pebble_deviation}
-    \end{subfigure}
-    \caption{Directional deviations by the MP-DQN agent on Pebble Beach. The brighter colours are closer to the average deviation.}
-\end{figure}
-
 \chapter{Ullna GC Histograms}
 \label{app:ullna_histograms}
 \begin{figure}
@@ -1292,124 +1215,6 @@ In \autoref{tab:MPDQN_ullna_direction_choices}, the average directional choices 
     \end{subfigure}
     \caption{Confusion matrices indicating how often clubs were chosen by the MP-DQN agent for the first, second and third shot on a given hole at Ullna GC. Only the first three shots are shown because most of the holes played were completed within this shot range.}
     \label{fig:MPDQN_ullna_club_choice_confusion}
-\end{figure}
-
-\chapter{MP-DQN Ullna GC Directions}
-\label{app:mpdqn_ullna_direction_choices}
-\begin{figure}
-    \centering
-    \begin{subfigure}{0.4\textwidth}
-    \centering
-    \includegraphics[width=\textwidth]{AgentDirectionChoices/MPDQN_Ullna_Direction_Choices_DR.png} 
-    \caption{The DR.}
-    \label{fig:DR_ullna_deviation}
-    \end{subfigure}
-    \begin{subfigure}{0.4\textwidth}
-    \centering
-    \includegraphics[width=\textwidth]{AgentDirectionChoices/MPDQN_Ullna_Direction_Choices_3W.png} 
-    \caption{The 3W.}
-    \label{fig:3W_ullna_deviation}
-    \end{subfigure}
-    \begin{subfigure}{0.4\textwidth}
-    \centering
-    \includegraphics[width=\textwidth]{AgentDirectionChoices/MPDQN_Ullna_Direction_Choices_4I.png} 
-    \caption{The 4I.}
-    \label{fig:4I_ullna_deviation}
-    \end{subfigure}
-    \begin{subfigure}{0.4\textwidth}
-    \centering
-    \includegraphics[width=\textwidth]{AgentDirectionChoices/MPDQN_Ullna_Direction_Choices_5I.png} 
-    \caption{The 5I.}
-    \label{fig:5I_ullna_deviation}
-    \end{subfigure}
-    \caption{Directional deviations by the MP-DQN agent on Ullna GC. The brighter colours are closer to the average deviation.}
-\end{figure}
-
-\begin{figure}
-    \centering
-    \begin{subfigure}{0.4\textwidth}
-    \centering
-    \includegraphics[width=\textwidth]{AgentDirectionChoices/MPDQN_Ullna_Direction_Choices_6I.png} 
-    \caption{The 6I.}
-    \label{fig:6I_ullna_deviation}
-    \end{subfigure}
-    \begin{subfigure}{0.4\textwidth}
-    \centering
-    \includegraphics[width=\textwidth]{AgentDirectionChoices/MPDQN_Ullna_Direction_Choices_7I.png} 
-    \caption{The 7I.}
-    \label{fig:7I_ullna_deviation}
-    \end{subfigure}
-    \begin{subfigure}{0.4\textwidth}
-    \centering
-    \includegraphics[width=\textwidth]{AgentDirectionChoices/MPDQN_Ullna_Direction_Choices_8I.png} 
-    \caption{The 8I.}
-    \label{fig:8I_ullna_deviation}
-    \end{subfigure}
-    \begin{subfigure}{0.4\textwidth}
-    \centering
-    \includegraphics[width=\textwidth]{AgentDirectionChoices/MPDQN_Ullna_Direction_Choices_9I.png} 
-    \caption{The 9I.}
-    \label{fig:9I_ullna_deviation}
-    \end{subfigure}
-    \caption{Directional deviations by the MP-DQN agent on Ullna GC. The brighter colours are closer to the average deviation.}
-\end{figure}
-
-\begin{figure}
-    \centering
-    \begin{subfigure}{0.4\textwidth}
-    \centering
-    \includegraphics[width=\textwidth]{AgentDirectionChoices/MPDQN_Ullna_Direction_Choices_PW.png} 
-    \caption{The PW.}
-    \label{fig:PW_ullna_deviation}
-    \end{subfigure}
-    \begin{subfigure}{0.4\textwidth}
-    \centering
-    \includegraphics[width=\textwidth]{AgentDirectionChoices/MPDQN_Ullna_Direction_Choices_GW.png} 
-    \caption{The GW.}
-    \label{fig:GW_ullna_deviation}
-    \end{subfigure}
-    \begin{subfigure}{0.4\textwidth}
-    \centering
-    \includegraphics[width=\textwidth]{AgentDirectionChoices/MPDQN_Ullna_Direction_Choices_SW.png} 
-    \caption{The SW.}
-    \label{fig:SW_ullna_deviation}
-    \end{subfigure}
-    \begin{subfigure}{0.4\textwidth}
-    \centering
-    \includegraphics[width=\textwidth]{AgentDirectionChoices/MPDQN_Ullna_Direction_Choices_LW.png} 
-    \caption{The LW.}
-    \label{fig:LW_ullna_deviation}
-    \end{subfigure}
-    \caption{Directional deviations by the MP-DQN agent on Ullna GC. The brighter colours are closer to the average deviation.}
-\end{figure}
-
-\begin{figure}
-    \centering
-    \begin{subfigure}{0.4\textwidth}
-    \centering
-    \includegraphics[width=\textwidth]{AgentDirectionChoices/MPDQN_Ullna_Direction_Choices_65.png} 
-    \caption{The 65.}
-    \label{fig:65_ullna_deviation}
-    \end{subfigure}
-    \begin{subfigure}{0.4\textwidth}
-    \centering
-    \includegraphics[width=\textwidth]{AgentDirectionChoices/MPDQN_Ullna_Direction_Choices_55.png} 
-    \caption{The 55.}
-    \label{fig:55_ullna_deviation}
-    \end{subfigure}
-    \begin{subfigure}{0.4\textwidth}
-    \centering
-    \includegraphics[width=\textwidth]{AgentDirectionChoices/MPDQN_Ullna_Direction_Choices_45.png} 
-    \caption{The 45.}
-    \label{fig:45_ullna_deviation}
-    \end{subfigure}
-    \begin{subfigure}{0.4\textwidth}
-    \centering
-    \includegraphics[width=\textwidth]{AgentDirectionChoices/MPDQN_Ullna_Direction_Choices_35.png} 
-    \caption{The 35.}
-    \label{fig:35_ullna_deviation}
-    \end{subfigure}
-    \caption{Directional deviations by the MP-DQN agent on Ullna GC. The brighter colours are closer to the average deviation.}
 \end{figure}
 
 \chapter{Miscellaneous}
