@@ -68,13 +68,34 @@ The methods used in the above mentioned examples are all based on reinforcement 
 As can be seen from above, reinforcement learning is capable of creating well performing agents for various games. It is therefore interesting to investigate if this approach could be utilized to create an agent for the game of golf, since golf is easily adaptable to a reinforcement learning problem in that the agent will hit golf shots (the actions) on a golf course (the environment) such that it minimizes the number of strokes performed (the penalty). Furthermore, it is interesting to see if an artificial agent could learn how to utilize data from golf shots when playing. If that is the case, then real golfers' data could be used with the agent, resulting in the agent being able to show the golfers how their data can improve their game. If successful, this could then be generalized to other areas of a similar kind, such as basketball players trying to throw balls into hoops, or robots trying to learn tasks utilizing human data.
 
 \section{Research Question}
-
+Given the description above, the research question investigated in this thesis is the following:
+\begin{quote}
+    How well does a reinforcement learning agent, limited by shot data from a golfer, play golf compared to the golfer whose data it uses?
+\end{quote}
+This research question entails implementing a reinforcement learning agent capable of playing golf. Furthermore, this agent must be limited by shot data from a golfer. That is, the actions of the agent will be dependent on the shots from a golfer. Finally, the question requires a comparison between the golfer and the agent in regards to playing golf. 
 
 \section{Purpose}
+This thesis investigates the feasibility of training reinforcement learning agents to play golf. This is, as mentioned above, useful for several reasons. First of all, an agent capable of playing better than the golfer whose data it is limited by knows more about the golfer's shot data than the golfer. This allows the agent to be used as a learning tool to help golfers improve their game. This can not only help golfers minimize the costs from taking lessons but might also be useful for trainers when teaching.
+
+Looking with a broader perspective, the purpose of this thesis is also to investigate the usability of reinforcement learning in general. Papers such as \textcite{mnih2015human} showcase that it is possible to create agents capable of performing tasks on a high level, but these tasks are still specific to certain environments. The results in this thesis may generalize these results by not only showcasing how well an agent can play golf, but also looking into how reinforcement learning can be combined with human data. This latter reason can in turn provide insight into other similar problems, where reinforcement learning has not yet been attempted. 
 
 \section{Scope}
+While the end goal of the work in this thesis is to have agents that can act as learning tools for golfers, this goal is outside of the scope of this thesis. The first step towards this goal is to look into the feasibility of using reinforcement learning agents for the problem of golf, and that is what is investigated in this paper.
+
+The term reinforcement learning is a broad one. For the scope of this thesis, two types of reinforcement learning algorithms are implemented and tested, the Dueling Double Deep Q Network algorithm presented in \textcite{wang2015dueling} and the Multipass Deep Q Network algorithm presented in \textcite{bester2019mpdqn}. These algorithms were chosen because they fit well to the problem of golf. This will be explained further in \autoref{chapter:background} and \autoref{chapter:methods}.
+
+Just like with reinforcement learning, the term golf is also broad. For the scope of this thesis, the agents will be trained, evaluated and compared with the golfer on two golf courses: Pebble Beach and Ullna GC. These courses were chosen because of them being the courses that data was gathered from by a golfer. 
 
 \section{Disposition}
+In \autoref{chapter:background}, information necessary for the understanding of this paper is presented. This chapter includes information about golf, neural networks, as well as reinforcement learning. It also provides some insight into work related to this paper.
+
+In \autoref{chapter:methods}, the methods used to answer the research question are showcased. The tools needed to train the reinforcement learning agent are presented, and how the agents were implemented, trained and evaluated is described. Moreover, the data gathering process from a golfer is touched upon.
+
+In \autoref{chapter:results}, the results from the data gathering process as well as the evaluation of the reinforcement learning agents implemented is presented. The agents are compared to the golfer and statistical tests are performed to determine the significance of the results. 
+
+In \autoref{chapter:discussion}, the results are analyzed to draw conclusions regarding the research question. Moreover, limitations on this thesis are presented and discussed, and future research is touched upon.
+
+Finally, in \autoref{chapter:conclusions}, the conclusions drawn from \autoref{chapter:discussion} are summarized.
 
 \chapter{Background}
 \label{chapter:background}
@@ -94,12 +115,12 @@ Aside from the existence of one or several tee boxes and a green, the holes on a
     \item Pathways - man made paths used for walking or driving golf carts on.
     \item Out of bounds - areas outside the course. It is not allowed to play from these areas.
 \end{itemize}
-An example of a golf hole can be found in \autoref{fig:golfhole}.\footnote{\url{https://www.reigatehillgolfclub.co.uk/assets/img/holes/hole1/hole1.jpg} (Accessed 2020-01-28)}
+An example of a golf hole can be found in \autoref{fig:golfhole}.\footnote{\url{https://en.wikipedia.org/wiki/File:Golf_field.svg} under the Creative Commons license (Accessed 2020-04-15).}
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.4\textwidth]{golfhole.jpg}
-    \caption{An example of a golf hole as seen from above. The tee boxes are marked with white, yellow and red. The hole contains a fairway, rough, native areas, water hazards, pathways, bunkers surrounding the green, as well as an out of bounds area (marked with OoB).}
+    \includegraphics[width=0.4\textwidth]{golffield.png}
+    \caption{An example of a golf hole as seen from above. The tee box is labelled with a 1 and the green with an 8. The hole contains a fairway (7), rough (3), native areas, water hazards (2, 6), bunkers (5), as well as an out of bounds area (4).}
     \label{fig:golfhole}
 \end{figure}
 
@@ -153,12 +174,12 @@ In order to achieve the general function approximation, a deep network architect
 \label{eq:relu}
 f(x) = max(x, 0)
 \end{equation}
-For a visual representation of a deep neural network, see \autoref{fig:dnn}\footnote{\url{https://miro.medium.com/max/2636/1*3fA77_mLNiJTSgZFhYnU0Q.png} (Accessed 2020-02-07)}.
+For a visual representation of a deep neural network, see \autoref{fig:dnn}\footnote{\url{https://commons.wikimedia.org/wiki/File:Neural_network.svg} under the Creative Commons license (Accessed 2020-04-15)}.
 
 \begin{figure}
 \centering
 \includegraphics[width=0.75\textwidth]{dnn.png}
-\caption{A representation of a deep neural network. The input layer takes the data and feeds it forward in the network to get an output from the output layer. Each dot represents a neuron, and each arrow represents the neurons' output computations, including the weight and bias modification as described in \autoref{eq:weightsandbiases} and the activation function.}
+\caption{A representation of a deep neural network. The input layer (green) takes the data and feeds it forward in the network to get an output from the output layer (yellow). Each dot represents a neuron, and each line represents the neurons' output computations, including the weight and bias modification as described in \autoref{eq:weightsandbiases} and the activation function.}
 \label{fig:dnn}
 \end{figure}
 
@@ -233,7 +254,7 @@ A relevant function to the above defined functions is the advantage function, de
 A_\pi(s,a) = Q_\pi(s,a) - V_\pi(s)
 \end{equation}
 
-For an illustration of how the above mentioned components interact with each other, see \autoref{fig:reinforcementlearning}\footnote{\url{https://www.kdnuggets.com/images/reinforcement-learning-fig1-700.jpg} (Accessed 2020-02-07)}.
+For an illustration of how the above mentioned components interact with each other, see \autoref{fig:reinforcementlearning}\footnote{\url{https://commons.wikimedia.org/wiki/File:Markov_diagram_v2.svg} under the Creative Commons license (Accessed 2020-04-15)}.
 
 \begin{figure}
 \centering
@@ -312,14 +333,7 @@ Y_t^{DDQN} = R_t + \gamma \cdot Q(s_{t+1}, argmax_aQ(s_{t+1}, a;\theta_t);\theta
 \subsubsection{Dueling Deep Q-learning}
 In \textcite{wang2015dueling}, a new variant of a deep Q-learning algorithm called the Dueling DQN algorithm is presented. This algorithm utilizes the DDQN algorithm with a new network architecture specifically designed for reinforcement learning problems. 
 
-The network architecture of the Dueling DQN algorithm consists of a general feature learning module which is then split into two streams; one for generating the state-value (as defined in \autoref{eq:statevalue}) and one for generating the advantages of all actions (as defined in \autoref{eq:advantage}). These streams are then combined to generate an estimate of the Q function, used by the DDQN algorithm. See \autoref{fig:duelingdqn} for a comparison between the normal DQN architecture and the dueling variant.
-
-\begin{figure}
-\centering
-\includegraphics[width=0.75\textwidth]{duddqn.png}
-\caption{A comparison of the network architecture described in \textcite{mnih2015human} (top) and the dueling architecture of \textcite{wang2015dueling} (bottom). The dueling architecture utilizes two streams, one for calculating the state-value and one for calculating the advantages for all actions, which are then combined into Q-value estimates. \parencite{wang2015dueling}}
-\label{fig:duelingdqn}
-\end{figure}
+The network architecture of the Dueling DQN algorithm consists of a general feature learning module which is then split into two streams; one for generating the state-value (as defined in \autoref{eq:statevalue}) and one for generating the advantages of all actions (as defined in \autoref{eq:advantage}). These streams are then combined to generate an estimate of the Q function, used by the DDQN algorithm.
 
 The key insight with this above mentioned architecture is that in some states, there is no need to estimate the action values for all actions. For instance, in a car racing simulation, the steering actions are generally irrelevant when the car is travelling down a straight road. By separating the estimates into two streams, this allows for the algorithm to more quickly learn the correct actions for each state. \parencite{wang2015dueling}
 
@@ -877,13 +891,13 @@ Finally, one can look at the general problem instead of the golf specific varian
 
 \chapter{Conclusions}
 \label{chapter:conclusions}
-In this thesis, reinforcement learning agents limited by human data have been trained and evaluated on playing golf in order to determine how well they play compared to the golfer whose data they have been limited on. This was done because of the potential use cases of reinforcement learning agents as tutors on how to improve, for this and similar problems.
+In this thesis, reinforcement learning agents limited by human data have been trained and evaluated on playing golf in order to determine how well they play compared to the golfer whose data they have been limited on. This was done because of the potential use cases of reinforcement learning agents as tutors on how to improve, for both this and similar problems.
 
 Specifically, a Dueling Double Deep Q Network agent and a Multipass Deep Q Network agent were implemented for the above mentioned purpose. These agents could play holes of golf by choosing clubs to hit. The latter of the two agents could also choose the direction to hit in. These actions sampled a shot gathered from a golfer with the chosen club, that was then input into a simulated golf environment. 
 
 The agents were trained on 50000 holes on two courses, Pebble Beach and Ullna GC. These courses were also used for evaluation, and the results from the agents were compared to the golfer's performance on the courses. The results showcased no statistical significance between either agent and the golfer in terms of the score on each hole.
 
-It was concluded that the results showcase that reinforcement learning agents are at least able to perform on a similar level as a golfer. However, there were no indications that they could not be able to perform better, and several reasons as to why they did not were discussed. Two main components were the lack of data available and the lack of time during the scope of the thesis. The former made it difficult to determine the confidence of the golfer's results, which could have made the comparison between the agents and the golfer inaccurate. The latter made it difficult to test several approaches, and could also have affected the agents' performance due to them reaching local optimums in terms of the scoring function instead of global optimums. Another discussed factor was the complexity of the problem, which not only included a large state space but also a complex action space. This complexity could have affected the agents when reaching states they had not explored much, causing outlier results of poor quality. It could also explain why the directional agent did not perform better than the non-directional one.
+It was concluded that the results showed that reinforcement learning agents are at least able to perform on a similar level as a golfer. However, there were no indications that they could not be able to perform better, and several reasons as to why they did not were discussed. Two main components were the lack of data available and the lack of time during the scope of the thesis. The former made it difficult to determine the confidence of the golfer's results, which could have made the comparison between the agents and the golfer inaccurate. The latter made it difficult to test several approaches, and could also have affected the agents' performance due to them reaching local optimums in terms of the scoring function instead of global optimums. Another discussed factor was the complexity of the problem, which not only included a large state space but also a complex action space. This complexity could have affected the agents when reaching states they had not explored much, causing outlier results of poor quality. It could also explain why the directional agent did not perform better than the non-directional one.
 
 The agents were able to play on a similar level as the golfer, even though they were limited on training time, even though the data available was limited and even though the problem was complex. By putting more research into this problem and investigating longer training times, better data and other scoring functions, it is possible to generalize the results of this thesis, potentially giving way to an agent capable of playing better than a golfer it has gotten data from. To conclude this thesis, it is therefore clear there is potential in using reinforcement learning to play golf with an agent limited by human data.
 
