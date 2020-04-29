@@ -53,7 +53,7 @@ To my family, for their continuous support that led me to this moment. To my sup
 
 %HOW TO CITE:
 %\parencite{ref} = [1]
-%\textcite{ref2} = Einstein [2]
+%\parencite{ref2} = Einstein [2]
 
 \chapter{Introduction}
 \label{chapter:introduction}
@@ -61,9 +61,9 @@ Golf is a sport in which a player attempts to hit a ball into a hole using clubs
 
 Even though swing and shot data is more easily accessible than before it is not always inherently clear how to use this data. Professional golfers as well as teachers usually know enough about golf swings to understand how their shot and swing data affects their results, and how to improve their game using it, but amateurs seldom have the time nor knowledge required to efficiently do so. This can be remedied by lessons from teachers, but lessons can become expensive since consistent updates are usually required for noticeable improvements. 
 
-In the past decade, there has been plenty of research done in the field of artificial intelligence for games. Specifically, the work done by Google DeepMind in \textcite{mnih2015human} showcased methods capable of exceeding human levels of play in several Atari games. This research caused much more work to be done in the field, and now there are artificial agents capable of beating 99.8\% of players in the immensely complex game StarCraft II \parencite{vinyals2019grandmaster}. 
+In the past decade, there has been plenty of research done in the field of artificial intelligence for games. Specifically, the work done by Google DeepMind in \parencite{mnih2015human} showcased methods capable of exceeding human levels of play in several Atari games. This research caused much more work to be done in the field, and now there are artificial agents capable of beating 99.8\% of players in the immensely complex game StarCraft II \parencite{vinyals2019grandmaster}. 
 
-The methods used in the above mentioned examples are all based on reinforcement learning. At its core, reinforcement learning is a method in which a so called agent learns how to perform a task in a given environment by observing the environment, performing actions, and analyzing the effects of those actions on the environment. By being punished or rewarded, the agent can learn which actions to take given a specific environment. Traditionally, these types of algorithms have worked for relatively simple environments, but the Dueling Q Network algorithm in \textcite{mnih2015human} showed that this is also possible in complex environments through the use of deep neural networks. This deep reinforcement learning has now been applied to several different types of problems, such as the Deep Deterministic Policy Gradient algorithm presented in \textcite{lillicrap2015continuous} for continuous action spaces, and is a baseline for the state of the art in this field.
+The methods used in the above mentioned examples are all based on reinforcement learning. At its core, reinforcement learning is a method in which a so called agent learns how to perform a task in a given environment by observing the environment, performing actions, and analyzing the effects of those actions on the environment. By being punished or rewarded, the agent can learn which actions to take given a specific environment. Traditionally, these types of algorithms have worked for relatively simple environments, but the Dueling Q Network algorithm in \parencite{mnih2015human} showed that this is also possible in complex environments through the use of deep neural networks. This deep reinforcement learning has now been applied to several different types of problems, such as the Deep Deterministic Policy Gradient algorithm presented in \parencite{lillicrap2015continuous} for continuous action spaces, and is a baseline for the state of the art in this field.
 
 As can be seen from above, reinforcement learning is capable of creating well performing agents for various games. It is therefore interesting to investigate if this approach could be utilized to create an agent for the game of golf, since golf is easily adaptable to a reinforcement learning problem in that the agent will hit golf shots (the actions) on a golf course (the environment) such that it minimizes the number of strokes performed (the penalty). Furthermore, it is interesting to see if an artificial agent could learn how to utilize data from golf shots when playing. If that is the case, then real golfers' data could be used with the agent, resulting in the agent being able to show the golfers how their data can improve their game. If successful, this could then be generalized to other areas of a similar kind, such as basketball players trying to throw balls into hoops, or robots trying to learn tasks utilizing human data.
 
@@ -77,12 +77,12 @@ This research question entails implementing a reinforcement learning agent capab
 \section{Purpose}
 This thesis investigates the feasibility of training reinforcement learning agents to play golf. This is, as mentioned above, useful for several reasons. First of all, an agent capable of playing better than the golfer whose data it is limited by knows more about the golfer's shot data than the golfer. This allows the agent to be used as a learning tool to help golfers improve their game. This can not only help golfers minimize the costs from taking lessons but might also be useful for trainers when teaching.
 
-Looking with a broader perspective, the purpose of this thesis is also to investigate the usability of reinforcement learning in general. Papers such as \textcite{mnih2015human} showcase that it is possible to create agents capable of performing tasks on a high level, but these tasks are still specific to certain environments. The results in this thesis may generalize these results by not only showcasing how well an agent can play golf, but also looking into how reinforcement learning can be combined with human data. This latter reason can in turn provide insight into other similar problems, where reinforcement learning has not yet been attempted. 
+Looking with a broader perspective, the purpose of this thesis is also to investigate the usability of reinforcement learning in general. Papers such as \parencite{mnih2015human} showcase that it is possible to create agents capable of performing tasks on a high level, but these tasks are still specific to certain environments. The results in this thesis may generalize these results by not only showcasing how well an agent can play golf, but also looking into how reinforcement learning can be combined with human data. This latter reason can in turn provide insight into other similar problems, where reinforcement learning has not yet been attempted. 
 
 \section{Scope}
 While the end goal of the work in this paper is to have agents that can act as learning tools for golfers, this goal is outside of the scope of this thesis. The first step towards this goal is to look into the feasibility of using reinforcement learning agents for the problem of golf, and that is what is investigated in this paper.
 
-The term reinforcement learning is a broad one. For the scope of this thesis, two types of reinforcement learning algorithms are implemented and tested, the Dueling Double Deep Q Network algorithm presented in \textcite{wang2015dueling} and the Multipass Deep Q Network algorithm presented in \textcite{bester2019mpdqn}. These algorithms were chosen because they fit well to the problem of golf. This will be explained further in \autoref{chapter:background} and \autoref{chapter:methods}.
+The term reinforcement learning is a broad one. For the scope of this thesis, two types of reinforcement learning algorithms are implemented and tested, the Dueling Double Deep Q Network algorithm presented in \parencite{wang2015dueling} and the Multipass Deep Q Network algorithm presented in \parencite{bester2019mpdqn}. These algorithms were chosen because they fit well to the problem of golf. This will be explained further in \autoref{chapter:background} and \autoref{chapter:methods}.
 
 Just like with reinforcement learning, the term golf is also broad. For the scope of this thesis, the agents will be trained, evaluated and compared with the golfer on two golf courses: Pebble Beach and Ullna GC. These courses were chosen because of them being the courses that data was gathered from by a golfer. 
 
@@ -275,7 +275,7 @@ For continuous action spaces the $\epsilon$-greedy policy is infeasible due to t
 
 \subsection{Q-learning}
 \label{subsec:qlearning}
-Q-learning, described in \textcite{watkins1992q}, is a reinforcement learning algorithm. The algorithm works by approximating the optimal action-value function, defined in \autoref{eq:qoptimal}, using a table for storing the so called Q-values of the function. These values are iteratively updated using dynamic programming according to \autoref{eq:qupdate}, where $\alpha$ is a learning rate used to smoothen the learning. 
+Q-learning, described in \parencite{watkins1992q}, is a reinforcement learning algorithm. The algorithm works by approximating the optimal action-value function, defined in \autoref{eq:qoptimal}, using a table for storing the so called Q-values of the function. These values are iteratively updated using dynamic programming according to \autoref{eq:qupdate}, where $\alpha$ is a learning rate used to smoothen the learning. 
 \begin{equation}
 \label{eq:qupdate}
 Q(s_t, a_t) \leftarrow Q(s_t, a_t) + \alpha \cdot (R_t + \gamma \cdot max_a Q(s_{t+1}, a) - Q(s_t, a_t))
@@ -293,13 +293,13 @@ As was mentioned in \autoref{sec:neuralnetworks}, ANNs can be used to approximat
 Y_t = R_t + \gamma \cdot max_a Q(s_{t+1}, a)
 \end{equation}
 
-The deep Q-network algorithm (DQN) presented in \textcite{mnih2015human} utilizes a deep neural network to approximate the action-value function. It solves the problems mentioned above by introducing two features to the network: the use of something known as experience replay, and by iteratively updating the Q-values with target values only updated periodically. 
+The deep Q-network algorithm (DQN) presented in \parencite{mnih2015human} utilizes a deep neural network to approximate the action-value function. It solves the problems mentioned above by introducing two features to the network: the use of something known as experience replay, and by iteratively updating the Q-values with target values only updated periodically. 
 
-Experience replay, described in \textcite{lin1992self}, is a process in which the agent stores experiences, defined as $e_t = (s_t, a_t, R_t, s_{t+1})$, every iteration in a buffer. This buffer stores the $m$ most recent experiences, where $m$ is a fixed size defined during training of the algorithm. During the learning process the buffer is uniformly sampled for a batch of experiences which is then used to apply Q-learning updates to the network. This removes the correlations between subsequent states when learning, and smoothes major policy changes \parencite{mnih2015human}.
+Experience replay, described in \parencite{lin1992self}, is a process in which the agent stores experiences, defined as $e_t = (s_t, a_t, R_t, s_{t+1})$, every iteration in a buffer. This buffer stores the $m$ most recent experiences, where $m$ is a fixed size defined during training of the algorithm. During the learning process the buffer is uniformly sampled for a batch of experiences which is then used to apply Q-learning updates to the network. This removes the correlations between subsequent states when learning, and smoothes major policy changes \parencite{mnih2015human}.
 
 If the network were to be used by both the Q-value prediction and the target value prediction, the network would be aiming for a moving target. Updating one value also updates the other, making it harder to reach and often leading to divergence. Because of this reason, the target values are calculated using another network which is only updated with the network parameters of the Q-value network periodically. By keeping the target values fixed, the network can more easily converge. \parencite{mnih2015human}
 
-In \textcite{mnih2015human}, a version of the MSE loss is used when applying the Q-learning updates. This loss is defined as in \autoref{eq:qloss}, where $\theta_t$ represents the network parameters at iteration $t$, $\theta_t^-$ the network parameters used for the target values at iteration $t$, and $n$ is the size of the sampled batch from the experience replay buffer. In the equation, $Q$ now refers to the Q Network, where $Q(s_i, a_i, \theta_t)$ equals the network output of action $a_i$ at iteration $t$.
+In \parencite{mnih2015human}, a version of the MSE loss is used when applying the Q-learning updates. This loss is defined as in \autoref{eq:qloss}, where $\theta_t$ represents the network parameters at iteration $t$, $\theta_t^-$ the network parameters used for the target values at iteration $t$, and $n$ is the size of the sampled batch from the experience replay buffer. In the equation, $Q$ now refers to the Q Network, where $Q(s_i, a_i, \theta_t)$ equals the network output of action $a_i$ at iteration $t$.
 
 \begin{equation}
 \label{eq:qloss}
@@ -316,14 +316,14 @@ Y_t = R_t + \gamma \cdot Q(s_{t+1}, argmax_aQ(s_{t+1}, a;\theta_t);\theta_t)
 
 Overestimation of action values is not necessarily a bad thing. If all action values are overestimated uniformly then no changes would occur, since the relative differences between values would be the same. However, even in environments well adapted for the DQN algorithm, overestimation that affects the performance does happen \parencite{van2016deep}.
 
-Double Q-learning, described in \textcite{hasselt2010double}, aims to solve the problem of overestimation by decoupling the selection and evaluation. In Double Q-learning, two action-value functions are approximated by randomly updating one of the functions with an experience. This results in two sets of weights $\theta$ and $\theta'$. One of these sets is then used for estimating the policy, and the other to estimate its value. \autoref{eq:doubleqtarget} describes how this new target value is calculated.
+Double Q-learning, described in \parencite{hasselt2010double}, aims to solve the problem of overestimation by decoupling the selection and evaluation. In Double Q-learning, two action-value functions are approximated by randomly updating one of the functions with an experience. This results in two sets of weights $\theta$ and $\theta'$. One of these sets is then used for estimating the policy, and the other to estimate its value. \autoref{eq:doubleqtarget} describes how this new target value is calculated.
 \begin{equation}
 \label{eq:doubleqtarget}
 Y_t^{DoubleQ} = R_t + \gamma \cdot Q(s_{t+1}, argmax_aQ(s_{t+1}, a;\theta_t);\theta_t')
 \end{equation}
 As can be seen in the equation, the $argmax$ operator still selects an action using the online weights $\theta_t$, meaning that the estimation of the current policy is done with current values, just like in Q-learning and DQN. However, $\theta_t'$ is used to evaluate the value, reducing the overestimation of action values. By switching the use of $\theta$ and $\theta'$, both sets of weights can be updated symmetrically. \parencite{van2016deep}
 
-In \textcite{van2016deep}, Double Q-learning is applied to the DQN algorithm, resulting in the Double DQN (DDQN) algorithm. This algorithm works similarly to the DQN algorithm, but utilizes the target network for evaluating the action values. This is not a fully decoupled solution, but is a minimal possible change of the DQN algorithm to utilize Double Q-learning. This results in the target values being calculated as in \autoref{eq:ddqntarget}. The target network, as well as all other components in the algorithm, are updated just as in the DQN algorithm.
+In \parencite{van2016deep}, Double Q-learning is applied to the DQN algorithm, resulting in the Double DQN (DDQN) algorithm. This algorithm works similarly to the DQN algorithm, but utilizes the target network for evaluating the action values. This is not a fully decoupled solution, but is a minimal possible change of the DQN algorithm to utilize Double Q-learning. This results in the target values being calculated as in \autoref{eq:ddqntarget}. The target network, as well as all other components in the algorithm, are updated just as in the DQN algorithm.
 
 \begin{equation}
 \label{eq:ddqntarget}
@@ -331,7 +331,7 @@ Y_t^{DDQN} = R_t + \gamma \cdot Q(s_{t+1}, argmax_aQ(s_{t+1}, a;\theta_t);\theta
 \end{equation}
 
 \subsubsection{Dueling Deep Q-learning}
-In \textcite{wang2015dueling}, a new variant of a deep Q-learning algorithm called the Dueling DDQN algorithm is presented. This algorithm utilizes the DDQN algorithm with a new network architecture specifically designed for reinforcement learning problems. 
+In \parencite{wang2015dueling}, a new variant of a deep Q-learning algorithm called the Dueling DDQN algorithm is presented. This algorithm utilizes the DDQN algorithm with a new network architecture specifically designed for reinforcement learning problems. 
 
 The network architecture of the Dueling DDQN algorithm consists of a general feature learning module which is then split into two streams; one for generating the state-value (as defined in \autoref{eq:statevalue}) and one for generating the advantages of all actions (as defined in \autoref{eq:advantage}). These streams are then combined to generate an estimate of the Q function, used by the DDQN algorithm.
 
@@ -344,7 +344,7 @@ As can be seen from the definitions of the action-value, state-value and advanta
 Q(s,a;\theta,\alpha,\beta) = V(s;\theta,\beta) + A(s, a;\theta, \alpha)
 \end{equation}
 
-In \textcite{wang2015dueling}, the stream combining network module is defined as in \autoref{eq:duelingcombine}, where $n$ is the size of the advantage vector. This stabilizes the learning process, since the advantages only need to change as fast as the average. 
+In \parencite{wang2015dueling}, the stream combining network module is defined as in \autoref{eq:duelingcombine}, where $n$ is the size of the advantage vector. This stabilizes the learning process, since the advantages only need to change as fast as the average. 
 
 \begin{equation}
 \label{eq:duelingcombine}
@@ -354,7 +354,7 @@ Q(s,a;\theta,\alpha,\beta) = V(s;\theta,\beta) + (A(s, a;\theta, \alpha) - \frac
 \subsection{Deep Deterministic Policy Gradient}
 From \autoref{subsec:qlearning} and \autoref{subsec:deepqlearning}, it can be derived that the Q-learning algorithm and its variants work well in discrete action spaces. However, the algorithms do not work in continuous action spaces. Both the $max$ and $argmax$ operators choose between a fixed set of choices, which is impossible to apply with real numbers. One possible solution to this is to discretize the continuous action space, but this causes the Q-learning algorithms to perform poorly \parencite{lillicrap2015continuous}. As such, some other algorithm is required for continuous action spaces.
 
-In \textcite{lillicrap2015continuous}, the Deep Deterministic Policy Gradient (DDPG) algorithm is presented. This algorithm combines the continuous reinforcement learning algorithm Deterministic Policy Gradient (DPG) with the advances of utilizing deep neural networks from \textcite{mnih2015human}.
+In \parencite{lillicrap2015continuous}, the Deep Deterministic Policy Gradient (DDPG) algorithm is presented. This algorithm combines the continuous reinforcement learning algorithm Deterministic Policy Gradient (DPG) with the advances of utilizing deep neural networks from \parencite{mnih2015human}.
 
 The DPG algorithm uses what is known as an actor-critic approach. This is similar to the approach used by the DDQN algorithm, in that one parametrized function selects actions and that another function evaluates, or criticizes, the policy. Whereas the Q-learning algorithm uses the $max$ operator to specify a greedy policy, the action function (known as $\mu(s;\theta^\mu)$, where $\theta^\mu$ are the parameters) maps states to actions in a deterministic fashion to specify the current policy, using its parameters. 
 
@@ -367,12 +367,12 @@ The critic function, known as $Q(s, a; \theta^Q)$, is updated as in \autoref{eq:
 \end{split}
 \end{equation}
 
-In \textcite{lillicrap2015continuous}, the DPG algorithm is modified into the DDPG algorithm by adding an experience replay from which the networks are trained on, and by creating copies of the actor and critic networks for calculating the target values. However, rather than directly copying the networks in a periodic fashion, the networks are smoothly updated using a constant $\tau$ such that $\theta^- \leftarrow \tau\theta + (1-\tau)\theta^-$, where $\tau < 1$ and $\theta^-$ represents the respective target network. Furthermore, the networks use batch normalization to make learning more efficient. 
+In \parencite{lillicrap2015continuous}, the DPG algorithm is modified into the DDPG algorithm by adding an experience replay from which the networks are trained on, and by creating copies of the actor and critic networks for calculating the target values. However, rather than directly copying the networks in a periodic fashion, the networks are smoothly updated using a constant $\tau$ such that $\theta^- \leftarrow \tau\theta + (1-\tau)\theta^-$, where $\tau < 1$ and $\theta^-$ represents the respective target network. Furthermore, the networks use batch normalization to make learning more efficient. 
 
 As was mentioned in \autoref{subsec:explorevsexploit}, continuous action space algorithms can explore by adding noise to the actions. This is done in the DDPG algorithm. Specifically, the actor function adds some random noise to its output. \parencite{lillicrap2015continuous}
 
 \subsection{Parametrized Deep Q-learning}
-When it comes to hybrid action spaces, neither the Q-learning algorithms nor the DDPG algorithm are intuitive choices. In order to utilize Q-learning the continuous subset of the action space must be discretized, and using DDPG requires the discrete subset to be relaxed into a continuous one. Both of these approaches causes the action space to become more complex, resulting in a harder problem to solve using reinforcement learning \parencite{xiong2018parametrized}. In \textcite{xiong2018parametrized}, the Parametrized DQN (P-DQN) algorithm is presented as a way to handle hybrid action space problems without having to modify the action space itself.
+When it comes to hybrid action spaces, neither the Q-learning algorithms nor the DDPG algorithm are intuitive choices. In order to utilize Q-learning the continuous subset of the action space must be discretized, and using DDPG requires the discrete subset to be relaxed into a continuous one. Both of these approaches causes the action space to become more complex, resulting in a harder problem to solve using reinforcement learning \parencite{xiong2018parametrized}. In \parencite{xiong2018parametrized}, the Parametrized DQN (P-DQN) algorithm is presented as a way to handle hybrid action space problems without having to modify the action space itself.
 
 The P-DQN algorithm combines both the DQN algorithm and the DDPG algorithm in order to learn how to utilize the discrete and continuous actions. An actor function is defined which maps the state and each discrete action to their corresponding parameters. This function can then be used as input, together with the discrete action chosen by a greedy policy and the state, into the action value function. 
 
@@ -385,7 +385,7 @@ Q(s_t, k_t, x_{k_t}) \leftarrow Q(s_t, k_t, x_{k_t}) + \\ \alpha \cdot (R_t + \g
 \end{equation}
 As can be derived from the equation, first $x_k^* = max_{x_k}Q(s_{t+1}, k, x_k)$ is solved for each discrete action $k$. Then, the largest $Q(s_{t+1}, k, x_k^*)$ is chosen. As has already been mentioned, it is not possible to perform the $max$ operator on a continuous value. However, it is easy to see that the equation can be evaluated efficiently if $x_k^*$ is given. This value can easily be approximated using a deterministic policy network as in DDPG. The P-DQN algorithm therefore works by using this network to calculate the parameters for all discrete actions $k$, and then use DQN with these values given to find the optimal $k$ to choose from. \parencite{xiong2018parametrized}
 
-In \textcite{xiong2018parametrized}, the DQN network is actually a Dueling DDQN network, and is updated as in \textcite{mnih2015human} using MSE loss. The deterministic policy network parameters are updated using the loss described in \autoref{eq:pdqnddpgloss}, where $\omega_t$ represents the Dueling DDQN network parameters. Furthermore, the different network parameters use different learning rates.
+In \parencite{xiong2018parametrized}, the DQN network is actually a Dueling DDQN network, and is updated as in \parencite{mnih2015human} using MSE loss. The deterministic policy network parameters are updated using the loss described in \autoref{eq:pdqnddpgloss}, where $\omega_t$ represents the Dueling DDQN network parameters. Furthermore, the different network parameters use different learning rates.
 
 \begin{equation}
 \label{eq:pdqnddpgloss}
@@ -393,44 +393,44 @@ L_t(\theta) = -\sum_kQ(s_t, k, x_k(s_t;\theta);\omega_t)
 \end{equation}
 
 \subsubsection{Multi Pass Parametrized Deep Q-learning}
-In \textcite{xiong2018parametrized}, all action parameters $\boldsymbol{x}$ are input into the Q-network for each discrete action $k$. As such, all discrete actions share the continuous action parameters. In \textcite{bester2019mpdqn}, it is described that this negatively affects the performance of the algorithm due to the updates of the Q-values and action parameters being affected by all parameters. 
+In \parencite{xiong2018parametrized}, all action parameters $\boldsymbol{x}$ are input into the Q-network for each discrete action $k$. As such, all discrete actions share the continuous action parameters. In \parencite{bester2019mpdqn}, it is described that this negatively affects the performance of the algorithm due to the updates of the Q-values and action parameters being affected by all parameters. 
 
-By inputting $\boldsymbol{x}$ into the Q-network, the action parameter loss changes. This is due to the Q-value producing gradients for each action parameter. If each Q-value was a function of only a single action parameter, then the gradients for all other parameters would be $0$, but this is not the case for the P-DQN algorithm in \textcite{xiong2018parametrized}. Since Q-values are only updated when their actions are sampled, this causes a problem. The Q-value contains no information on how the other action parameters should be updated, but they are still updated due to the gradients not being $0$. 
+By inputting $\boldsymbol{x}$ into the Q-network, the action parameter loss changes. This is due to the Q-value producing gradients for each action parameter. If each Q-value was a function of only a single action parameter, then the gradients for all other parameters would be $0$, but this is not the case for the P-DQN algorithm in \parencite{xiong2018parametrized}. Since Q-values are only updated when their actions are sampled, this causes a problem. The Q-value contains no information on how the other action parameters should be updated, but they are still updated due to the gradients not being $0$. 
 
 Inputting $\boldsymbol{x}$ causes more problems by affecting the discrete action policy. More specifically, updating the continuous action parameter policy of any action disturbs the Q-values for all actions, not just the one associated with the continuous parameter. This can result in sub-optimal greedy choices, which slows down learning. \parencite{bester2019mpdqn}
 
-A solution to the problems mentioned above is to split the Q-network into several networks, one for each discrete action. However, this increases the complexity of the algorithm drastically. In \textcite{bester2019mpdqn}, an alternative approach is presented, where the action parameters are separated and input into different forward passes into the same network. This causes no structural changes to the network architecture, but still removes the above mentioned problems from the algorithm. This is done by inputting the one-hot vector for the $k$:th action parameter during the $k$:th forward pass, i.e. by inputting $\boldsymbol{x}\boldsymbol{e}_k$. This causes all gradients of the other action parameters to be $0$, and makes the Q-values for the $k$:th action only depend on $x_k$. This modified algorithm is referred to as the Multi Pass Q-network (MP-DQN) algorithm. \parencite{bester2019mpdqn}
+A solution to the problems mentioned above is to split the Q-network into several networks, one for each discrete action. However, this increases the complexity of the algorithm drastically. In \parencite{bester2019mpdqn}, an alternative approach is presented, where the action parameters are separated and input into different forward passes into the same network. This causes no structural changes to the network architecture, but still removes the above mentioned problems from the algorithm. This is done by inputting the one-hot vector for the $k$:th action parameter during the $k$:th forward pass, i.e. by inputting $\boldsymbol{x}\boldsymbol{e}_k$. This causes all gradients of the other action parameters to be $0$, and makes the Q-values for the $k$:th action only depend on $x_k$. This modified algorithm is referred to as the Multi Pass Q-network (MP-DQN) algorithm. \parencite{bester2019mpdqn}
 
 Performing forward passes for each discrete action is also costly, but this can be improved by utilizing the properties of batches. By doing so, all action parameters can be input at the same time without affecting each other in a single parallel forward pass. This generates a matrix of Q-values, in which the diagonal contains the valid Q-values, i.e. where the correct action parameter is used with the correct discrete action. This allows the overhead of the MP-DQN algorithm to scale linearly. \parencite{bester2019mpdqn}
 
 \section{Related Work}
 In this section, articles related to this thesis are presented. Their content and how it relates to this work is described.
 
-Most of the papers referenced in \autoref{sec:reinforcementlearning} are all related to this thesis in that they utilize reinforcement learning algorithms on various problems where the performance can be compared to that of humans. \textcite{mnih2015human}, \textcite{van2016deep} and \textcite{wang2015dueling} tested their algorithms in the Atari Game environment on several different games, using pixel data as input. The DQN algorithm performed well, setting the state of the art results for Q-learning algorithms and exceeding human level of play in a majority of the games tested. These results were further improved upon in most of the games tested, first by the DDQN algorithm and then even more by the Dueling DDQN algorithm. 
+Most of the papers referenced in \autoref{sec:reinforcementlearning} are all related to this thesis in that they utilize reinforcement learning algorithms on various problems where the performance can be compared to that of humans. The authors of \parencite{mnih2015human}, \parencite{van2016deep} and \parencite{wang2015dueling} tested their algorithms in the Atari Game environment on several different games, using pixel data as input. The DQN algorithm performed well, setting the state of the art results for Q-learning algorithms and exceeding human level of play in a majority of the games tested. These results were further improved upon in most of the games tested, first by the DDQN algorithm and then even more by the Dueling DDQN algorithm. 
 
 Just like how the discrete algorithms set the state of the art in the discrete action space, the DDPG algorithm performed well in the continuous action space. The algorithm was tested in continuous control environments, such as instances where a robot arm must move an object from one position to another. The results of the algorithm were comparable to or better than that of a planning algorithm, even in cases where the planning algorithm used low-level features while the DDPG algorithm utilized pixel data. \parencite{lillicrap2015continuous}
 
-For hybrid action spaces, the P-DQN algorithm in \textcite{xiong2018parametrized} set the state of the art performance. The algorithm was tested in game environments requiring both continuous and discrete actions, such as the soccer game Half Field Offense (HFO). The performance and speed was further improved by the MP-DQN algorithm in \textcite{bester2019mpdqn}.
+For hybrid action spaces, the P-DQN algorithm in \parencite{xiong2018parametrized} set the state of the art performance. The algorithm was tested in game environments requiring both continuous and discrete actions, such as the soccer game Half Field Offense (HFO). The performance and speed was further improved by the MP-DQN algorithm in \parencite{bester2019mpdqn}.
 
-In \textcite{vinyals2019grandmaster}, an agent was trained for the immensely complex game StarCraft II. Each game consists of several thousand time steps and in each step, more than $10^{26}$ actions can be chosen. The agent is similar to the one in this paper in that it utilizes human data. However, the agent in \textcite{vinyals2019grandmaster} does it differently in that it uses supervised imitation learning to imitate actions performed by humans. It then uses an actor-critic reinforcement learning method to directly learn a policy that maximizes its win rate. The algorithm performs very well, achieving better results than 99.8\% of StarCraft II players. This is the first algorithm to achieve such a high score.
+In \parencite{vinyals2019grandmaster}, an agent was trained for the immensely complex game StarCraft II. Each game consists of several thousand time steps and in each step, more than $10^{26}$ actions can be chosen. The agent is similar to the one in this paper in that it utilizes human data. However, the agent in \parencite{vinyals2019grandmaster} does it differently in that it uses supervised imitation learning to imitate actions performed by humans. It then uses an actor-critic reinforcement learning method to directly learn a policy that maximizes its win rate. The algorithm performs very well, achieving better results than 99.8\% of StarCraft II players. This is the first algorithm to achieve such a high score.
 
-In \textcite{delalleau2019discrete}, a reinforcement learning algorithm capable of being used in discrete, continuous and hybrid action spaces is presented. This algorithm is based on an actor critic method called Soft Actor Critic (SAC), but modified to work in all types of action spaces. It is therefore named Hybrid SAC. It is compared to the MP-DQN algorithm in the same environments MP-DQN was originally trained on. The results showcased that the Hybrid SAC algorithm performed comparable to, but not better than, the MP-DQN algorithm. The only exception is when the MP-DQN algorithm is simplified for HFO to make the comparison more similar, in which the Hybrid SAC performs better. It was also tested in a Ubisoft game environment in driving a car at high speeds.
+In \parencite{delalleau2019discrete}, a reinforcement learning algorithm capable of being used in discrete, continuous and hybrid action spaces is presented. This algorithm is based on an actor critic method called Soft Actor Critic (SAC), but modified to work in all types of action spaces. It is therefore named Hybrid SAC. It is compared to the MP-DQN algorithm in the same environments MP-DQN was originally trained on. The results showcased that the Hybrid SAC algorithm performed comparable to, but not better than, the MP-DQN algorithm. The only exception is when the MP-DQN algorithm is simplified for HFO to make the comparison more similar, in which the Hybrid SAC performs better. It was also tested in a Ubisoft game environment in driving a car at high speeds.
 
-The work in \textcite{delalleau2019discrete} showcases a different approach to hybrid action spaces. It is different from the MP-DQN algorithm in that it also can handle discrete and continuous action spaces. This is not necessary in this thesis, which is why the MP-DQN algorithm is preferred.
+The work in \parencite{delalleau2019discrete} showcases a different approach to hybrid action spaces. It is different from the MP-DQN algorithm in that it also can handle discrete and continuous action spaces. This is not necessary in this thesis, which is why the MP-DQN algorithm is preferred.
 
-In \textcite{fu2019deep}, deep multi-agent reinforcement learning is evaluated for hybrid action spaces. Two new algorithms are introduced, the Deep Multi-Agent Parametrized Q-Network (Deep MAPQN) algorithm and the Deep Multi-Agent Hierarchical Hybrid Q-Network (Deep MAHHQN) algorithm. Both of these are based on the P-DQN algorithm. The Deep MAPQN algorithm utilizes P-DQN for several agents, but combines the Q-value outputs into a so called mixing network, to get a total action value for all agents' actions. This is then used to learn how agents can cooperate with each other. This is a quite computationally complex algorithm due to it always having to compute continuous parameters for all discrete actions. The Deep MAHHQN algorithm was therefore implemented to solve this. It uses two networks, one high-level for discrete actions and one low-level for the continuous parameters, that are trained separately. 
+In \parencite{fu2019deep}, deep multi-agent reinforcement learning is evaluated for hybrid action spaces. Two new algorithms are introduced, the Deep Multi-Agent Parametrized Q-Network (Deep MAPQN) algorithm and the Deep Multi-Agent Hierarchical Hybrid Q-Network (Deep MAHHQN) algorithm. Both of these are based on the P-DQN algorithm. The Deep MAPQN algorithm utilizes P-DQN for several agents, but combines the Q-value outputs into a so called mixing network, to get a total action value for all agents' actions. This is then used to learn how agents can cooperate with each other. This is a quite computationally complex algorithm due to it always having to compute continuous parameters for all discrete actions. The Deep MAHHQN algorithm was therefore implemented to solve this. It uses two networks, one high-level for discrete actions and one low-level for the continuous parameters, that are trained separately. 
 
-Both algorithms in \textcite{fu2019deep} were compared to a group of separate P-DQN agents in several environments, one of them being a multi-agent HFO. In all environments, they performed better than the P-DQN agents. 
+Both algorithms in \parencite{fu2019deep} were compared to a group of separate P-DQN agents in several environments, one of them being a multi-agent HFO. In all environments, they performed better than the P-DQN agents. 
 
-The work in \textcite{fu2019deep} relates to this thesis in that it utilizes parametrized reinforcement learning. It is however applied to a vastly different setting, a multi-agent one. This is completely opposite to golf, in which there is no other entity than the agent itself.
+The work in \parencite{fu2019deep} relates to this thesis in that it utilizes parametrized reinforcement learning. It is however applied to a vastly different setting, a multi-agent one. This is completely opposite to golf, in which there is no other entity than the agent itself.
 
 \textcite{ArccosGo0:online} is a product that tracks golfers' shots on a golf course using sensors fitted to the golfers' clubs, as well as GPS locations. This data is then used to give recommendations on how to play holes, i.e. which clubs to use. This is similar to potential one use case of the agent from this paper, in that the reinforcement learning agent could be used to showcase how the golfer from which the data was gathered could improve. However, it is unclear whether \textcite{ArccosGo0:online} uses reinforcement learning or any similar method. Furthermore, their data is based solely on club choice and the starting and ending position of the shot. In this paper, entire shots are used to teach the agent, including statistics such as the height and curve of the shot.
 
 \textcite{HelloBir63:online} is a product similar to \textcite{ArccosGo0:online} in that it gives personal recommendations on how to play golf holes. However, \textcite{HelloBir63:online} does not utilize sensors on the golf clubs, and instead uses only GPS data to track golf shots. It is unclear what type of method this product uses for learning.
 
-In \textcite{ko2012simulation}, a model for simulating golf is developed and analyzed to see how different skills, such as long shots, approach shots and putting, in golf affect the final score of a golf round. The golf course model included realistic hole settings, and the golfer shot patterns were modeled using $t$ distributions and normal distributions. The simulations showcased that a 20 yard increase in distance improved the score of high-handicap golfers by almost three strokes, and professional golfers with less than a stroke. They also showcased that the long game accounted for two thirds of the difference in scores between high- and low-handicap golfers.
+In \parencite{ko2012simulation}, a model for simulating golf is developed and analyzed to see how different skills, such as long shots, approach shots and putting, in golf affect the final score of a golf round. The golf course model included realistic hole settings, and the golfer shot patterns were modeled using $t$ distributions and normal distributions. The simulations showcased that a 20 yard increase in distance improved the score of high-handicap golfers by almost three strokes, and professional golfers with less than a stroke. They also showcased that the long game accounted for two thirds of the difference in scores between high- and low-handicap golfers.
 
-The work in \textcite{ko2012simulation} is similar to the work in this thesis in that it uses simulation models for simulating golf. However, it differs in that it uses distributions to simulate golf shots, rather than golf shots directly as in this paper. Furthermore, \textcite{ko2012simulation} uses deterministic rules for hitting shots, rather than teaching an agent how to do it. The results show potential use cases for the agent in this paper, i.e. by seeing how differences in a golfer's data affects the agent in its playing.
+The work in \parencite{ko2012simulation} is similar to the work in this thesis in that it uses simulation models for simulating golf. However, it differs in that it uses distributions to simulate golf shots, rather than golf shots directly as in this paper. Furthermore, \parencite{ko2012simulation} uses deterministic rules for hitting shots, rather than teaching an agent how to do it. The results show potential use cases for the agent in this paper, i.e. by seeing how differences in a golfer's data affects the agent in its playing.
 
 \chapter{Methods}
 \label{chapter:methods}
@@ -479,25 +479,24 @@ For this thesis, the data included shot data mapped to different clubs. For each
 
 \begin{table}
     \centering
-    \begin{tabular}{|c| c|}
-        \hline
+    \begin{tabular}{c|c}
         \textbf{Club} & \textbf{Abbreviation} \\ \hline
-        Driver & DR \\ \hline
-        3 Wood & 3W \\ \hline 
-        4 Iron & 4I \\ \hline 
-        5 Iron & 5I \\ \hline 
-        6 Iron & 6I \\ \hline 
-        7 Iron & 7I \\ \hline 
-        8 Iron & 8I \\ \hline 
-        9 Iron & 9I \\ \hline 
-        Pitching Wedge & PW \\ \hline 
-        Gap Wedge & GW \\ \hline 
-        Sand Wedge & SW \\ \hline 
-        Lob Wedge & LW \\ \hline 
-        35 Meters & 35 \\ \hline 
-        45 Meters & 45 \\ \hline 
-        55 Meters & 55 \\ \hline 
-        65 Meters & 65 \\ \hline 
+        Driver & DR \\ 
+        3 Wood & 3W \\  
+        4 Iron & 4I \\  
+        5 Iron & 5I \\  
+        6 Iron & 6I \\  
+        7 Iron & 7I \\  
+        8 Iron & 8I \\  
+        9 Iron & 9I \\  
+        Pitching Wedge & PW \\  
+        Gap Wedge & GW \\  
+        Sand Wedge & SW \\  
+        Lob Wedge & LW \\  
+        35 Meters & 35 \\  
+        45 Meters & 45 \\  
+        55 Meters & 55 \\  
+        65 Meters & 65 \\  
     \end{tabular}
     \caption{A table indicating the abbreviations utilized for the various clubs and distances that were used during the shot data gathering.}
     \label{tab:clubabbreviations}
@@ -520,11 +519,11 @@ To answer the question posed in \autoref{chapter:introduction}, reinforcement le
 
 The Dueling DDQN agent utilized, as described in \autoref{chapter:background}, a dueling network layer in conjunction with a Double Deep Q network to determine club choices given observations. Since this algorithm only deals with discrete action spaces, the Dueling DDQN agent could not handle choosing a direction to hit in, but focused only on the club choices. This might sound suboptimal for the problem, but the agent was implemented to discover how important of a factor the direction was, both in terms of an agent's performance in playing golf and in terms of how well an agent learns depending on the problem's complexity. 
 
-The Dueling DDQN agent utilized the same network structure as in \textcite{wang2015dueling}. That is, it contained the same number of neurons, and utilized the same activation and learning functions. Moreover, it also used the $\epsilon$-greedy policy for exploration.
+The Dueling DDQN agent utilized the same network structure as in \parencite{wang2015dueling}. That is, it contained the same number of neurons, and utilized the same activation and learning functions. Moreover, it also used the $\epsilon$-greedy policy for exploration.
 
-The MP-DQN agent differed from the one presented in \textcite{bester2019mpdqn}. In the original version, the dueling network layer was omitted in order to make comparisons between algorithms fair. Since the layer was present in the P-DQN algorithm in \textcite{xiong2018parametrized}, it was also present in the agent used in this thesis. 
+The MP-DQN agent differed from the one presented in \parencite{bester2019mpdqn}. In the original version, the dueling network layer was omitted in order to make comparisons between algorithms fair. Since the layer was present in the P-DQN algorithm in \parencite{xiong2018parametrized}, it was also present in the agent used in this thesis. 
 
-The original MP-DQN agent was evaluated on problems in which the state space contained no spatial information. As such, no convolutional layers were needed. The observations in this thesis did include this kind of information and therefore the MP-DQN agent in this paper was modified to include convolutional layers. The policy networks were structured as in the DDPG algorithm in \textcite{lillicrap2015continuous}. For the Q networks, almost the same structure of convolutional layers as in the Dueling DDQN algorithm was used. Since the Q networks also used the action parameters as input, and since these parameters contained no spatial information, the parameters were not added as input to the convolutional layers. Instead, they were combined with the extracted features from the convolutional layers and input into the remaining network structure.
+The original MP-DQN agent was evaluated on problems in which the state space contained no spatial information. As such, no convolutional layers were needed. The observations in this thesis did include this kind of information and therefore the MP-DQN agent in this paper was modified to include convolutional layers. The policy networks were structured as in the DDPG algorithm in \parencite{lillicrap2015continuous}. For the Q networks, almost the same structure of convolutional layers as in the Dueling DDQN algorithm was used. Since the Q networks also used the action parameters as input, and since these parameters contained no spatial information, the parameters were not added as input to the convolutional layers. Instead, they were combined with the extracted features from the convolutional layers and input into the remaining network structure.
 
 The agents learned by playing holes of golf, where one hole was defined as an episode. First, the agents received an initial observation from the environment, showcasing the starting position on the hole. The two dimensional map from this observation was input into the agents' networks and the Q-values for the actions (as well as their corresponding parameters for the MP-DQN) were received as output. Then, the agents chose the corresponding actions according to the $\epsilon$-greedy policy, which were converted into a shot that was input to the simulation environment. The environment then returned the next observation, which as mentioned contained the new position on the hole, whether the hole was finished, as well as the penalty the agent received. Finally, the agents performed network learning updates using their experience replays. This procedure was repeated until the hole was finished. The information from the episode was then stored and a new episode was started. This information included which hole was played, what par the hole had, the number of shots hit, the distance remaining to the hole after the hole was finished, the penalty received, the club choices, and the directional choices.
 
@@ -542,23 +541,22 @@ The agents were trained on two different course configurations. The first config
 
 Both agents were trained on both configurations. During training, holes from the configurations were played at random, and the best weights were saved. These weights were determined by keeping the penalties of the last 100 par 3 holes, the last 100 par 4 holes as well as the last 100 par 5 holes, and taking the average of these penalties. The weights that caused the lowest average penalty were stored as the best.
 
-Although the simulation application was sped up, the time required for training the agents was quite long. Due to the time limitations on this project, no extensive hyperparameter tests could be conducted. Instead, the parameters used in the original Dueling DDQN and DDPG algorithms were used as a baseline, and a few combinations of parameters were tested using the parameters in \textcite{bester2019mpdqn} as guidelines. Specifically, the learning rates of the networks, the rate at which $\epsilon$ decreased and the number of episodes were tuned. For the policy networks in the MP-DQN agent, $10^{-4}$, $10^{-5}$ and $10^{-6}$ were tested. For the Q networks, $10^{-3}$, $10^{-4}$ and $10^{-5}$ were tested. The number of episodes varied between $10000$ and $200000$. For the rate at which $\epsilon$ decreased, $10^{-4}$, $10^{-5}$ and $2 \cdot 10^{-6}$ was tested. The values used in the final tests can be found in \autoref{tab:hyperparameters}. As can be seen in the table, some other values differed from the literature on which the agents were based. These values were changed due to the reduced time available for training compared to the original algorithms' training times.
+Although the simulation application was sped up, the time required for training the agents was quite long. Due to the time limitations on this project, no extensive hyperparameter tests could be conducted. Instead, the parameters used in the original Dueling DDQN and DDPG algorithms were used as a baseline, and a few combinations of parameters were tested using the parameters in \parencite{bester2019mpdqn} as guidelines. Specifically, the learning rates of the networks, the rate at which $\epsilon$ decreased and the number of episodes were tuned. For the policy networks in the MP-DQN agent, $10^{-4}$, $10^{-5}$ and $10^{-6}$ were tested. For the Q networks, $10^{-3}$, $10^{-4}$ and $10^{-5}$ were tested. The number of episodes varied between $10000$ and $200000$. For the rate at which $\epsilon$ decreased, $10^{-4}$, $10^{-5}$ and $2 \cdot 10^{-6}$ was tested. The values used in the final tests can be found in \autoref{tab:hyperparameters}. As can be seen in the table, some other values differed from the literature on which the agents were based. These values were changed due to the reduced time available for training compared to the original algorithms' training times.
 
 \begin{table}
     \centering
-    \begin{tabular}{|c|c|}
-        \hline
+    \begin{tabular}{c|c}
         \textbf{Hyperparameter} & \textbf{Value} \\ \hline
-        Episodes & $50000$ \\ \hline
-        Q Network learning rate & $10^{-4}$ \\ \hline
-        Policy Network learning rate & $10^{-5}$ \\ \hline
-        $\tau$ & $10^{-3}$ \\ \hline
-        $\epsilon_{min}$ & $0.02$ \\ \hline
-        $\epsilon_{dec}$ & $10^{-5}$ \\ \hline
-        Batch size & $32$ \\ \hline
-        Experience Replay size & $10000$ \\ \hline
-        Q Target network replacement iterations & $1000$ \\ \hline
-        $\gamma$ & $0.99$ \\ \hline
+        Episodes & $50000$ \\ 
+        Q Network learning rate & $10^{-4}$ \\ 
+        Policy Network learning rate & $10^{-5}$ \\ 
+        $\tau$ & $10^{-3}$ \\ 
+        $\epsilon_{min}$ & $0.02$ \\ 
+        $\epsilon_{dec}$ & $10^{-5}$ \\ 
+        Batch size & $32$ \\ 
+        Experience Replay size & $10000$ \\ 
+        Q Target network replacement iterations & $1000$ \\ 
+        $\gamma$ & $0.99$ \\
     \end{tabular}
     \caption{A table showing the hyperparameters used for the final tests of the agents.}
     \label{tab:hyperparameters}
@@ -641,18 +639,18 @@ In \autoref{tab:pebble_average_results}, the average scores, number of shots and
     \begin{subtable}{0.3\textwidth}
     \centering
     \resizebox{\textwidth}{!}{
-    \begin{tabular}{|c|c|c|c|c|} \hline
-    \multicolumn{5}{|c|}{\textbf{Pebble Beach Average Golfer Results}} \\ \hline
-        \textbf{Hole} & \textbf{Par} & \textbf{Score} & \textbf{Shots} & \textbf{Distance remaining}  \\ \hline
-        1 & 4 & 0.31 & 2.20 & 17.60 \\ \hline
-        2 & 5 & 0.31 & 2.80 & 8.82 \\ \hline
-        3 & 4 & 0.27 & 2.20 & 7.00 \\ \hline
-        4 & 4 & 0.32 & 2.60 & 7.30 \\ \hline
-        5 & 3 & 0.18 & 1.00 & 12.18 \\ \hline
-        6 & 5 & 0.35 & 3.00 & 15.00 \\ \hline
-        7 & 3 & 0.21 & 1.20 & 15.04 \\ \hline
-        8 & 4 & 0.32 & 2.60 & 7.76 \\ \hline
-        9 & 4 & 0.29 & 2.20 & 11.28 \\ \hline
+    \begin{tabular}{c|c|c|c|c}
+    \multicolumn{5}{c}{\textbf{Pebble Beach Average Golfer Results}} \\ 
+        \textbf{Hole} & \textbf{Par} & \textbf{Score} & \textbf{Shots} & \textbf{Distance remaining (m)}  \\ \hline
+        1 & 4 & 0.31 & 2.20 & 17.60 \\ 
+        2 & 5 & 0.31 & 2.80 & 8.82 \\ 
+        3 & 4 & 0.27 & 2.20 & 7.00 \\ 
+        4 & 4 & 0.32 & 2.60 & 7.30 \\ 
+        5 & 3 & 0.18 & 1.00 & 12.18 \\ 
+        6 & 5 & 0.35 & 3.00 & 15.00 \\ 
+        7 & 3 & 0.21 & 1.20 & 15.04 \\ 
+        8 & 4 & 0.32 & 2.60 & 7.76 \\ 
+        9 & 4 & 0.29 & 2.20 & 11.28 \\
     \end{tabular}
     }
     \end{subtable}
@@ -660,18 +658,18 @@ In \autoref{tab:pebble_average_results}, the average scores, number of shots and
     \begin{subtable}{0.3\textwidth}
     \centering
     \resizebox{\textwidth}{!}{
-    \begin{tabular}{|c|c|c|c|c|} \hline
-    \multicolumn{5}{|c|}{\textbf{Pebble Beach Average Dueling DDQN Results}} \\ \hline
-        \textbf{Hole} & \textbf{Par} & \textbf{Score} & \textbf{Shots} & \textbf{Distance remaining}  \\ \hline
-        1 & 4 & 0.30 & 2.26 & 12.76 \\ \hline
-        2 & 5 & 0.30 & 2.48 & 14.16 \\ \hline
-        3 & 4 & 0.29 & 2.14 & 12.76 \\ \hline
-        4 & 4 & 0.34 & 2.62 & 12.75 \\ \hline
-        5 & 3 & 0.19 & 1.12 & 11.70 \\ \hline
-        6 & 5 & 0.51 & 4.64 & 17.26 \\ \hline
-        7 & 3 & 0.20 & 1.30 & 9.91 \\ \hline
-        8 & 4 & 0.34 & 2.56 & 15.36 \\ \hline
-        9 & 4 & 0.35 & 2.62 & 16.37 \\ \hline
+    \begin{tabular}{c|c|c|c|c}
+    \multicolumn{5}{c}{\textbf{Pebble Beach Average Dueling DDQN Results}} \\ 
+        \textbf{Hole} & \textbf{Par} & \textbf{Score} & \textbf{Shots} & \textbf{Distance remaining (m)}  \\ \hline
+        1 & 4 & 0.30 & 2.26 & 12.76 \\ 
+        2 & 5 & 0.30 & 2.48 & 14.16 \\ 
+        3 & 4 & 0.29 & 2.14 & 12.76 \\ 
+        4 & 4 & 0.34 & 2.62 & 12.75 \\ 
+        5 & 3 & 0.19 & 1.12 & 11.70 \\ 
+        6 & 5 & 0.51 & 4.64 & 17.26 \\ 
+        7 & 3 & 0.20 & 1.30 & 9.91 \\ 
+        8 & 4 & 0.34 & 2.56 & 15.36 \\ 
+        9 & 4 & 0.35 & 2.62 & 16.37 \\ 
     \end{tabular}
     }
     \end{subtable}
@@ -679,18 +677,18 @@ In \autoref{tab:pebble_average_results}, the average scores, number of shots and
     \begin{subtable}{0.3\textwidth}
     \centering
     \resizebox{\textwidth}{!}{
-    \begin{tabular}{|c|c|c|c|c|} \hline
-    \multicolumn{5}{|c|}{\textbf{Pebble Beach Average MP-DQN Results}} \\ \hline
-        \textbf{Hole} & \textbf{Par} & \textbf{Score} & \textbf{Shots} & \textbf{Distance remaining}  \\ \hline
-        1 & 4 & 0.30 & 2.22 & 15.19 \\ \hline
-        2 & 5 & 0.31 & 2.62 & 15.09 \\ \hline
-        3 & 4 & 0.30 & 2.17 & 14.70 \\ \hline
-        4 & 4 & 0.30 & 2.24 & 13.43 \\ \hline
-        5 & 3 & 0.21 & 1.12 & 17.54 \\ \hline
-        6 & 5 & 0.39 & 3.40 & 15.75 \\ \hline
-        7 & 3 & 0.19 & 1.11 & 13.04 \\ \hline
-        8 & 4 & 0.35 & 2.61 & 16.53 \\ \hline
-        9 & 4 & 0.35 & 2.60 & 16.97 \\ \hline
+    \begin{tabular}{c|c|c|c|c}
+    \multicolumn{5}{c}{\textbf{Pebble Beach Average MP-DQN Results}} \\
+        \textbf{Hole} & \textbf{Par} & \textbf{Score} & \textbf{Shots} & \textbf{Distance remaining (m)}  \\ \hline
+        1 & 4 & 0.30 & 2.22 & 15.19 \\ 
+        2 & 5 & 0.31 & 2.62 & 15.09 \\ 
+        3 & 4 & 0.30 & 2.17 & 14.70 \\ 
+        4 & 4 & 0.30 & 2.24 & 13.43 \\ 
+        5 & 3 & 0.21 & 1.12 & 17.54 \\ 
+        6 & 5 & 0.39 & 3.40 & 15.75 \\ 
+        7 & 3 & 0.19 & 1.11 & 13.04 \\ 
+        8 & 4 & 0.35 & 2.61 & 16.53 \\ 
+        9 & 4 & 0.35 & 2.60 & 16.97 \\ 
     \end{tabular}
     }
     \end{subtable}
@@ -728,18 +726,18 @@ In \autoref{tab:ullna_average_results}, the average scores, number of shots and 
     \begin{subtable}{0.3\textwidth}
     \centering
     \resizebox{\textwidth}{!}{
-    \begin{tabular}{|c|c|c|c|c|} \hline
-    \multicolumn{5}{|c|}{\textbf{Ullna GC Average Golfer Results}} \\ \hline
-        \textbf{Hole} & \textbf{Par} & \textbf{Score} & \textbf{Shots} & \textbf{Distance remaining}  \\ \hline
-        1 & 5 & 0.32 & 2.75 & 13.75 \\ \hline
-        2 & 4 & 0.27 & 2.00 & 12.50 \\ \hline
-        3 & 3 & 0.17 & 1.00 & 9.65 \\ \hline
-        4 & 5 & 0.40 & 3.25 & 23.25 \\ \hline
-        5 & 3 & 0.37 & 2.50 & 14.85 \\ \hline
-        6 & 4 & 0.25 & 2.00 & 6.67 \\ \hline
-        7 & 4 & 0.32 & 2.25 & 18.00 \\ \hline
-        8 & 4 & 0.28 & 2.00 & 15.75 \\ \hline
-        9 & 4 & 0.28 & 2.00 & 14.50 \\ \hline
+    \begin{tabular}{c|c|c|c|c}
+    \multicolumn{5}{c}{\textbf{Ullna GC Average Golfer Results}} \\
+        \textbf{Hole} & \textbf{Par} & \textbf{Score} & \textbf{Shots} & \textbf{Distance remaining (m)}  \\ \hline
+        1 & 5 & 0.32 & 2.75 & 13.75 \\ 
+        2 & 4 & 0.27 & 2.00 & 12.50 \\ 
+        3 & 3 & 0.17 & 1.00 & 9.65 \\ 
+        4 & 5 & 0.40 & 3.25 & 23.25 \\ 
+        5 & 3 & 0.37 & 2.50 & 14.85 \\ 
+        6 & 4 & 0.25 & 2.00 & 6.67 \\ 
+        7 & 4 & 0.32 & 2.25 & 18.00 \\ 
+        8 & 4 & 0.28 & 2.00 & 15.75 \\ 
+        9 & 4 & 0.28 & 2.00 & 14.50 \\ 
     \end{tabular}
     }
     \end{subtable}
@@ -747,18 +745,18 @@ In \autoref{tab:ullna_average_results}, the average scores, number of shots and 
     \begin{subtable}{0.3\textwidth}
     \centering
     \resizebox{\textwidth}{!}{
-    \begin{tabular}{|c|c|c|c|c|} \hline
-    \multicolumn{5}{|c|}{\textbf{Ullna GC Average Dueling DDQN Results}} \\ \hline
-        \textbf{Hole} & \textbf{Par} & \textbf{Score} & \textbf{Shots} & \textbf{Distance remaining}  \\ \hline
-        1 & 5 & 0.33 & 2.85 & 14.36 \\ \hline
-        2 & 4 & 0.28 & 2.08 & 12.85 \\ \hline
-        3 & 3 & 0.21 & 1.16 & 15.73 \\ \hline
-        4 & 5 & 0.41 & 3.68 & 20.89 \\ \hline
-        5 & 3 & 0.23 & 1.35 & 15.10 \\ \hline
-        6 & 4 & 0.30 & 2.24 & 13.41 \\ \hline
-        7 & 4 & 0.28 & 2.05 & 13.16 \\ \hline
-        8 & 4 & 0.29 & 2.12 & 13.51 \\ \hline
-        9 & 4 & 0.29 & 2.19 & 13.95 \\ \hline
+    \begin{tabular}{c|c|c|c|c}
+    \multicolumn{5}{c}{\textbf{Ullna GC Average Dueling DDQN Results}} \\
+        \textbf{Hole} & \textbf{Par} & \textbf{Score} & \textbf{Shots} & \textbf{Distance remaining (m)}  \\ \hline
+        1 & 5 & 0.33 & 2.85 & 14.36 \\ 
+        2 & 4 & 0.28 & 2.08 & 12.85 \\ 
+        3 & 3 & 0.21 & 1.16 & 15.73 \\ 
+        4 & 5 & 0.41 & 3.68 & 20.89 \\ 
+        5 & 3 & 0.23 & 1.35 & 15.10 \\ 
+        6 & 4 & 0.30 & 2.24 & 13.41 \\ 
+        7 & 4 & 0.28 & 2.05 & 13.16 \\ 
+        8 & 4 & 0.29 & 2.12 & 13.51 \\ 
+        9 & 4 & 0.29 & 2.19 & 13.95 \\ 
     \end{tabular}
     }
     \end{subtable}
@@ -766,18 +764,18 @@ In \autoref{tab:ullna_average_results}, the average scores, number of shots and 
     \begin{subtable}{0.3\textwidth}
     \centering
     \resizebox{\textwidth}{!}{
-    \begin{tabular}{|c|c|c|c|c|} \hline
-    \multicolumn{5}{|c|}{\textbf{Ullna GC Average MP-DQN Results}} \\ \hline
-        \textbf{Hole} & \textbf{Par} & \textbf{Score} & \textbf{Shots} & \textbf{Distance remaining}  \\ \hline
-        1 & 5 & 0.34 & 2.96 & 14.14 \\ \hline
-        2 & 4 & 0.30 & 2.26 & 12.11 \\ \hline
-        3 & 3 & 0.19 & 1.08 & 14.32 \\ \hline
-        4 & 5 & 0.35 & 3.02 & 16.23 \\ \hline
-        5 & 3 & 0.25 & 1.55 & 13.67 \\ \hline
-        6 & 4 & 0.33 & 2.42 & 15.46 \\ \hline
-        7 & 4 & 0.29 & 2.18 & 13.85 \\ \hline
-        8 & 4 & 0.30 & 2.21 & 15.79 \\ \hline
-        9 & 4 & 0.29 & 2.18 & 13.80 \\ \hline
+    \begin{tabular}{c|c|c|c|c}
+    \multicolumn{5}{c}{\textbf{Ullna GC Average MP-DQN Results}} \\
+        \textbf{Hole} & \textbf{Par} & \textbf{Score} & \textbf{Shots} & \textbf{Distance remaining (m)}  \\ \hline
+        1 & 5 & 0.34 & 2.96 & 14.14 \\ 
+        2 & 4 & 0.30 & 2.26 & 12.11 \\ 
+        3 & 3 & 0.19 & 1.08 & 14.32 \\ 
+        4 & 5 & 0.35 & 3.02 & 16.23 \\ 
+        5 & 3 & 0.25 & 1.55 & 13.67 \\ 
+        6 & 4 & 0.33 & 2.42 & 15.46 \\ 
+        7 & 4 & 0.29 & 2.18 & 13.85 \\ 
+        8 & 4 & 0.30 & 2.21 & 15.79 \\ 
+        9 & 4 & 0.29 & 2.18 & 13.80 \\ 
     \end{tabular}
     }
     \end{subtable}
@@ -1247,23 +1245,22 @@ The agents were able to play on a similar level as the golfer, even though they 
 \chapter{Miscellaneous}
 \begin{table}
     \centering
-    \begin{tabular}{|c|c|}
-        \hline
+    \begin{tabular}{c|c}
         \textbf{Area} & \textbf{Integer} \\ \hline
-        Fairway & 0 \\ \hline
-        Rough & 1 \\ \hline
-        Green & 2 \\ \hline
-        Tee box & 3 \\ \hline
-        Pathway & 4 \\ \hline
-        Tree & 5 \\ \hline
-        Out of bounds & 6 \\ \hline
-        Water & 7 \\ \hline
-        Ball & 8 \\ \hline
-        Hole & 9 \\ \hline
-        Bunker & 10 \\ \hline
-        Waste area & 11 \\ \hline
-        Native area & 12 \\ \hline
-        Penalty area & 13 \\ \hline
+        Fairway & 0 \\ 
+        Rough & 1 \\ 
+        Green & 2 \\ 
+        Tee box & 3 \\ 
+        Pathway & 4 \\ 
+        Tree & 5 \\ 
+        Out of bounds & 6 \\ 
+        Water & 7 \\ 
+        Ball & 8 \\ 
+        Hole & 9 \\ 
+        Bunker & 10 \\ 
+        Waste area & 11 \\ 
+        Native area & 12 \\ 
+        Penalty area & 13 \\ 
     \end{tabular}
     \caption{A table indicating the mapping between golf areas and integers. These integers were stored in the observations from the golf simulation application and used by the agent to learn how to play golf.}
     \label{app:tab:areamapping}
