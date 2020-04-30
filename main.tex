@@ -138,72 +138,6 @@ In order for golfers of different skill levels to play against each other, a sys
 
 Due to the nature of the game, golf is easily adaptable to a digital setting. It contains well defined rules, is played on specified areas (the golf holes) and allows for a specific set of actions (hitting shots with golf clubs). These components can be described digitally, allowing golf to be played in a virtual environment. As such, this allows for artificial agents to be trained for playing golf, since they can access the game digitally. The agents have, regardless of using deterministic rules or learning methods, access to the data related to the game, which results in the possibilities of helping golfers improve using artificial intelligence.
 
-\section{Artificial Neural Networks}
-\label{sec:neuralnetworks}
-In the past few decades, the amount of data available has increased a lot. Much of this data contains features that can be modelled. For instance, a dataset containing images could be modelled to determine whether an image contains an elephant or not. However, the functions needed to correctly model the features are usually non-trivial to discover manually.
-
-One solution to the above mentioned problem is to approximate the functions needed for the model using artificial neural networks (ANNs). An artificial neural network, often called simply a neural network, is a universal function approximator that given an input calculates an output that approximates the value given by the actual function modelling the data \parencite{rojas2013neural}. 
-
-More specifically, the ANN consists of so called neurons. Neurons receive input which is combined with their internal state to produce an output. These internal states utilize so called weights and biases to linearly modify the input, as seen in \autoref{eq:weightsandbiases} where $o_n$, $i_n$, $w_n$ and $b_n$ are the output, input, weight and bias of the neuron, respectively. The neural network combines the neurons by using outputs from one so called layer of neurons as inputs to another layer. This is done until a final set of neurons outputs the approximated function value. As such, the ANN can be seen as a directed, weighted graph, consisting of layers of neurons. \parencite{lecun2015deep} 
-
-\begin{equation}
-\label{eq:weightsandbiases}
-o_n = w_n \cdot i_n + b_n 
-\end{equation}
-
-In order for the network to correctly approximate a function, the weights must map inputs correctly to outputs. This is hard to manually input into a network, and must instead be learned by it. This is done by training the ANN on datasets labelled with the correct result, for instance a dataset containing images mapped to a boolean value indicating whether an elephant is present or not. The network takes the data as input and approximates the output. This output is compared with the correct label, using something known as a loss function (described in \autoref{sec:loss}), to measure the error between the values. This error is then used to modify the weights and biases such that the error is reduced in the next iteration. \parencite{lecun2015deep} 
-
-Specifically, the weights and biases are modified by computing a gradient for both the weights and biases, that for each weight or bias indicates how much the error would increase or decrease if the weight or bias changed a tiny amount. The weights and biases are then modified in the opposite direction of the gradient, i.e. by taking the negative of the gradient. This is done since the gradient always points in the direction of the steepest ascent in the error space. However, the value is usually limited by a learning rate parameter $\eta$ to make the learning smoother. \parencite{lecun2015deep}
-
-For computational efficiency, the weight and bias modification is usually done by taking a few examples, a batch, and running them through the network to compute the outputs and the errors, and then computing the average gradient for the batch. The gradient is then used to adjust all weights and biases. The process, called stochastic gradient descent, is then repeated with a new batch until the errors converge. \parencite{bottou2010large}
-
-\subsection{Loss functions}
-\label{sec:loss}
-Loss functions are used to evaluate how well an algorithm models data. These functions map the deviation of the prediction and the actual value to a real number, known as the error. Larger deviations cause a larger error.
-
-There are several different loss functions, used for different purposes. The choice of loss function depends on several factors, such as what type of algorithm is used and the dataset used for comparison. One example of a loss function is the mean square error (MSE) loss function defined in \autoref{eq:mse}, where $y_i$ is the true value of sample $i$ and $x_i$ is the predicted value. \parencite{CommonLo62:online}
-
-\begin{equation}
-\label{eq:mse}
-MSE = \frac{\sum_{i=1}^n (y_i - x_i)^2}{n}
-\end{equation}
-
-\subsection{Deep neural networks}
-In order to achieve the general function approximation, a deep network architecture consisting of several neuron layers is required. Shallow networks act similar to linear function approximators and cannot learn the high level features present in inputs such as images. Aside from large amounts of layers in their architectures, the deep networks also utilize non-linear activation functions when computing the output from a layer. One of the more common activation functions is the rectified linear unit (ReLU), defined in \autoref{eq:relu}.
-\begin{equation}
-\label{eq:relu}
-f(x) = max(x, 0)
-\end{equation}
-For a visual representation of a deep neural network, see \autoref{fig:dnn}\footnote{\url{https://commons.wikimedia.org/wiki/File:Neural_network.svg} under the Creative Commons license (Accessed 2020-04-15)}.
-
-\begin{figure}
-\centering
-\includegraphics[width=0.75\textwidth]{dnn.png}
-\caption{A representation of a deep neural network. The input layer (green) takes the data and feeds it forward in the network to get an output from the output layer (yellow). Each dot represents a neuron, and each line represents the neurons' output computations, including the weight and bias modification as described in \autoref{eq:weightsandbiases} and the activation function.}
-\label{fig:dnn}
-\end{figure}
-
-To propagate the error modifications through the multiple layers and their non-linear functions, a procedure known as the backpropagation algorithm is used. This procedure utilizes the fact that the gradients for each layer can be seen as applications of the chain rule for derivatives. Specifically, the gradient for a layer in regards to the input of the layer is directly correlated to the gradient for the subsequent layer in regards to the input of that layer. As such, the algorithm can work backwards, first computing the gradient of the output layer and then utilizing that to compute the previous layer's gradient. This makes the algorithm computationally efficient and usable even for large network architectures. \parencite{Goodfellow-et-al-2016} 
-
-Due to the size of deep neural network architectures, training a deep network can be computationally heavy and take up a lot of time. However, the advances in graphical processing units (GPUs) in the last decade have made it possible to greatly speed up the computations required for the learning process, causing convergence to be achieved much faster. \parencite{lecun2015deep}
-
-\subsection{Convolutional neural networks}
-One of the drawbacks of a deep neural network as described above, often called a multilayer perceptron (MLP), is that it cannot efficiently handle data input with spatial information, such as two dimensional images. Pixels near each other are important since they contribute to defining features in the image, but an image must be flattened to be input into an MLP. Thus, information that is relevant for features may disappear. 
-
-Convolutional neural networks (CNNs) are a type of neural network that can handle spatial information. A CNN features two different types of layers: convolutional layers and pooling layers. The convolutional layers contain units organized in what is called feature maps, where each unit is connected to patches of units in one of the previous layer's feature maps through weight and bias groups called filters. A layer can and often does contain several feature maps, and these use different filters. This architecture causes the local correlation between data points to be kept when going through the layers. The name convolution comes from the name of the mathematical operation performed by the filters. \parencite{lecun2015deep}
-
-The pooling layers are used to pool similar features into one new feature. This can be done in several ways, with one common unit operation being to take the maximum of a patch of units as output. Close by pooling units use patches separate from each other such that the feature maps shrink when going through a pooling layer. \parencite{lecun2015deep}
-
-A convolutional network architecture typically uses these two types of layers together with non-linear activation functions early in the network architecture, and utilizes an MLP network architecture later to extract the approximation of the function value. \parencite{lecun2015deep}
-
-\subsection{Batch normalization}
-Batch normalization is a process in which the inputs for each layer of a network are normalized before being used by the layer. This is added as a part of the network architecture, and adds a normalization for each training batch.
-
-The reason for normalizing the inputs is that the distributions of each layer's inputs changes during training since the weights and biases of other layers change. This requires a lower learning rate, which in turn causes learning to be slower. Batch normalization allows for greater learning rates and also makes the network more stable in regards to the initial weight and bias initializations. \parencite{ioffe2015batch}
-
-\subsection{Usage of neural networks}
-On their own, neural networks work well for what is known as supervised learning, in which the correct answer is already known beforehand. For instance, when training a network to identify elephants in images, the images trained on are already labelled with whether they contain elephants or not. There are however many problems with no obvious answers. As an example, it is not inherently clear how to optimally play a hole of golf. There are several different actions to choose from, and several steps to take. As such, labelling a golf hole with the suggested actions is a difficult task. Therefore, neural networks on their own cannot successfully be used for problems such as golf. Other methods must be used instead.
-
 \section{Reinforcement Learning}
 \label{sec:reinforcementlearning}
 Humans learn through interacting with their environment. For instance, a child does not have a teacher teaching it how to move its joints to walk, but rather observes its environment (such as adults moving around it) and tries actions to propel itself forward. It learns how its actions affect its environment and how much they contribute to the success of the process. Eventually, the child learns to walk successfully. 
@@ -286,7 +220,7 @@ As can be seen in the equation, the updated Q-value for a state and action depen
 \label{subsec:deepqlearning}
 One problem with the Q-learning algorithm is that a table for storing Q-values is infeasible for environments with a large state space. One example of such an environment is when an agent receives colored images as input, i.e. it observes a rendered representation of a problem. An image usually consists of tens of thousands of pixels. Environments utilizing images can have many different image states, making it impossible to store all this information in a table.
 
-As was mentioned in \autoref{sec:neuralnetworks}, ANNs can be used to approximate models with high dimensional inputs such as images. As such, they seem like good candidates to replace tables for mapping states to actions. That is, the state of the environment can be used as input to a neural network, and the Q-values for each action can be approximated as output from the network. However, reinforcement learning algorithms have been known to diverge when used with non-linear classifiers \parencite{tsitsiklis1997analysis}. This is due to subsequent states being related to each other, major policy changes caused by small updates of the Q function, as well as the correlations between action values and their so called target values $Y$, defined in \autoref{eq:qtarget}.
+Artificial neural networks (described in detail in \autoref{sec:neuralnetworks}) can be used to approximate models with high dimensional inputs such as images. As such, they seem like good candidates to replace tables for mapping states to actions. That is, the state of the environment can be used as input to a neural network, and the Q-values for each action can be approximated as output from the network. However, reinforcement learning algorithms have been known to diverge when used with non-linear classifiers \parencite{tsitsiklis1997analysis}. This is due to subsequent states being related to each other, major policy changes caused by small updates of the Q function, as well as the correlations between action values and their so called target values $Y$, defined in \autoref{eq:qtarget}.
 
 \begin{equation}
 \label{eq:qtarget}
@@ -299,7 +233,7 @@ Experience replay, described in \parencite{lin1992self}, is a process in which t
 
 If the network were to be used by both the Q-value prediction and the target value prediction, the network would be aiming for a moving target. Updating one value also updates the other, making it harder to reach and often leading to divergence. Because of this reason, the target values are calculated using another network which is only updated with the network parameters of the Q-value network periodically. By keeping the target values fixed, the network can more easily converge. \parencite{mnih2015human}
 
-In \parencite{mnih2015human}, a version of the MSE loss is used when applying the Q-learning updates. This loss is defined as in \autoref{eq:qloss}, where $\theta_t$ represents the network parameters at iteration $t$, $\theta_t^-$ the network parameters used for the target values at iteration $t$, and $n$ is the size of the sampled batch from the experience replay buffer. In the equation, $Q$ now refers to the Q Network, where $Q(s_i, a_i, \theta_t)$ equals the network output of action $a_i$ at iteration $t$.
+In \parencite{mnih2015human}, a version of the mean square error loss detailed in \autoref{sec:neuralnetworks} is used when applying the Q-learning updates. This loss is defined as in \autoref{eq:qloss}, where $\theta_t$ represents the network parameters at iteration $t$, $\theta_t^-$ the network parameters used for the target values at iteration $t$, and $n$ is the size of the sampled batch from the experience replay buffer. In the equation, $Q$ now refers to the Q Network, where $Q(s_i, a_i, \theta_t)$ equals the network output of action $a_i$ at iteration $t$.
 
 \begin{equation}
 \label{eq:qloss}
@@ -385,7 +319,7 @@ Q(s_t, k_t, x_{k_t}) \leftarrow Q(s_t, k_t, x_{k_t}) + \\ \alpha \cdot (R_t + \g
 \end{equation}
 As can be derived from the equation, first $x_k^* = max_{x_k}Q(s_{t+1}, k, x_k)$ is solved for each discrete action $k$. Then, the largest $Q(s_{t+1}, k, x_k^*)$ is chosen. As has already been mentioned, it is not possible to perform the $max$ operator on a continuous value. However, it is easy to see that the equation can be evaluated efficiently if $x_k^*$ is given. This value can easily be approximated using a deterministic policy network as in DDPG. The P-DQN algorithm therefore works by using this network to calculate the parameters for all discrete actions $k$, and then use DQN with these values given to find the optimal $k$ to choose from. \parencite{xiong2018parametrized}
 
-In \parencite{xiong2018parametrized}, the DQN network is actually a Dueling DDQN network, and is updated as in \parencite{mnih2015human} using MSE loss. The deterministic policy network parameters are updated using the loss described in \autoref{eq:pdqnddpgloss}, where $\omega_t$ represents the Dueling DDQN network parameters. Furthermore, the different network parameters use different learning rates.
+In \parencite{xiong2018parametrized}, the DQN network is actually a Dueling DDQN network, and is updated as in \parencite{mnih2015human} using the mean square error loss from \autoref{eq:qloss}. The deterministic policy network parameters are updated using the loss described in \autoref{eq:pdqnddpgloss}, where $\omega_t$ represents the Dueling DDQN network parameters. Furthermore, the different network parameters use different learning rates.
 
 \begin{equation}
 \label{eq:pdqnddpgloss}
@@ -402,6 +336,72 @@ Inputting $\boldsymbol{x}$ causes more problems by affecting the discrete action
 A solution to the problems mentioned above is to split the Q-network into several networks, one for each discrete action. However, this increases the complexity of the algorithm drastically. In \parencite{bester2019mpdqn}, an alternative approach is presented, where the action parameters are separated and input into different forward passes into the same network. This causes no structural changes to the network architecture, but still removes the above mentioned problems from the algorithm. This is done by inputting the one-hot vector for the $k$:th action parameter during the $k$:th forward pass, i.e. by inputting $\boldsymbol{x}\boldsymbol{e}_k$. This causes all gradients of the other action parameters to be $0$, and makes the Q-values for the $k$:th action only depend on $x_k$. This modified algorithm is referred to as the Multi Pass Q-network (MP-DQN) algorithm. \parencite{bester2019mpdqn}
 
 Performing forward passes for each discrete action is also costly, but this can be improved by utilizing the properties of batches. By doing so, all action parameters can be input at the same time without affecting each other in a single parallel forward pass. This generates a matrix of Q-values, in which the diagonal contains the valid Q-values, i.e. where the correct action parameter is used with the correct discrete action. This allows the overhead of the MP-DQN algorithm to scale linearly. \parencite{bester2019mpdqn}
+
+\section{Artificial Neural Networks}
+\label{sec:neuralnetworks}
+In the past few decades, the amount of data available has increased a lot. Much of this data contains features that can be modelled. For instance, a dataset containing images could be modelled to determine whether an image contains an elephant or not. However, the functions needed to correctly model the features are usually non-trivial to discover manually.
+
+One solution to the above mentioned problem is to approximate the functions needed for the model using artificial neural networks (ANNs). An artificial neural network, often called simply a neural network, is a universal function approximator that given an input calculates an output that approximates the value given by the actual function modelling the data \parencite{rojas2013neural}. 
+
+More specifically, the ANN consists of so called neurons. Neurons receive input which is combined with their internal state to produce an output. These internal states utilize so called weights and biases to linearly modify the input, as seen in \autoref{eq:weightsandbiases} where $o_n$, $i_n$, $w_n$ and $b_n$ are the output, input, weight and bias of the neuron, respectively. The neural network combines the neurons by using outputs from one so called layer of neurons as inputs to another layer. This is done until a final set of neurons outputs the approximated function value. As such, the ANN can be seen as a directed, weighted graph, consisting of layers of neurons. \parencite{lecun2015deep} 
+
+\begin{equation}
+\label{eq:weightsandbiases}
+o_n = w_n \cdot i_n + b_n 
+\end{equation}
+
+In order for the network to correctly approximate a function, the weights must map inputs correctly to outputs. This is hard to manually input into a network, and must instead be learned by it. This is done by training the ANN on datasets labelled with the correct result, for instance a dataset containing images mapped to a boolean value indicating whether an elephant is present or not. The network takes the data as input and approximates the output. This output is compared with the correct label, using something known as a loss function (described in \autoref{sec:loss}), to measure the error between the values. This error is then used to modify the weights and biases such that the error is reduced in the next iteration. \parencite{lecun2015deep} 
+
+Specifically, the weights and biases are modified by computing a gradient for both the weights and biases, that for each weight or bias indicates how much the error would increase or decrease if the weight or bias changed a tiny amount. The weights and biases are then modified in the opposite direction of the gradient, i.e. by taking the negative of the gradient. This is done since the gradient always points in the direction of the steepest ascent in the error space. However, the value is usually limited by a learning rate parameter $\eta$ to make the learning smoother. \parencite{lecun2015deep}
+
+For computational efficiency, the weight and bias modification is usually done by taking a few examples, a batch, and running them through the network to compute the outputs and the errors, and then computing the average gradient for the batch. The gradient is then used to adjust all weights and biases. The process, called stochastic gradient descent, is then repeated with a new batch until the errors converge. \parencite{bottou2010large}
+
+\subsection{Loss functions}
+\label{sec:loss}
+Loss functions are used to evaluate how well an algorithm models data. These functions map the deviation of the prediction and the actual value to a real number, known as the error. Larger deviations cause a larger error.
+
+There are several different loss functions, used for different purposes. The choice of loss function depends on several factors, such as what type of algorithm is used and the dataset used for comparison. One example of a loss function is the mean square error (MSE) loss function defined in \autoref{eq:mse}, where $y_i$ is the true value of sample $i$ and $x_i$ is the predicted value. \parencite{CommonLo62:online}
+
+\begin{equation}
+\label{eq:mse}
+MSE = \frac{\sum_{i=1}^n (y_i - x_i)^2}{n}
+\end{equation}
+
+\subsection{Deep neural networks}
+In order to achieve the general function approximation, a deep network architecture consisting of several neuron layers is required. Shallow networks act similar to linear function approximators and cannot learn the high level features present in inputs such as images. Aside from large amounts of layers in their architectures, the deep networks also utilize non-linear activation functions when computing the output from a layer. One of the more common activation functions is the rectified linear unit (ReLU), defined in \autoref{eq:relu}.
+\begin{equation}
+\label{eq:relu}
+f(x) = max(x, 0)
+\end{equation}
+For a visual representation of a deep neural network, see \autoref{fig:dnn}\footnote{\url{https://commons.wikimedia.org/wiki/File:Neural_network.svg} under the Creative Commons license (Accessed 2020-04-15)}.
+
+\begin{figure}
+\centering
+\includegraphics[width=0.75\textwidth]{dnn.png}
+\caption{A representation of a deep neural network. The input layer (green) takes the data and feeds it forward in the network to get an output from the output layer (yellow). Each dot represents a neuron, and each line represents the neurons' output computations, including the weight and bias modification as described in \autoref{eq:weightsandbiases} and the activation function.}
+\label{fig:dnn}
+\end{figure}
+
+To propagate the error modifications through the multiple layers and their non-linear functions, a procedure known as the backpropagation algorithm is used. This procedure utilizes the fact that the gradients for each layer can be seen as applications of the chain rule for derivatives. Specifically, the gradient for a layer in regards to the input of the layer is directly correlated to the gradient for the subsequent layer in regards to the input of that layer. As such, the algorithm can work backwards, first computing the gradient of the output layer and then utilizing that to compute the previous layer's gradient. This makes the algorithm computationally efficient and usable even for large network architectures. \parencite{Goodfellow-et-al-2016} 
+
+Due to the size of deep neural network architectures, training a deep network can be computationally heavy and take up a lot of time. However, the advances in graphical processing units (GPUs) in the last decade have made it possible to greatly speed up the computations required for the learning process, causing convergence to be achieved much faster. \parencite{lecun2015deep}
+
+\subsection{Convolutional neural networks}
+One of the drawbacks of a deep neural network as described above, often called a multilayer perceptron (MLP), is that it cannot efficiently handle data input with spatial information, such as two dimensional images. Pixels near each other are important since they contribute to defining features in the image, but an image must be flattened to be input into an MLP. Thus, information that is relevant for features may disappear. 
+
+Convolutional neural networks (CNNs) are a type of neural network that can handle spatial information. A CNN features two different types of layers: convolutional layers and pooling layers. The convolutional layers contain units organized in what is called feature maps, where each unit is connected to patches of units in one of the previous layer's feature maps through weight and bias groups called filters. A layer can and often does contain several feature maps, and these use different filters. This architecture causes the local correlation between data points to be kept when going through the layers. The name convolution comes from the name of the mathematical operation performed by the filters. \parencite{lecun2015deep}
+
+The pooling layers are used to pool similar features into one new feature. This can be done in several ways, with one common unit operation being to take the maximum of a patch of units as output. Close by pooling units use patches separate from each other such that the feature maps shrink when going through a pooling layer. \parencite{lecun2015deep}
+
+A convolutional network architecture typically uses these two types of layers together with non-linear activation functions early in the network architecture, and utilizes an MLP network architecture later to extract the approximation of the function value. \parencite{lecun2015deep}
+
+\subsection{Batch normalization}
+Batch normalization is a process in which the inputs for each layer of a network are normalized before being used by the layer. This is added as a part of the network architecture, and adds a normalization for each training batch.
+
+The reason for normalizing the inputs is that the distributions of each layer's inputs changes during training since the weights and biases of other layers change. This requires a lower learning rate, which in turn causes learning to be slower. Batch normalization allows for greater learning rates and also makes the network more stable in regards to the initial weight and bias initializations. \parencite{ioffe2015batch}
+
+\subsection{Usage of neural networks}
+On their own, neural networks work well for what is known as supervised learning, in which the correct answer is already known beforehand. For instance, when training a network to identify elephants in images, the images trained on are already labelled with whether they contain elephants or not. There are however many problems with no obvious answers. As an example, it is not inherently clear how to optimally play a hole of golf. There are several different actions to choose from, and several steps to take. As such, labelling a golf hole with the suggested actions is a difficult task. Therefore, neural networks on their own cannot successfully be used for problems such as golf. Other methods, such as reinforcement learning, must be used instead.
 
 \section{Related Work}
 In this section, articles related to this thesis are presented. Their content and how it relates to this work is described.
@@ -562,7 +562,7 @@ Although the simulation application was sped up, the time required for training 
     \label{tab:hyperparameters}
 \end{table}
 
-The agents were both trained and evaluated on a computer using 16GB of RAM as well as an NVIDIA GeForce GTX 970 graphics card. The GPU was utilized both for the training of the networks and the golf simulation application. The experience replay was always stored in memory during training.
+The agents were both trained and evaluated on a computer using 16GB of RAM as well as an NVIDIA GeForce GTX 970 graphics card. The GPU was utilized both for the training of the networks and the golf simulation application. The experience replay was always stored in memory during training. The agents were implemented in Python, with PyTorch and NumPy used as machine learning libraries. The network structures and experience replay were implemented as their own classes, and these components were then used to create agent classes. The agent classes then communicated through an API with the golf simulation application.
 
 \subsection{Evaluation}
 The agents were evaluated on the same configurations they were trained on, one containing the first nine holes of Pebble Beach and one containing the first nine holes of Ullna GC. They were evaluated by playing 5000 random holes on their respective course. The results from these holes were stored and analyzed on the score, the number of shots hit, the distance remaining to the pin, the club selections and the directional deviations chosen.
@@ -636,9 +636,8 @@ The results in this subsection are divided into two groups; Pebble Beach results
 In \autoref{tab:pebble_average_results}, the average scores, number of shots and distances remaining for each hole on Pebble Beach are presented for the golfer, the Dueling DDQN agent and MP-DQN agent. As was mentioned in \autoref{chapter:methods}, the golfer was evaluated over five rounds, whereas the agents were evaluated over 250 rounds. The tables showcase that both the golfer and the agents found some holes more difficult than others. This is also true when comparing the Dueling DDQN and MP-DQN agents. For instance, the Dueling DDQN agent performed better than the MP-DQN agent on hole 2, but the opposite was true for hole 6.
 
 \begin{table}
-    \begin{subtable}{0.3\textwidth}
+    \begin{subtable}{\textwidth}
     \centering
-    \resizebox{\textwidth}{!}{
     \begin{tabular}{c|c|c|c|c}
     \multicolumn{5}{c}{\textbf{Pebble Beach Average Golfer Results}} \\ 
         \textbf{Hole} & \textbf{Par} & \textbf{Score} & \textbf{Shots} & \textbf{Distance remaining (m)}  \\ \hline
@@ -652,12 +651,10 @@ In \autoref{tab:pebble_average_results}, the average scores, number of shots and
         8 & 4 & 0.32 & 2.60 & 7.76 \\ 
         9 & 4 & 0.29 & 2.20 & 11.28 \\
     \end{tabular}
-    }
     \end{subtable}
     \hfill
-    \begin{subtable}{0.3\textwidth}
+    \begin{subtable}{\textwidth}
     \centering
-    \resizebox{\textwidth}{!}{
     \begin{tabular}{c|c|c|c|c}
     \multicolumn{5}{c}{\textbf{Pebble Beach Average Dueling DDQN Results}} \\ 
         \textbf{Hole} & \textbf{Par} & \textbf{Score} & \textbf{Shots} & \textbf{Distance remaining (m)}  \\ \hline
@@ -671,12 +668,10 @@ In \autoref{tab:pebble_average_results}, the average scores, number of shots and
         8 & 4 & 0.34 & 2.56 & 15.36 \\ 
         9 & 4 & 0.35 & 2.62 & 16.37 \\ 
     \end{tabular}
-    }
     \end{subtable}
     \hfill
-    \begin{subtable}{0.3\textwidth}
+    \begin{subtable}{\textwidth}
     \centering
-    \resizebox{\textwidth}{!}{
     \begin{tabular}{c|c|c|c|c}
     \multicolumn{5}{c}{\textbf{Pebble Beach Average MP-DQN Results}} \\
         \textbf{Hole} & \textbf{Par} & \textbf{Score} & \textbf{Shots} & \textbf{Distance remaining (m)}  \\ \hline
@@ -690,7 +685,6 @@ In \autoref{tab:pebble_average_results}, the average scores, number of shots and
         8 & 4 & 0.35 & 2.61 & 16.53 \\ 
         9 & 4 & 0.35 & 2.60 & 16.97 \\ 
     \end{tabular}
-    }
     \end{subtable}
     \caption{The average scores, number of shots and distances remaining gathered from the golfer, Dueling DDQN agent and MP-DQN agent for each hole on Pebble Beach, respectively. All numbers are rounded to two decimals.}
     \label{tab:pebble_average_results}
@@ -723,9 +717,8 @@ In \autoref{fig:MPDQN_pebble_direction_choices}, boxplots showcasing the directi
 In \autoref{tab:ullna_average_results}, the average scores, number of shots and distances remaining for each hole on Ullna GC are presented for the golfer, the Dueling DDQN agent and the MP-DQN agent, respectively. Similarly to previously mentioned results, some holes were harder or easier than others for both the agents and the golfer. 
 
 \begin{table}
-    \begin{subtable}{0.3\textwidth}
+    \begin{subtable}{\textwidth}
     \centering
-    \resizebox{\textwidth}{!}{
     \begin{tabular}{c|c|c|c|c}
     \multicolumn{5}{c}{\textbf{Ullna GC Average Golfer Results}} \\
         \textbf{Hole} & \textbf{Par} & \textbf{Score} & \textbf{Shots} & \textbf{Distance remaining (m)}  \\ \hline
@@ -739,12 +732,10 @@ In \autoref{tab:ullna_average_results}, the average scores, number of shots and 
         8 & 4 & 0.28 & 2.00 & 15.75 \\ 
         9 & 4 & 0.28 & 2.00 & 14.50 \\ 
     \end{tabular}
-    }
     \end{subtable}
     \hfill
-    \begin{subtable}{0.3\textwidth}
+    \begin{subtable}{\textwidth}
     \centering
-    \resizebox{\textwidth}{!}{
     \begin{tabular}{c|c|c|c|c}
     \multicolumn{5}{c}{\textbf{Ullna GC Average Dueling DDQN Results}} \\
         \textbf{Hole} & \textbf{Par} & \textbf{Score} & \textbf{Shots} & \textbf{Distance remaining (m)}  \\ \hline
@@ -758,12 +749,10 @@ In \autoref{tab:ullna_average_results}, the average scores, number of shots and 
         8 & 4 & 0.29 & 2.12 & 13.51 \\ 
         9 & 4 & 0.29 & 2.19 & 13.95 \\ 
     \end{tabular}
-    }
     \end{subtable}
     \hfill
-    \begin{subtable}{0.3\textwidth}
+    \begin{subtable}{\textwidth}
     \centering
-    \resizebox{\textwidth}{!}{
     \begin{tabular}{c|c|c|c|c}
     \multicolumn{5}{c}{\textbf{Ullna GC Average MP-DQN Results}} \\
         \textbf{Hole} & \textbf{Par} & \textbf{Score} & \textbf{Shots} & \textbf{Distance remaining (m)}  \\ \hline
@@ -777,7 +766,6 @@ In \autoref{tab:ullna_average_results}, the average scores, number of shots and 
         8 & 4 & 0.30 & 2.21 & 15.79 \\ 
         9 & 4 & 0.29 & 2.18 & 13.80 \\ 
     \end{tabular}
-    }
     \end{subtable}
     \caption{The average scores, number of shots and distances remaining gathered from the golfer, Dueling DDQN agent and MP-DQN agent for each hole on Ullna GC, respectively. All numbers are rounded to two decimals.}
     \label{tab:ullna_average_results}
